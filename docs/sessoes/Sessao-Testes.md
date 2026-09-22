@@ -21,6 +21,16 @@ Provar que o comportamento implementado corresponde ao `../Discovery.md`, identi
 - Corrigir lógica de backend ou layout de frontend sem encaminhamento.
 - Considerar um teste verde como prova suficiente quando o cenário de aceite não foi exercitado.
 
+## Retorno necessário
+
+- **De:** Backend.
+- **Retorno solicitado:** schema de tarefas, regras implementadas e contrato das rotas ou serviços a validar.
+- **De:** Frontend.
+- **Retorno solicitado:** fluxos, seletores e estados visuais disponíveis para os testes de interface.
+- **De:** Administração.
+- **Retorno solicitado:** confirmação da fase ativa, critérios de aceite e prioridade dos cenários.
+- **Condição para continuar:** receber o contrato ou a superfície executável correspondente à fase atual.
+
 ## Atividades
 
 ### Testes-01 - Matriz de comportamento
@@ -74,6 +84,22 @@ Provar que o comportamento implementado corresponde ao `../Discovery.md`, identi
 - Confirmar tarefas, tags, status, deadlines e scores após a restauração.
 - Registrar os comandos reais utilizados.
 
+## Matriz executada - Fundação (Fase 1)
+
+| Cenário | Resultado | Evidência |
+|---|---|---|
+| Carregar as rotas Flask localmente | Passou | `GET /health` é publicado |
+| Consultar `/health` em banco isolado | Passou | HTTP 200, banco `ok`, schema `1` |
+| Inicializar novamente o mesmo SQLite | Passou | Schema permaneceu em `1` |
+| Criar banco em caminho configurável | Passou | Diretórios intermediários e arquivo foram criados |
+| Rejeitar fuso horário inválido | Passou | `RuntimeError` foi levantado |
+| Resolver a configuração do Compose | Passou | Bind mount, portas e variáveis conferidos |
+| Construir e iniciar o container | Passou | Container `web` iniciou e respondeu em `8000` |
+| Recriar o container com o volume persistente | Passou | `/app/data/app.sqlite3` e schema `1` permaneceram disponíveis |
+| Backup/restauração com tarefas reais | Bloqueado | Schema de tarefas ainda não implementado |
+
+Testes automatizados executados: `python3 -m unittest discover -s tests -v`.
+
 ## Classificação de falhas
 
 - `BACKEND`: regra, validação, persistência, rota ou resposta incorreta.
@@ -124,3 +150,4 @@ Provar que o comportamento implementado corresponde ao `../Discovery.md`, identi
 - [ ] Persistência após reinício foi verificada.
 - [ ] Backup e restauração foram verificados.
 - [ ] Toda falha aberta tem classificação e sessão responsável.
+- [ ] Retornos necessários de Backend, Frontend e Administração foram registrados.

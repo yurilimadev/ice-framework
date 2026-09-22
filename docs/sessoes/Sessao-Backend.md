@@ -24,6 +24,14 @@ Implementar o domínio, a persistência e os fluxos Flask que sustentam a lista 
 - Alterar testes para fazer uma implementação incorreta passar.
 - Adicionar autenticação ou funcionalidades não previstas no discovery sem decisão registrada.
 
+## Retorno necessário
+
+- **De:** Administração.
+- **Retorno solicitado:** confirmação do início da Fase 2 e do escopo de domínio aprovado.
+- **De:** Testes.
+- **Retorno solicitado:** cenários prioritários para score, validação, deadlines, status, tags e persistência.
+- **Condição para continuar:** escopo e cenários registrados nos handoffs `BE-002` e `QA-002`.
+
 ## Atividades
 
 ### Backend-01 - Fundação
@@ -81,6 +89,7 @@ Implementar o domínio, a persistência e os fluxos Flask que sustentam a lista 
 - Contrato de rotas e dados documentado.
 - Regras de negócio cobertas por testes ou encaminhadas para a sessão de testes.
 - Handoffs registrados no formato de `Administracao-de-Sessoes.md`.
+- Retornos necessários de Administração e Testes registrados.
 
 ## Checklist de encerramento
 

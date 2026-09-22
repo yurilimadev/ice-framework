@@ -1,6 +1,6 @@
 # Discovery
 
-**Status:** Fase 0 concluída; Fase 1 é a próxima etapa
+**Status:** Fases 0 e 1 concluídas; Fase 2 é a próxima etapa
 
 ## Objetivo
 
@@ -123,6 +123,13 @@ Score ICE = Impacto x Confiança x Facilidade
 - Confirmado que o MVP terá somente título, sem descrição ou notas.
 - Definida a estratégia de evolução do schema com `PRAGMA user_version` e scripts SQL.
 - Fase 0 concluída sem pendências de produto necessárias para iniciar a Fundação.
+
+### 2026-09-21 - Conclusão da Fase 1
+
+- Fundação Flask, SQLite, Docker Compose e volume persistente validados.
+- Endpoint `/health` respondeu localmente e no container.
+- Schema inicial `1` e execução repetida do banco foram validados.
+- Fase 1 concluída; a próxima etapa é implementar o domínio e a persistência das tarefas.
 
 ## Documentos relacionados
 

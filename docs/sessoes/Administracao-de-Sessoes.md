@@ -11,6 +11,8 @@ Este documento coordena sessões de trabalho especializadas e registra dependên
 - A sessão de testes pode criar ou ajustar testes, mas não deve esconder uma falha alterando expectativas sem decisão registrada.
 - Comandos só entram na documentação depois de serem confirmados pela configuração executável do projeto.
 - As fases devem ser executadas uma por vez; a próxima só começa após o critério de saída da fase atual ser verificado.
+- O papel do assistente é coordenar o registro, orientar a próxima sessão e apontar dependências; a implementação deve ser executada pela sessão responsável, não pelo assistente.
+- Toda sessão deve indicar de quem precisa de retorno, qual retorno espera e qual condição permite continuar.
 
 ## Papéis
 
@@ -70,6 +72,9 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Comportamento anterior:
 - Comportamento novo:
 - Ação obrigatória do destino:
+- Retorno necessário de:
+- Retorno solicitado:
+- Condição de desbloqueio:
 - Verificação executada:
 - Bloqueios:
 - Status: aberto | em validação | concluído
@@ -79,10 +84,57 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 
 | ID | Sessão | Fase | Status | Bloqueio ou próximo passo |
 |---|---|---|---|---|
-| ADM-001 | Discovery e planejamento | 0 | concluída | Fase 0 concluída; iniciar Fundação quando autorizado |
-| BE-001 | Fundação e domínio | 1-3 | próxima | Aguardar início explícito da Fase 1 |
+| ADM-001 | Discovery e planejamento | 0 | concluída | Fases 0 e 1 concluídas; Fase 2 é a próxima etapa |
+| BE-001 | Fundação e domínio | 1 | concluída | Fundação validada; sessão encerrada |
 | FE-001 | Interface do MVP | 4 | aguardando | Depende do contrato do backend |
-| QA-001 | Estratégia e execução de testes | 2-7 | aguardando | Depende da primeira superfície executável |
+| QA-001 | Estratégia e execução de testes | 1 | concluída | Fundação validada; sessão encerrada |
+| BE-002 | Domínio e persistência | 2 | próxima | Aguardar autorização e retorno da Administração |
+| QA-002 | Testes do domínio e persistência | 2 | aguardando | Aguardar schema de tarefas e retorno do Backend |
+
+### Handoff BE-F1-001 - 2026-09-21
+
+- Origem: Backend
+- Destino: Testes e Administração
+- Tipo: INFRA
+- Alteração: criada a fundação Flask com SQLite em caminho configurável, migração inicial controlada por `PRAGMA user_version`, Dockerfile e Compose com bind mount persistente.
+- Arquivos ou áreas afetadas: `app/`, `migrations/001_foundation.sql`, `Dockerfile`, `compose.yaml`, `requirements.txt`, `wsgi.py`, `README.md`.
+- Comportamento anterior: não havia aplicação executável, banco ou configuração de ambiente.
+- Comportamento novo: a aplicação inicializa o banco, aplica schema `1` e expõe `GET /health`; localmente usa `data/app.sqlite3` e no Compose usa `/app/data/app.sqlite3` via `./data:/app/data:Z`.
+- Ação obrigatória do destino: revalidar inicialização local e via Compose; manter a estratégia `PRAGMA user_version` ao adicionar o schema de tarefas.
+- Verificação executada: `python3 -m flask --app wsgi routes`, cliente Flask em `GET /health`, servidor local com `curl`, `docker compose config`, `docker build` e `docker compose up --build --detach` com `curl` em `/health`.
+- Bloqueios: nenhum para a Fase 1; a implementação do domínio ainda não foi iniciada.
+- Status: concluído
+
+### Handoff QA-F1-001 - 2026-09-21
+
+- Origem: Testes
+- Destino: Administração
+- Tipo: INFRA
+- Alteração: validada a fundação local e via Docker Compose, sem falhas de Backend identificadas.
+- Arquivos ou áreas afetadas: `app/`, `migrations/001_foundation.sql`, `Dockerfile`, `compose.yaml`, `tests/test_foundation.py`.
+- Comportamento anterior: fundação aguardava revalidação independente.
+- Comportamento novo: a execução local e o container respondem `/health` com banco disponível e schema `1`; a inicialização repetida preserva o schema e o volume expõe o SQLite no container.
+- Ação obrigatória do destino: considerar a Fase 1 validada e manter a sessão de Testes bloqueada para os cenários de tarefas até a implementação da Fase 2.
+- Verificação executada: `python3 -m flask --app wsgi routes`; servidor Flask local com `curl` em `/health`; `docker compose config`; `docker compose build`; `docker compose up --detach`; `curl` em `http://127.0.0.1:8000/health`; `docker compose down`; nova subida do Compose; `python3 -m unittest discover -s tests -v`.
+- Bloqueios: não há tarefas, tags, status, deadlines, score ou rotas de domínio para validar.
+- Status: concluído
+
+### Handoff ADM-F1-001 - 2026-09-21
+
+- Origem: Administração
+- Destino: Backend e Testes
+- Tipo: INFRA
+- Alteração: Fase 1 sincronizada como concluída; Fase 2 definida como próxima etapa.
+- Arquivos ou áreas afetadas: `docs/Discovery.md`, `docs/Fases-de-Desenvolvimento.md`, registro de sessões.
+- Comportamento anterior: Fase 1 validada, mas os registros administrativos ainda apontavam sessões em andamento.
+- Comportamento novo: Backend e Testes da Fase 1 encerrados; novas sessões aguardam início da Fase 2.
+- Ação obrigatória do destino: Backend deve solicitar autorização para iniciar o domínio; Testes deve informar a matriz de cenários prioritários da Fase 2.
+- Retorno necessário de: Backend e Testes.
+- Retorno solicitado: confirmação do escopo inicial da Fase 2 e dos cenários de validação prioritários.
+- Condição de desbloqueio: registro de `BE-002` e `QA-002` como sessões da Fase 2.
+- Verificação executada: comparação dos critérios da Fase 1 com as evidências dos handoffs `BE-F1-001` e `QA-F1-001`.
+- Bloqueios: nenhum para a transição; a Fase 2 ainda não foi iniciada.
+- Status: concluído
 
 ## Definition of Done da sessão
 
@@ -91,3 +143,4 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Handoffs foram criados para todas as sessões afetadas.
 - Verificações executadas e seus resultados foram registrados.
 - A documentação relacionada foi atualizada quando o comportamento mudou.
+- O retorno necessário de outras sessões foi registrado, incluindo origem, pedido e condição de desbloqueio.

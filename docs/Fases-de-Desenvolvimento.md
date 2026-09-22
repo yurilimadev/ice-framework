@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Fase 0 concluída; Fase 1 aguardando início
+**Status:** Fases 0 e 1 concluídas; Fase 2 aguardando início
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -34,7 +34,7 @@ Uma fase pode ter atividades paralelas somente quando não houver dependência d
 
 ## Fase 1 - Fundação do projeto
 
-**Status:** próxima fase; ainda não iniciada.
+**Status:** concluída em 2026-09-21.
 
 **Objetivo:** criar a estrutura mínima executável sem implementar o produto inteiro.
 
@@ -53,7 +53,14 @@ Uma fase pode ter atividades paralelas somente quando não houver dependência d
 
 **Critério de saída:** o container e a execução local estão documentados e verificáveis.
 
+**Verificação registrada:** a execução local respondeu `GET /health` com banco
+disponível e schema `1`; o Compose foi construído e iniciado com a pasta
+`./data` persistida em `/app/data`, e respondeu ao mesmo endpoint. O Compose
+usa `:Z` no bind mount para suportar hosts com SELinux habilitado.
+
 ## Fase 2 - Domínio e persistência do backend
+
+**Status:** próxima fase; ainda não iniciada.
 
 **Objetivo:** implementar a entidade tarefa e suas regras sem depender da interface final.
 

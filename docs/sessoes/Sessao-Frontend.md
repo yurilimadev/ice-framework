@@ -29,6 +29,14 @@ Construir uma interface web limpa, leve e responsiva para o fluxo diário de pri
 - Receber as regras confirmadas para filtros, ordenação e validação.
 - Ter dados reais ou fixtures identificadas, sem mascarar respostas vazias ou inválidas.
 
+## Retorno necessário
+
+- **De:** Backend.
+- **Retorno solicitado:** contrato confirmado de rotas, campos, validações e contexto dos templates.
+- **De:** Testes.
+- **Retorno solicitado:** seletores e fluxos de interface que precisam permanecer estáveis para validação.
+- **Condição para continuar:** Fase 3 concluída e handoff `CONTRATO` recebido.
+
 ## Atividades
 
 ### Frontend-01 - Estrutura visual
@@ -89,3 +97,4 @@ Construir uma interface web limpa, leve e responsiva para o fluxo diário de pri
 - [ ] Exclusão exige confirmação.
 - [ ] Formulários têm labels e mensagens de erro.
 - [ ] Mudanças relevantes foram encaminhadas para testes.
+- [ ] Retornos necessários de Backend e Testes foram registrados.
