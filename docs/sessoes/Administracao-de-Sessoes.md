@@ -84,12 +84,12 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 
 | ID | Sessão | Fase | Status | Bloqueio ou próximo passo |
 |---|---|---|---|---|
-| ADM-001 | Discovery e planejamento | 0 | concluída | Fases 0 e 1 concluídas; Fase 2 é a próxima etapa |
+| ADM-001 | Discovery e planejamento | 0 | concluída | Fases 0 e 1 concluídas; Fase 2 em andamento |
 | BE-001 | Fundação e domínio | 1 | concluída | Fundação validada; sessão encerrada |
 | FE-001 | Interface do MVP | 4 | aguardando | Depende do contrato do backend |
 | QA-001 | Estratégia e execução de testes | 1 | concluída | Fundação validada; sessão encerrada |
-| BE-002 | Domínio e persistência | 2 | próxima | Aguardar autorização e retorno da Administração |
-| QA-002 | Testes do domínio e persistência | 2 | aguardando | Aguardar schema de tarefas e retorno do Backend |
+| BE-002 | Domínio e persistência | 2 | em andamento | Implementar domínio e persistência; retornar schema ao QA-002 |
+| QA-002 | Testes do domínio e persistência | 2 | em andamento | Preparar cenários; aguardar schema do Backend para executar |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -135,6 +135,23 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Verificação executada: comparação dos critérios da Fase 1 com as evidências dos handoffs `BE-F1-001` e `QA-F1-001`.
 - Bloqueios: nenhum para a transição; a Fase 2 ainda não foi iniciada.
 - Status: concluído
+
+### Handoff ADM-F2-001 - 2026-09-21
+
+- Origem: Administração
+- Destino: Backend e Testes
+- Tipo: REGRA
+- Alteração: início formal da Fase 2 após a publicação da fundação da Fase 1.
+- Arquivos ou áreas afetadas: domínio da tarefa, schema SQLite e testes de persistência.
+- Comportamento anterior: Fase 2 aguardava autorização e as sessões `BE-002` e `QA-002` estavam bloqueadas.
+- Comportamento novo: `BE-002` e `QA-002` estão ativas para implementar e validar o domínio e a persistência.
+- Ação obrigatória do destino: Backend deve implementar somente o escopo da Fase 2; Testes deve preparar a matriz de cenários e validar após receber o schema.
+- Retorno necessário de: Backend e Testes.
+- Retorno solicitado: Backend deve enviar schema e regras implementadas; Testes deve enviar cenários prioritários e falhas encontradas.
+- Condição de desbloqueio: schema de tarefas disponível para `QA-002`; critério de saída da Fase 2 verificado antes da Fase 3.
+- Verificação executada: push da fundação concluído no commit `179b9f8`; critérios da Fase 1 já registrados como validados.
+- Bloqueios: frontend permanece aguardando o contrato da Fase 3.
+- Status: aberto
 
 ## Definition of Done da sessão
 

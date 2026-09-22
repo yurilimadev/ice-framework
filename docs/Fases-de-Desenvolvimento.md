@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Fases 0 e 1 concluídas; Fase 2 aguardando início
+**Status:** Fases 0 e 1 concluídas; Fase 2 em andamento
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -60,7 +60,7 @@ usa `:Z` no bind mount para suportar hosts com SELinux habilitado.
 
 ## Fase 2 - Domínio e persistência do backend
 
-**Status:** próxima fase; ainda não iniciada.
+**Status:** iniciada em 2026-09-21.
 
 **Objetivo:** implementar a entidade tarefa e suas regras sem depender da interface final.
 
@@ -75,6 +75,14 @@ usa `:Z` no bind mount para suportar hosts com SELinux habilitado.
 - Implementar persistência, consulta e exclusão.
 
 **Sessões envolvidas:** backend e testes.
+
+**Atualização de 2026-09-21:**
+
+- A Fase 2 foi autorizada após o push da fundação no commit `179b9f8`.
+- `BE-002` está responsável pelo domínio e pela persistência.
+- `QA-002` está responsável por preparar e validar os cenários da fase.
+- O escopo atual não inclui rotas de aplicação, templates, frontend ou identidade visual.
+- O próximo retorno esperado do Backend é o schema e as regras implementadas para validação dos Testes.
 
 **Saída obrigatória:** regras cobertas por testes de unidade e integração de persistência.
 

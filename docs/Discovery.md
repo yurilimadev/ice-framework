@@ -1,6 +1,6 @@
 # Discovery
 
-**Status:** Fases 0 e 1 concluídas; Fase 2 é a próxima etapa
+**Status:** Fases 0 e 1 concluídas; Fase 2 em andamento
 
 ## Objetivo
 
@@ -130,6 +130,12 @@ Score ICE = Impacto x Confiança x Facilidade
 - Endpoint `/health` respondeu localmente e no container.
 - Schema inicial `1` e execução repetida do banco foram validados.
 - Fase 1 concluída; a próxima etapa é implementar o domínio e a persistência das tarefas.
+
+### 2026-09-21 - Início da Fase 2
+
+- Fase 2 autorizada após o push da fundação no commit `179b9f8`.
+- `BE-002` e `QA-002` foram acionadas.
+- O escopo permanece limitado ao domínio, persistência e testes correspondentes.
 
 ## Documentos relacionados
 
