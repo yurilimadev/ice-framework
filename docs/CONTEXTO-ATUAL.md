@@ -77,5 +77,5 @@ Depois da decisão:
 
 ## Último versionamento
 
-- Último commit publicado: `6c59e25`.
-- Existem alterações locais posteriores aguardando commit e push.
+- Último commit publicado: `2e36d91` (Fases 3 e 4 completas no GitHub).
+- Sem alterações locais pendentes de commit.

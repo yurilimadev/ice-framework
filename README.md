@@ -1,15 +1,32 @@
 # ICE Framework
 
-Aplicacao Flask para organizar prioridades usando o framework ICE.
+Aplicação web para organizar prioridades pelo framework **ICE** — **I**mpacto, **C**onfiança e **F**acilidade. Feita para responder, todos os dias, uma pergunta simples: *o que merece seu foco hoje?*
 
-## Fase 1: fundacao
+## Propósito
 
-A aplicacao usa Python com `pip` e `requirements.txt`. O SQLite fica em
-`data/app.sqlite3` por padrao. No Compose, `./data` e montada em `/app/data`,
-fora do filesystem efemero do container. O sufixo `:Z` permite a montagem em
-hosts com SELinux habilitado.
+Listas de tarefas tradicionais ordenam por data de criação ou urgência, e isso não diz nada sobre o valor real de cada ação. O ICE Framework avalia cada tarefa em três dimensões, de 1 a 10:
 
-### Execucao local
+- **Impacto** — quanto essa tarefa move algo importante quando concluída?
+- **Confiança** — quão certo estou de que vai funcionar como esperado?
+- **Facilidade** — quão simples é executar? (quanto menor o esforço, maior a nota)
+
+O **score** é o produto das três dimensões — `I × C × F`, de 1 a 1000 — e a lista fica sempre ordenada pelas tarefas de maior score. Assim, o topo da lista é sempre a ação com melhor relação custo-benefício no momento, e não a mais recente.
+
+## Como o app funciona
+
+- **Painel de foco** — a tela principal lista as tarefas abertas com score, breakdown I·C·F, prazo, tags e status (aberta, concluída, atrasada).
+- **Filtro dinâmico** — clicar em qualquer filtro (status, atrasadas, tags, ordenação) atualiza a lista na hora, sem recarregar a página; a URL acompanha o filtro, então dá para salvar/compartilhar uma vista já filtrada. O botão "Aplicar filtros" existe apenas como fallback para navegadores sem JavaScript.
+- **Modo painel (desktop)** — cabeçalho e filtros ficam fixos e a lista rola dentro do próprio painel; em telas pequenas a página rola normalmente.
+- **Tags** — cada tarefa pode ter várias tags; a tela "Gerenciar Tags" permite renomear, excluir (desvinculando das tarefas, com confirmação) e mesclar tags.
+- **Ciclo de vida** — criar, editar, concluir, reabrir e excluir tarefas, com avisos efêmeros (4 segundos) de sucesso/erro e confirmação antes de exclusões.
+- **Resumo por email** — envia um email com as tarefas abertas (por score), contagem de atrasadas e prazos, com destaque para as atrasadas. Disparável por botão na barra superior ou por comando no terminal (ver abaixo).
+- **Saúde** — `GET /health` responde `status`, `database` e `schema_version` em JSON.
+
+O backend é **Flask** com **SQLite** (migrações versionadas por `PRAGMA user_version`, schema atual `2`), renderização server-side e um pouco de JavaScript vanilla — sem frameworks no front, sem dependências além do Flask e do `python-dotenv`.
+
+## Como executar
+
+### Local
 
 ```bash
 python3 -m venv .venv
@@ -17,30 +34,69 @@ python3 -m venv .venv
 .venv/bin/python -m flask --app wsgi run
 ```
 
-Verificacao da aplicacao e do banco:
+O app sobe em `http://127.0.0.1:5000`. Verificação:
 
 ```bash
 curl http://127.0.0.1:5000/health
+# {"status":"ok","database":"ok","schema_version":2}
 ```
 
-A resposta esperada contem `"status":"ok"`, `"database":"ok"` e
-`"schema_version":1`.
-
-### Execucao com Docker Compose
+### Docker Compose
 
 ```bash
 docker compose up --build
 curl http://127.0.0.1:8000/health
 ```
 
-Variaveis suportadas:
+O banco (`./data`) fica montado em `/app/data` fora do filesystem efêmero do container; o sufixo `:Z` permite montagem em hosts com SELinux.
 
-- `APP_DATABASE_PATH`: caminho do arquivo SQLite.
-- `APP_TIMEZONE`: fuso usado pela aplicacao; padrao `America/Sao_Paulo`.
-- `TZ`: fuso do container; padrao `America/Sao_Paulo`.
+Variáveis suportadas: `APP_DATABASE_PATH`, `APP_TIMEZONE` (padrão `America/Sao_Paulo`), `TZ` e as de email (abaixo).
 
-### Schema SQLite
+### Resumo por email
 
-As mudancas estruturais serao aplicadas por arquivos SQL numerados em
-`migrations/`. O numero aplicado e registrado em `PRAGMA user_version`.
-Migracoes devem ser sequenciais, sem reutilizar ou pular versoes.
+O envio exige credenciais SMTP em um arquivo **`.env`** na raiz (fora do git; copie `.env.example`):
+
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=seuemail@gmail.com
+SMTP_PASSWORD=senha_de_app_gerada_no_provedor
+SMTP_FROM=seuemail@gmail.com
+DIGEST_TO=destino@email.com
+```
+
+Com o `.env` preenchido, duas formas de enviar:
+
+```bash
+# Comando no terminal
+python3 -m flask --app wsgi send-digest          # usa DIGEST_TO
+python3 -m flask --app wsgi send-digest --to outro@email.com
+
+# Ou botão "Enviar resumo" na barra superior do app
+```
+
+O botão só aparece quando o SMTP está configurado. Sem credenciais, o app funciona normalmente — só o envio de email fica indisponível.
+
+### Lançador local (opcional, fora do repositório)
+
+Em máquinas com GNOME, o app pode ser aberto como um aplicativo: script `~/.local/bin/ice` sobe o servidor se necessário e abre o navegador; o ícone "ICE Framework" aparece na grade de aplicativos. Instalação manual, específica de cada máquina — não faz parte do repositório.
+
+## Testes
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+A suíte cobre domínio (score, validações, tags), rotas HTTP (contrato, filtros, 404, 400, 303), interface (seletores, acessibilidade, contraste WCAG AA) e o resumo por email (HTML, texto puro, erros de SMTP).
+
+## Estrutura
+
+```
+app/            # aplicação Flask: rotas, domínio, templates, estáticos
+migrations/     # SQL versionado por PRAGMA user_version
+tests/          # suíte unittest
+data/           # app.sqlite3 (criado na primeira execução)
+docs/           # governança do projeto: fases, contratos, sessões
+```
+
+A pasta `docs/` documenta como o projeto é desenvolvido (fases, sessões por papel e contratos vigentes) — comece por `docs/README.md`.
