@@ -24,7 +24,7 @@ class FoundationTestCase(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(
                 response.get_json(),
-                {"database": "ok", "schema_version": 1, "status": "ok"},
+                {"database": "ok", "schema_version": 2, "status": "ok"},
             )
             self.assertTrue(database_path.is_file())
 

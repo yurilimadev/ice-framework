@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Nao encontrado - ICE Framework{% endblock %}
+{% block content %}
+<section class="empty-state standalone-empty">
+  <span class="empty-mark" aria-hidden="true">?</span>
+  <p class="eyebrow">ERRO 404</p>
+  <h1>Essa tarefa tomou outro caminho.</h1>
+  <p>A tarefa solicitada nao existe ou ja foi removida.</p>
+  <a class="button button-primary" href="{{ url_for('tasks.index') }}">Voltar para tarefas</a>
+</section>
+{% endblock %}

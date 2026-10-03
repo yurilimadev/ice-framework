@@ -32,6 +32,21 @@ Implementar o domínio, a persistência e os fluxos Flask que sustentam a lista 
 - **Retorno solicitado:** cenários prioritários para score, validação, deadlines, status, tags e persistência.
 - **Condição para continuar:** escopo e cenários registrados nos handoffs `BE-002` e `QA-002`.
 
+### Retornos recebidos para a Fase 2
+
+- Administração confirmou o início da Fase 2 e o uso do escopo fechado no `Discovery.md`.
+- Testes priorizou limites ICE, deadline ausente/atual/futuro/passado, atraso por status, reabertura, tags, filtros, ordenações e persistência após nova instância.
+- Os retornos foram registrados nos handoffs `ADM-F2-001` e `QA-002`.
+
+### Retorno ao QA-002 após as correções
+
+- `QA-002-F01`: `normalize_tags` agora rejeita tipos não iteráveis com `ValidationError` controlado e preserva `None`, strings e iteráveis de strings.
+- `QA-002-F02`: a busca persistida de tags usa `casefold()`; `Straße` e `STRASSE` reutilizam a primeira linha e a primeira grafia, sem alteração do schema `2`.
+- Arquivo alterado: `app/tasks.py`.
+- Testes focados: passaram.
+- Suíte completa: `python3 -m unittest discover -s tests -v`, 14 testes, `OK`.
+- Banco novo e banco existente: schema `2` validado; nenhuma migração nova foi necessária.
+
 ## Atividades
 
 ### Backend-01 - Fundação
@@ -60,6 +75,26 @@ Implementar o domínio, a persistência e os fluxos Flask que sustentam a lista 
 - Definir o desempate de tarefas sem deadline.
 - Definir e registrar a estratégia de evolução do schema SQLite antes da primeira mudança estrutural.
 
+### Backend-03A - Correções bloqueadoras da Fase 2
+
+Resolver os handoffs `QA-002-F01` e `QA-002-F02` antes de qualquer atividade da Fase 3.
+
+- Fazer `normalize_tags` rejeitar tipos não iteráveis com erro de validação controlado, sem expor `TypeError` de implementação.
+- Preservar a validação esperada para `None`, strings e iteráveis de strings conforme o contrato do domínio.
+- Corrigir a deduplicação persistida para equivalências Unicode tratadas por `casefold`, incluindo `Straße` e `STRASSE`.
+- Preservar a primeira grafia da tag ao reutilizar uma tag equivalente.
+- Se a correção exigir mudança de schema, criar migração sequencial, reproduzível e compatível com bancos existentes.
+- Não alterar rotas HTTP, templates ou frontend nesta atribuição.
+- Executar os testes focados e encaminhar o resultado para `QA-002`.
+
+**Retorno necessário:**
+
+- **Para:** `QA-002`.
+- **Retorno solicitado:** informar arquivos alterados, estratégia de normalização/unicidade e resultado dos testes focados.
+- **Para:** Administração.
+- **Retorno solicitado:** indicar se houve mudança de schema, novo número de versão e qualquer bloqueio restante.
+- **Condição de conclusão:** `QA-002-F01` e `QA-002-F02` revalidados com sucesso e suíte completa aprovada.
+
 ### Backend-04 - Rotas e contrato
 
 - Publicar rotas e métodos usados pelo frontend.
@@ -67,6 +102,47 @@ Implementar o domínio, a persistência e os fluxos Flask que sustentam a lista 
 - Retornar mensagens compreensíveis para erros de validação.
 - Entregar ao template todos os dados necessários para score, atraso, filtros e estados.
 - Registrar qualquer alteração de campo ou rota como handoff `CONTRATO`.
+
+### Backend-04A - Implementação do contrato da aplicação
+
+- Implementar somente as rotas definidas em `../CONTRATO-APLICACAO.md`.
+- Implementar listagem, criação, edição, conclusão, reabertura e exclusão.
+- Adaptar formulários HTML para os tipos aceitos pelo `TaskRepository`.
+- Transformar `ValidationError` em erros de formulário sem expor exceções internas.
+- Preservar filtros, ordenações, score, atraso e normalização de tags do domínio.
+- Entregar aos templates o contexto definido no contrato.
+- Criar ou atualizar testes HTTP sem alterar a regra do domínio.
+- Informar qualquer divergência ao Frontend, Testes e Administração como `CONTRATO`.
+
+**Retorno necessário:**
+
+- **Para:** `FE-002`.
+- **Retorno solicitado:** rotas implementadas, campos do formulário, contexto dos templates e mensagens disponíveis.
+- **Para:** `QA-003`.
+- **Retorno solicitado:** métodos, status esperados, redirecionamentos e cenários de erro.
+- **Condição de conclusão:** contrato implementado e validado por Frontend e Testes.
+
+## Suporte à Fase 4
+
+- Não iniciar novas regras de domínio ou rotas sem uma necessidade registrada.
+- Responder a regressões de contrato encontradas pelo `FE-001` ou `QA-004`.
+- Preservar os nomes de campos, status, respostas e contexto validados na Fase 3.
+- Registrar qualquer alteração necessária como handoff `CONTRATO` para Frontend e Testes.
+
+**Retorno necessário:**
+
+- **De:** `FE-001` e `QA-004`.
+- **Retorno solicitado:** divergências de contrato, erros de integração ou falhas que exijam alteração no Backend.
+- **Condição para continuar:** atender somente correções confirmadas e devolver nova evidência às sessões afetadas.
+
+### Retorno BE-003 inicial
+
+- Rotas implementadas conforme `../CONTRATO-APLICACAO.md`: listagem, criação, edição, conclusão, reabertura, exclusão e `/health`.
+- Formulários convertem ICE, deadline e tags antes de chamar o domínio; erros retornam `400` com valores e mapa `errors` preservados.
+- Templates mínimos foram colocados em `app/templates/` somente para executar o contrato; identidade visual permanece com o Frontend.
+- Testes HTTP: 11; suíte completa: 25 testes, resultado `OK`.
+- Container validado com `/health` e `/` respondendo; schema `2` preservado.
+- Próximo retorno: FE-002 deve revisar campos/contexto e QA-003 deve executar a matriz HTTP independente.
 
 ### Backend-05 - Operação e portabilidade
 
@@ -99,3 +175,7 @@ Implementar o domínio, a persistência e os fluxos Flask que sustentam a lista 
 - [ ] Alterações de contrato foram comunicadas.
 - [ ] Docker e volume persistente foram verificados.
 - [ ] Backup e restauração foram encaminhados para validação.
+- [x] `QA-002-F01` foi corrigido e revalidado.
+- [x] `QA-002-F02` foi corrigido e revalidado.
+- [x] Qualquer migração nova foi testada em banco novo e banco existente.
+- [x] O retorno para Testes e Administração foi registrado.

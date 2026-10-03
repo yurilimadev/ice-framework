@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}Tarefas - ICE Framework{% endblock %}
+{% block body_class %} class="panel-mode"{% endblock %}
+{% block content %}
+<section class="hero-section" aria-labelledby="page-title">
+  <div>
+    <p class="eyebrow">PAINEL DE FOCO</p>
+    <h1 id="page-title">O que merece seu foco hoje?</h1>
+    <p class="hero-copy">Organize suas proximas acoes por impacto, confianca e facilidade.</p>
+  </div>
+  <div class="hero-aside" data-dynamic-region="view-count">
+    <span class="hero-aside-label">Na vista atual</span>
+    <strong>{{ tasks|length }} <span>tarefas</span></strong>
+  </div>
+</section>
+
+{% if messages %}
+  <div class="flash-stack" aria-live="polite">
+    {% for category, message in messages %}
+      <div class="message{% if category == 'error' %} message-error{% endif %}" data-message role="status" aria-atomic="true">
+        <span aria-hidden="true">{% if category == 'error' %}!{% else %}&#10003;{% endif %}</span>
+        <span class="message-text">{{ message }}</span>
+        <button class="message-dismiss" type="button" data-dismiss-message aria-label="Fechar aviso">&times;</button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="filter-feedback" data-dynamic-region="filter-feedback">
+  {% if errors %}
+    <div class="error-panel" role="alert">
+      <strong>Revise os filtros</strong>
+      {% for field, message in errors.items() %}
+        <p class="error" data-error-field="{{ field }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<div class="content-grid">
+  <aside class="filter-panel" aria-labelledby="filters-title">
+    <div class="panel-heading">
+      <p class="eyebrow">ORGANIZAR</p>
+      <h2 id="filters-title">Filtros</h2>
+    </div>
+    <form method="get" action="{{ url_for('tasks.index') }}" class="filter-form">
+      <div class="field-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="open"{% if filters.status == "open" %} selected{% endif %}>Abertas</option>
+          <option value="completed"{% if filters.status == "completed" %} selected{% endif %}>Concluidas</option>
+          <option value="all"{% if filters.status == "all" %} selected{% endif %}>Todas</option>
+        </select>
+      </div>
+
+      <label class="check-row">
+        <input type="checkbox" name="overdue" value="1"{% if filters.overdue %} checked{% endif %}>
+        <span class="check-box" aria-hidden="true"></span>
+        <span>Somente atrasadas</span>
+      </label>
+
+      <fieldset class="tag-fieldset">
+        <legend>Tags</legend>
+        {% if available_tags %}
+          <div class="tag-options">
+            {% for tag in available_tags %}
+              {% set selected_tag = namespace(value=false) %}
+              {% for active_tag in filters.tag %}
+                {% if active_tag.casefold() == tag.casefold() %}{% set selected_tag.value = true %}{% endif %}
+              {% endfor %}
+              <label class="tag-option" for="tag-{{ loop.index }}">
+                <input id="tag-{{ loop.index }}" type="checkbox" name="tag" value="{{ tag }}"{% if selected_tag.value %} checked{% endif %}>
+                <span>{{ tag }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted-text">As tags aparecem quando voce cria tarefas.</p>
+        {% endif %}
+      </fieldset>
+
+      <div class="field-group">
+        <label for="order">Ordenar por</label>
+        <select id="order" name="order">
+          <option value="score"{% if filters.order == "score" %} selected{% endif %}>Maior score</option>
+          <option value="deadline"{% if filters.order == "deadline" %} selected{% endif %}>Deadline proximo</option>
+          <option value="created_at"{% if filters.order == "created_at" %} selected{% endif %}>Mais recentes</option>
+        </select>
+      </div>
+      <noscript>
+        <button class="button button-secondary button-full" type="submit">Aplicar filtros</button>
+      </noscript>
+    </form>
+  </aside>
+
+  <section id="task-area" class="task-area" data-dynamic-region="task-area" aria-labelledby="task-list-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">PRIORIDADES</p>
+        <h2 id="task-list-title">Sua lista</h2>
+      </div>
+      {% if tasks %}<span class="result-count">{{ tasks|length }} resultado{% if tasks|length != 1 %}s{% endif %}</span>{% endif %}
+    </div>
+
+    {% if not tasks %}
+      <div class="empty-state" data-empty>
+        <span class="empty-mark" aria-hidden="true">+</span>
+        <h3>Nada por aqui ainda.</h3>
+        <p>Comece registrando uma tarefa e descubra onde seu foco pode gerar mais impacto.</p>
+        <a class="button button-primary" href="{{ url_for('tasks.new_task') }}">Criar primeira tarefa</a>
+      </div>
+    {% else %}
+      <div class="task-list">
+        {% for task in tasks %}
+          <article class="task-card{% if task.overdue %} is-overdue{% endif %}{% if task.status == 'completed' %} is-completed{% endif %}" data-task-id="{{ task.id }}" data-task-status="{{ task.status }}"{% if task.overdue %} data-overdue{% endif %}>
+            <div class="task-card-topline">
+              <span class="status-label{% if task.overdue %} status-overdue{% elif task.status == 'completed' %} status-completed{% endif %}">
+                {% if task.overdue %}<span aria-hidden="true">!</span> Atrasada{% elif task.status == 'completed' %}<span aria-hidden="true">&#10003;</span> Concluida{% else %}<span aria-hidden="true">&#9675;</span> Aberta{% endif %}
+              </span>
+              <span class="task-index">#{{ "%02d"|format(loop.index) }}</span>
+            </div>
+            <div class="task-card-main">
+              <div class="task-copy">
+                <h3>{{ task.title }}</h3>
+                <div class="tag-list" aria-label="Tags">
+                  {% for tag in task.tags %}<span class="tag-chip">{{ tag }}</span>{% endfor %}
+                </div>
+              </div>
+              <div class="score-block" aria-label="Score ICE {{ task.score }}">
+                <span class="score-value">{{ task.score }}</span>
+                <span class="score-caption">ICE SCORE</span>
+              </div>
+            </div>
+            <div class="score-meter" aria-hidden="true"><span style="width: {{ (task.score / 10)|round(0, 'floor') }}%"></span></div>
+            <div class="task-details">
+              <div class="ice-breakdown" aria-label="Dimensoes ICE">
+                <span><b>I</b> {{ task.impact }}</span>
+                <span><b>C</b> {{ task.confidence }}</span>
+                <span><b>F</b> {{ task.ease }}</span>
+              </div>
+              <span class="deadline{% if task.overdue %} deadline-overdue{% endif %}">
+                <span aria-hidden="true">&#9679;</span>
+                {% if task.deadline %}{{ task.deadline.strftime("%d/%m/%Y") }}{% else %}Sem deadline{% endif %}
+              </span>
+            </div>
+            <div class="task-actions">
+              <a class="text-action" href="{{ url_for('tasks.edit_task', task_id=task.id) }}">Editar</a>
+              {% if task.status == "open" %}
+                <form method="post" action="{{ url_for('tasks.complete_task', task_id=task.id) }}">
+                  <button class="text-action" type="submit">Concluir</button>
+                </form>
+              {% else %}
+                <form method="post" action="{{ url_for('tasks.reopen_task', task_id=task.id) }}">
+                  <button class="text-action" type="submit">Reabrir</button>
+                </form>
+              {% endif %}
+              <form method="post" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" onsubmit="return window.confirm('Excluir esta tarefa permanentemente?');">
+                <button class="text-action text-action-danger" type="submit">Excluir</button>
+              </form>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

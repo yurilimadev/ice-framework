@@ -1,6 +1,6 @@
 # Discovery
 
-**Status:** Fases 0 e 1 concluídas; Fase 2 em andamento
+**Status:** Fases 0, 1, 2 e 3 concluídas; Fase 4 em andamento
 
 ## Objetivo
 
@@ -137,9 +137,49 @@ Score ICE = Impacto x Confiança x Facilidade
 - `BE-002` e `QA-002` foram acionadas.
 - O escopo permanece limitado ao domínio, persistência e testes correspondentes.
 
+### 2026-09-27 - Início da Fase 3
+
+- Fase 2 concluída após 14 testes aprovados e revalidação do schema `2`.
+- Criado o `CONTRATO-APLICACAO.md` com rotas, formulários, respostas e contexto dos templates.
+- Ativadas as sessões `BE-003`, `FE-002` e `QA-003`.
+- A identidade visual permanece reservada para a Fase 4.
+
+### 2026-09-27 - Início da Fase 4
+
+- Fase 3 concluída após revisão do Frontend e aprovação independente de 25 testes.
+- Ativadas as sessões `FE-001` e `QA-004`.
+- Criado `IDENTIDADE-VISUAL.md` a partir da referência visual fornecida.
+- Backend permanece em suporte para regressões ou mudanças de contrato.
+
+### 2026-09-27 - Implementação inicial da Fase 4
+
+- `FE-001` substituiu os templates de fundação pela interface visual responsiva do MVP.
+- Adicionados tokens CSS, estados de tarefa, filtros, formulário, mensagens, estado vazio e confirmação de exclusão.
+- A suíte completa passou com 33 testes; a validação visual independente permanece com `QA-004`.
+
+### 2026-09-21 - Validação inicial da Fase 2
+
+- Implementados o modelo da tarefa, score ICE derivado, deadlines, atraso, status e tags.
+- Definidas a normalização de título e tags, as ordenações determinísticas e o filtro combinado de tags.
+- Criada a migração SQLite `002_tasks.sql` com tabelas `tasks`, `tags` e `task_tags`.
+- Regras de domínio e persistência foram exercitadas por 11 testes automatizados.
+- A revalidação encontrou duas falhas de validação e deduplicação de tags, registradas para o Backend antes do encerramento da fase.
+
+### 2026-09-27 - Conclusão da Fase 2
+
+- `QA-002-F01` e `QA-002-F02` foram corrigidos e revalidados.
+- A suíte completa passou com 14 testes.
+- O schema `2` foi mantido; nenhuma migração adicional foi necessária.
+- Fase 2 concluída e Fase 3 liberada para rotas e contrato de aplicação.
+
 ## Documentos relacionados
 
+- `README.md`: roteador da documentação.
+- `CONTEXTO-ATUAL.md`: snapshot operacional para continuidade entre sessões.
 - `Fases-de-Desenvolvimento.md`: fases, dependências e critérios de avanço.
+- `CONTRATO-DOMINIO.md`: campos, regras e operações do domínio validado.
+- `CONTRATO-APLICACAO.md`: rotas, formulários, respostas e contexto dos templates.
+- `IDENTIDADE-VISUAL.md`: direção visual e limites para a implementação do Frontend.
 - `sessoes/Administracao-de-Sessoes.md`: responsabilidades, handoffs e registro das sessões.
 - `sessoes/Sessao-Backend.md`: atividades e limites da sessão de backend.
 - `sessoes/Sessao-Frontend.md`: atividades e limites da sessão de frontend.

@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Fases 0 e 1 concluídas; Fase 2 em andamento
+**Status:** Fases 0, 1, 2 e 3 concluídas; Fase 4 em andamento
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -60,7 +60,7 @@ usa `:Z` no bind mount para suportar hosts com SELinux habilitado.
 
 ## Fase 2 - Domínio e persistência do backend
 
-**Status:** iniciada em 2026-09-21.
+**Status:** concluída em 2026-09-27.
 
 **Objetivo:** implementar a entidade tarefa e suas regras sem depender da interface final.
 
@@ -88,7 +88,15 @@ usa `:Z` no bind mount para suportar hosts com SELinux habilitado.
 
 **Critério de saída:** o backend fornece dados consistentes sem depender de regras duplicadas no frontend.
 
+**Verificação registrada:** a migração `002_tasks.sql` criou o modelo de tarefas
+e tags; score, validações, atraso, status, filtros, ordenações, CRUD e
+persistência após nova instância foram exercitados por 14 testes. Os casos
+`QA-002-F01` e `QA-002-F02` foram corrigidos e revalidados; o Compose e o banco
+existente permanecem no schema `2`, sem nova migração.
+
 ## Fase 3 - Rotas e contrato de aplicação
+
+**Status:** concluída em 2026-09-27.
 
 **Objetivo:** disponibilizar os fluxos que o frontend consumirá.
 
@@ -102,11 +110,23 @@ usa `:Z` no bind mount para suportar hosts com SELinux habilitado.
 
 **Sessões envolvidas:** backend, frontend e testes.
 
+**Atualização de 2026-09-27:**
+
+- A Fase 2 foi encerrada após 14 testes aprovados e revalidação do schema `2`.
+- O domínio foi congelado em `CONTRATO-DOMINIO.md`.
+- O contrato de rotas, formulários e contexto foi criado em `CONTRATO-APLICACAO.md`.
+- Backend, Frontend e Testes devem trabalhar somente no contrato da aplicação nesta fase.
+- A identidade visual será aplicada somente na Fase 4, após o contrato ser validado.
+
 **Saída obrigatória:** handoff para frontend e testes com rotas, campos e comportamentos confirmados.
 
 **Critério de saída:** frontend e testes conseguem trabalhar sem adivinhar nomes de campos ou regras.
 
+**Verificação registrada:** `BE-003` entregou as rotas e o contexto; `FE-002` confirmou a suficiência do contrato; `QA-003` aprovou 11 testes HTTP e a suíte completa passou com 25 testes.
+
 ## Fase 4 - Interface do frontend
+
+**Status:** iniciada em 2026-09-27.
 
 **Objetivo:** criar uma interface limpa para o fluxo diário de tarefas.
 
@@ -121,6 +141,21 @@ usa `:Z` no bind mount para suportar hosts com SELinux habilitado.
 - Garantir uso em telas menores.
 
 **Sessões envolvidas:** frontend e testes.
+
+**Atualização de 2026-09-27:**
+
+- A Fase 3 foi encerrada após os retornos aprovados de Backend, Frontend e Testes.
+- `FE-001` está responsável pela implementação da interface visual.
+- `QA-004` está responsável pela validação da interface e dos fluxos reais.
+- `IDENTIDADE-VISUAL.md` é a referência visual oficial desta fase.
+- Backend permanece disponível somente para correções de contrato ou regressões.
+
+**Atualização de 2026-09-27:**
+
+- `FE-001` entregou a primeira interface visual em `app/templates/` e `app/static/styles.css`.
+- Os fluxos e seletores do contrato foram preservados; a suíte completa passou com 33 testes.
+- `QA-004` deve validar contraste, foco, responsividade, acessibilidade e fluxos reais antes do encerramento.
+- A inspeção local deve seguir `VALIDACAO-VISUAL-F4.md` em telas desktop e mobile.
 
 **Saída obrigatória:** fluxo principal navegável sem dados falsos escondendo falhas de integração.
 

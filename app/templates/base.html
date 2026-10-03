@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082f3a">
+  <title>{% block title %}ICE Framework{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+  <body{% block body_class %}{% endblock %}>
+  <a class="skip-link" href="#main-content">Pular para o conteudo</a>
+  <div class="app-frame">
+    <header class="topbar">
+      <a class="brand" href="{{ url_for('tasks.index') }}" aria-label="ICE Framework, inicio">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span class="brand-name">ICE <strong>FRAMEWORK</strong></span>
+      </a>
+      <nav class="topnav" aria-label="Navegacao principal">
+        <a class="nav-link" href="{{ url_for('tasks.index') }}">Painel</a>
+        <a class="nav-link" href="{{ url_for('tasks.list_tags') }}">Tags</a>
+        {% if digest_ready %}
+        <form class="digest-form" method="post" action="{{ url_for('tasks.send_digest_email') }}" data-digest-form>
+          <button class="nav-action nav-action-secondary" type="submit" data-digest-send>
+            <span aria-hidden="true">&#9993;</span>
+            <span data-digest-label>Enviar resumo</span>
+          </button>
+        </form>
+        {% endif %}
+        <a class="nav-action" href="{{ url_for('tasks.new_task') }}"><span aria-hidden="true">+</span> Nova tarefa</a>
+      </nav>
+    </header>
+    <main id="main-content" class="page-shell">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <span>ICE Framework</span>
+      <span>Prioridade com clareza.</span>
+    </footer>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

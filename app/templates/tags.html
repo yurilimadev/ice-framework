@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Gerenciar Tags - ICE Framework{% endblock %}
+{% block body_class %} class="panel-mode"{% endblock %}
+{% block content %}
+<section class="tags-page" aria-labelledby="tags-title">
+  <header class="tags-header">
+    <div>
+      <a class="back-link" href="{{ url_for('tasks.index') }}"><span aria-hidden="true">&#8592;</span> Voltar para tarefas</a>
+      <p class="eyebrow">ORGANIZAR</p>
+      <h1 id="tags-title">Gerenciar Tags</h1>
+      <p class="tags-intro">Renomeie, exclua ou mescle tags para manter sua organização limpa.</p>
+    </div>
+    <span class="tags-count" aria-label="Total de tags">{{ tags|length }} tag{% if tags|length != 1 %}s{% endif %}</span>
+  </header>
+
+  {% if messages %}
+    <div class="flash-stack" aria-live="polite">
+      {% for category, message in messages %}
+        <div class="message{% if category == 'error' %} message-error{% endif %}" data-message role="status" aria-atomic="true">
+          <span aria-hidden="true">{% if category == 'error' %}!{% else %}&#10003;{% endif %}</span>
+          <span class="message-text">{{ message }}</span>
+          <button class="message-dismiss" type="button" data-dismiss-message aria-label="Fechar aviso">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if tags %}
+    <div class="tags-card">
+      <table class="tags-table">
+        <thead>
+          <tr>
+            <th scope="col">Tag</th>
+            <th scope="col">Tarefas</th>
+            <th scope="col">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tag in tags %}
+            <tr data-tag-id="{{ tag.id }}">
+              <td class="tag-name-cell"><span class="tag-chip">{{ tag.name }}</span></td>
+              <td>
+                <span class="tag-usage{% if tag.task_count == 0 %} tag-unused{% endif %}">{{ tag.task_count }}</span>
+              </td>
+              <td class="tag-actions">
+                <form method="post" action="{{ url_for('tasks.rename_tag', tag_id=tag.id) }}" class="tag-inline-form">
+                  <input type="text" name="name" value="{{ tag.name }}" maxlength="30" aria-label="Novo nome da tag {{ tag.name }}" required>
+                  <button class="button button-secondary" type="submit">Renomear</button>
+                </form>
+                <form method="post"
+                      action="{{ url_for('tasks.delete_tag', tag_id=tag.id) }}"
+                      class="tag-inline-form"
+                      {% if tag.task_count == 0 %}onsubmit="return window.confirm('Excluir esta tag?');"{% else %}onsubmit="return window.confirm('Excluir esta tag desvinculará de ' ~ tag.task_count ~ ' tarefa(s). Continuar?');"{% endif %}>
+                  <button class="text-action text-action-danger" type="submit">Excluir</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if tags|length > 1 %}
+      <fieldset class="merge-section">
+        <legend>Mesclar Tags</legend>
+        <p class="fieldset-help">Combine duas tags em uma só. Todas as tarefas da origem passam para o destino.</p>
+        <form method="post" action="{{ url_for('tasks.merge_tags') }}" class="merge-form">
+          <div class="field-group">
+            <label for="source_id">Origem (será removida)</label>
+            <select id="source_id" name="source_id" required>
+              {% for tag in tags %}
+                <option value="{{ tag.id }}">{{ tag.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="target_id">Destino</label>
+            <select id="target_id" name="target_id" required>
+              {% for tag in tags %}
+                <option value="{{ tag.id }}">{{ tag.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button class="button button-primary" type="submit">Mesclar</button>
+        </form>
+      </fieldset>
+    {% endif %}
+  {% else %}
+    <div class="empty-state" data-empty>
+      <span class="empty-mark" aria-hidden="true">+</span>
+      <h3>Nenhuma tag ainda.</h3>
+      <p>Crie tarefas com tags para começar a organizar.</p>
+      <a class="button button-primary" href="{{ url_for('tasks.new_task') }}">Criar primeira tarefa</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

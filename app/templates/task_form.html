@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{% if task %}Editar tarefa{% else %}Nova tarefa{% endif %} - ICE Framework{% endblock %}
+{% block content %}
+<section class="form-layout" aria-labelledby="form-title">
+  <div class="form-intro">
+    <a class="back-link" href="{{ url_for('tasks.index') }}"><span aria-hidden="true">&#8592;</span> Voltar para tarefas</a>
+    <p class="eyebrow">{% if task %}ATUALIZAR FOCO{% else %}NOVA PRIORIDADE{% endif %}</p>
+    <h1 id="form-title">{% if task %}Refine sua tarefa.{% else %}Dê forma ao seu proximo passo.{% endif %}</h1>
+    <p>Defina os fatores ICE com honestidade. O score ajuda a enxergar o que merece sua energia agora.</p>
+    <div class="form-note"><span aria-hidden="true">i</span><span>Facilidade 10 significa que a tarefa e muito facil de executar.</span></div>
+  </div>
+
+  <form class="task-form" method="post" action="{% if task %}{{ url_for('tasks.update_task', task_id=task.id) }}{% else %}{{ url_for('tasks.create_task') }}{% endif %}">
+    {% if errors %}
+      <div class="error-panel" role="alert" aria-labelledby="form-error-title">
+        <strong id="form-error-title">Confira os campos destacados</strong>
+        {% for field, message in errors.items() %}
+          <p class="error" id="error-{{ field }}" data-error-field="{{ field }}">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="field-group field-wide{% if errors.title %} has-error{% endif %}">
+      <label for="title">O que precisa ser feito?</label>
+      <input id="title" name="title" maxlength="120" value="{{ form_values.title }}" placeholder="Ex: Preparar a apresentacao do projeto" required{% if errors.title %} aria-invalid="true" aria-describedby="error-title"{% endif %}>
+      <span class="field-help">Maximo de 120 caracteres.</span>
+    </div>
+
+    <fieldset class="ice-fields">
+      <legend>Score ICE</legend>
+      <p class="fieldset-help">Avalie cada dimensao de 1 a 10.</p>
+      <div class="ice-input-grid">
+        <div class="field-group{% if errors.impact %} has-error{% endif %}">
+          <label for="impact"><span class="field-symbol symbol-impact">I</span> Impacto</label>
+          <input id="impact" name="impact" type="number" min="1" max="10" value="{{ form_values.impact }}" placeholder="1-10" required{% if errors.impact %} aria-invalid="true" aria-describedby="error-impact"{% endif %}>
+          <span class="field-help">Quanto importa?</span>
+        </div>
+        <div class="field-group{% if errors.confidence %} has-error{% endif %}">
+          <label for="confidence"><span class="field-symbol symbol-confidence">C</span> Confianca</label>
+          <input id="confidence" name="confidence" type="number" min="1" max="10" value="{{ form_values.confidence }}" placeholder="1-10" required{% if errors.confidence %} aria-invalid="true" aria-describedby="error-confidence"{% endif %}>
+          <span class="field-help">Quanto voce sabe?</span>
+        </div>
+        <div class="field-group{% if errors.ease %} has-error{% endif %}">
+          <label for="ease"><span class="field-symbol symbol-ease">F</span> Facilidade</label>
+          <input id="ease" name="ease" type="number" min="1" max="10" value="{{ form_values.ease }}" placeholder="1-10" required{% if errors.ease %} aria-invalid="true" aria-describedby="error-ease"{% endif %}>
+          <span class="field-help">Quao simples e?</span>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="form-two-col">
+      <div class="field-group{% if errors.deadline %} has-error{% endif %}">
+        <label for="deadline">Deadline <span class="optional">opcional</span></label>
+        <input id="deadline" name="deadline" type="date" value="{{ form_values.deadline }}"{% if errors.deadline %} aria-invalid="true" aria-describedby="error-deadline"{% endif %}>
+        <span class="field-help">Pode ser uma data passada.</span>
+      </div>
+      <div class="field-group{% if errors.tags %} has-error{% endif %}">
+        <label for="tags">Tags <span class="optional">opcional</span></label>
+        <input id="tags" name="tags" value="{{ form_values.tags }}" placeholder="Backend, Estudos"{% if errors.tags %} aria-invalid="true" aria-describedby="error-tags"{% endif %}>
+        <span class="field-help">Separe por virgulas.</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a class="button button-ghost" href="{{ url_for('tasks.index') }}">Cancelar</a>
+      <button class="button button-primary" type="submit">{% if task %}Salvar alteracoes{% else %}Adicionar tarefa{% endif %} <span aria-hidden="true">&#8594;</span></button>
+    </div>
+  </form>
+</section>
+{% endblock %}
