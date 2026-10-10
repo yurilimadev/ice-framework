@@ -112,23 +112,23 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio:
 - Verificação executada:
 - Bloqueios:
-- Status: aberto | em validação | concluído
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03) | em validação | concluído
 ```
 
 ## Registro de sessões
 
 | ID | Sessão | Fase | Status | Bloqueio ou próximo passo |
 |---|---|---|---|---|
-| ADM-001 | Discovery e planejamento | 0 | concluída | Fases 0, 1, 2 e 3 concluídas; Fase 4 em andamento |
+| ADM-001 | Discovery e planejamento | 0 | concluída | Fases 0 a 4 concluídas; Fase 5 pronta para ativação |
 | BE-001 | Fundação e domínio | 1 | concluída | Fundação validada; sessão encerrada |
-| FE-001 | Interface do MVP | 4 | em validação | Interface implementada; aguardar validação visual e acessibilidade do QA-004 |
+| FE-001 | Interface do MVP | 4 | concluída | Interface aprovada na inspeção visual de 2026-10-03 |
 | QA-001 | Estratégia e execução de testes | 1 | concluída | Fundação validada; sessão encerrada |
 | BE-002 | Domínio e persistência | 2 | concluída | Correções revalidadas; Fase 3 liberada |
 | QA-002 | Testes do domínio e persistência | 2 | concluída | 14 testes passaram; Fase 3 liberada |
 | BE-003 | Rotas e contrato de aplicação | 3 | concluída | Rotas validadas; suporte sob demanda na Fase 4 |
 | FE-002 | Revisão do contrato de aplicação | 3 | concluída | Contexto confirmado; sessão encerrada |
 | QA-003 | Testes do contrato de aplicação | 3 | concluída | 11 testes HTTP passaram; sessão encerrada |
-| QA-004 | Testes de interface e integração | 4 | em andamento | Validar interface real, acessibilidade e fluxos do MVP |
+| QA-004 | Testes de interface e integração | 4 | concluída | 53 testes e inspeção visual aprovados em 2026-10-03 |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -361,7 +361,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: interface principal, fluxos do MVP e validações de acessibilidade aprovados antes da Fase 5.
 - Verificação executada: Fase 3 encerrada com 25 testes aprovados, revisão de contexto e confirmação do Backend.
 - Bloqueios: nenhum para iniciar a Fase 4; integração ponta a ponta permanece para a Fase 5.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 ### Handoff ADM-F4-VISUAL-001 - 2026-09-27
 
@@ -378,7 +378,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: checklist concluído sem falhas críticas e Fase 4 encerrada pela Administração.
 - Verificação executada: rotas locais confirmadas e roteiro publicado.
 - Bloqueios: Fase 5 permanece bloqueada até a inspeção visual.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 ### Handoff FE-001 - 2026-09-27
 
@@ -395,7 +395,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: QA-004 aprovar a interface em telas grandes e pequenas sem regressão dos seletores do contrato.
 - Verificação executada: suíte completa com 33 testes `OK`, compilação Python, rotas preservadas e renderização HTTP validada; inspeção visual independente ainda pendente.
 - Bloqueios: nenhum bloqueio de backend; validação visual, acessibilidade e responsividade pendentes.
-- Status: em validação
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 ### Handoff QA-004-F01 - 2026-09-27
 
@@ -429,7 +429,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: inspeção visual renderizada sem regressão de layout, rolagem horizontal indevida ou foco/contraste; nenhum defeito funcional permanece aberto.
 - Verificação executada: `python3 -m unittest discover -s tests -v` com 33 testes `OK`; `docker compose config`; `docker compose build`; `docker compose up --detach`; `curl` em `/` e `/static/styles.css`; `docker compose down`; verificação de disponibilidade sem Chromium, Selenium ou Playwright.
 - Bloqueios: inspeção visual real não executável neste ambiente; a Fase 4 permanece em validação.
-- Status: em validação
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 ## Definition of Done da sessão
 
@@ -455,7 +455,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: checklist de respiros aprovado e fase encerrada formalmente.
 - Verificação executada: `python3 -m unittest discover -s tests` com 35 testes, resultado `OK`.
 - Bloqueios: Fase 5 permanece bloqueada até a inspeção visual.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 ### Handoff BE-F4-DIGEST-001 - 2026-09-27
 
@@ -472,7 +472,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: teste local de email bem-sucedido e inspeção visual de `/tags`.
 - Verificação executada: suíte 35 testes OK; sem SMTP configurado o comando falha com mensagem clara; com SMTP de exemplo, tenta conectar (falhou por ausência de servidor local).
 - Bloqueios: Fase 5 permanece bloqueada até o encerramento da Fase 4; teste real de email depende de SMTP configurado pelo usuário.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 ### Handoff FE-F4-TAGS-001 - 2026-09-27
 
@@ -489,7 +489,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: checklist visual aprovado e fase encerrada.
 - Verificação executada: suíte completa com 38 testes `OK`; `git diff --check` limpo; página `/tags` servida localmente.
 - Bloqueios: Fase 5 permanece bloqueada até a inspeção visual.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 
 ### Handoff BE-F4-DIGEST-002 - 2026-09-29
@@ -504,7 +504,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Retorno necessário de: Administração.
 - Retorno solicitado: decisão sobre agendamento do envio (cron/systemd timer) — fica para depois da inspeção visual da Fase 4.
 - Condição de desbloqueio: Fase 5 aguarda apenas a inspeção visual pendente.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 
 ### Handoff BE-F4-LAUNCHER-001 - 2026-09-29
@@ -517,7 +517,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Retorno necessario de: Administracao.
 - Retorno solicitado: nada pendente; registro para contexto de sessoes futuras.
 - Condicao de desbloqueio: n/a (arquivos fora do git, sem impactese no contrato).
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 
 ### Handoff FE-F4-DYNFILTER-001 - 2026-09-29
@@ -536,7 +536,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: checklist visual aprovado e fase encerrada.
 - Verificação executada: suíte completa com 46 testes `OK`; `git diff --check` limpo; HTML servido contém as regiões dinâmicas; servidor reiniciado.
 - Bloqueios: Fase 5 permanece bloqueada até a inspeção visual.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 
 ### Handoff FE-F4-DYNFILTER-002 - 2026-09-29
@@ -555,7 +555,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: checklist visual aprovado e fase encerrada.
 - Verificação executada: suíte com 46 testes `OK`; `git diff --check` limpo; servidor reiniciado com o template novo.
 - Bloqueios: Fase 5 permanece bloqueada até a inspeção visual.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 
 ### Handoff FE-F4-FILTERCOMPACT-001 - 2026-09-29
@@ -575,7 +575,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Condição de desbloqueio: checklist visual aprovado e fase encerrada.
 - Verificação executada: suíte com 46 testes `OK`; `git diff --check` limpo; servidor reiniciado.
 - Bloqueios: Fase 5 permanece bloqueada até a inspeção visual.
-- Status: aberto
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
 
 
 ### Handoff CONTRATO-F4-DIGESTROUTE-001 - 2026-09-29
@@ -601,4 +601,30 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Retorno solicitado: validação visual e confirmação do email de teste recebido.
 - Condição de desbloqueio: checklist visual aprovado e fase encerrada.
 - Bloqueios: Fase 5 permanece bloqueada até a inspeção visual.
+- Status: concluído (inspeção visual da Fase 4 aprovada em 2026-10-03)
+
+
+### Handoff ADM-F4-CLOSE-001 - 2026-10-03
+
+- Origem: Administração (retorno do usuário)
+- Destino: Todas as sessões
+- Tipo: Encerramento de fase
+- Alteração: Fase 4 concluída formalmente com base na inspeção visual aprovada pelo usuário, sem problemas encontrados. Retornos pendentes de `FE-001`, `QA-004` e dos handoffs `BE-F4-*`/`FE-F4-*` foram liquidados.
+- Verificação registrada: suíte com 53 testes `OK`; envio real de email confirmado; `VALIDACAO-VISUAL-F4.md` marcado como concluído.
+- Próximo passo: ativar as sessões da Fase 5 - Integração ponta a ponta (backend, frontend e testes), conforme `Fases-de-Desenvolvimento.md`.
+- Condição de desbloqueio: aprovação do usuário para abrir a Fase 5.
 - Status: aberto
+
+
+### Handoff INFRA-MIGRACAO-001 - 2026-10-09
+
+- Origem: Administração/Frontend (sessão unificada)
+- Destino: Administração
+- Tipo: Infraestrutura (fora do escopo de fase)
+- Alteração: instância online do app em Android/Termux acessível por `https://ice.yurilimadev.com`: repo clonado em `~/ice-framework` (venv com gunicorn e tzdata), serviços `ice-framework` e `ice-tunnel` no termux-services, banco copiado do app local via scp (4 tarefas, 4 tags), `.env` no servidor com SECRET_KEY gerado localmente nele, tunnel Cloudflare `ice` com CNAME na zona, acesso SSH por chave (`~/.ssh/ice_termux`, porta 8022) e `termux-wake-lock` ativo.
+- Descobertas registradas: Termux sem Docker/systemd/tzdata do sistema (corrigido pelo wheel `tzdata`); o roteiro do drive (`meu-drive`) roda como processo manual e não foi alterado.
+- Pendências: Cloudflare Access (email-OTP) a ser ativada pelo usuário no dashboard; verificação ponta a ponta pelo usuário; proteção de bateria do Termux (otimização desativada manualmente no Android).
+- Retorno necessário de: Administração (usuário).
+- Retorno solicitado: confirmação do Access ativo e do teste por dados móveis.
+- Retorno recebido (2026-10-09): Access ativo, testes ponta a ponta aprovados pelo usuário — app no ar.
+- Status: concluído

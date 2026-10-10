@@ -6,19 +6,18 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Fase ativa
 
-- Fase atual: **Fase 4 - Interface do frontend**.
-- Status: **em validação**.
-- Próxima fase: Fase 5 - Integração ponta a ponta.
-- Regra: não iniciar a Fase 5 antes do encerramento formal da Fase 4.
-- Roteiro ativo: `VALIDACAO-VISUAL-F4.md`.
+- Fase concluída: **Fase 4 - Interface do frontend** (encerrada em 2026-10-03, inspeção visual aprovada pelo usuário).
+- Próxima fase: **Fase 5 - Integração ponta a ponta** — pronta para ativação.
+- Sessões previstas para a Fase 5: backend, frontend e testes.
+- Critério de saída da Fase 5: fluxos ponta a ponta passam sem dados ou regras duplicadas de forma conflitante.
 
 ## Estado das sessões
 
 | Sessão | Status | Próximo passo |
 |---|---|---|
 | `BE-003` | concluída | Suporte somente para regressões ou mudanças de contrato |
-| `FE-001` | em validação | Aguardar aceitação visual e de acessibilidade |
-| `QA-004` | em validação | Registrar resultado final da inspeção visual ou limitação aceita |
+| `FE-001` | concluída | Interface aprovada na inspeção visual de 2026-10-03 |
+| `QA-004` | concluída | Inspeção visual aprovada; 53 testes OK |
 
 ## Concluído recentemente
 
@@ -42,25 +41,11 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Bloqueio atual
 
-A validação automatizada e funcional foi concluída. A inspeção visual local deve seguir `VALIDACAO-VISUAL-F4.md`, incluindo o novo bloco de respiros e a tela `/tags`. O teste real do email depende de SMTP configurado pelo usuário.
+Nenhum bloqueio. Migração concluída (2026-10-09): app no ar em `https://ice.yurilimadev.com` com Cloudflare Access ativo e testes ponta a ponta aprovados pelo usuário.
 
 ## Próxima decisão
 
-Administração/Tech Lead deve executar ou acompanhar a inspeção visual local (respiros + tags) e testar `flask send-digest` com SMTP real.
-
-Depois da decisão:
-
-1. Encerrar `FE-001` e `QA-004`.
-2. Marcar a Fase 4 como concluída.
-3. Fazer commit e push das alterações da Fase 4.
-4. Ativar as sessões da Fase 5.
-
-## Retornos pendentes
-
-- De Administração para `FE-001` e `QA-004`: decisão sobre a inspeção visual.
-- De `FE-001`: confirmação de que a interface permanece conforme a identidade visual e o contrato.
-- De `QA-004`: evidência do roteiro `VALIDACAO-VISUAL-F4.md` (respiros + `/tags`).
-- De Administração/Testes: resultado do `flask send-digest` com SMTP real. *(resolvido em 2026-09-29: envio real confirmado via Gmail)*
+Sessão de 2026-10-10: desenhar e escolher o mecanismo de sincronização local <-> servidor Termux (CLI `publish`, botão na interface e/ou cron) — detalhes em `BACKLOG.md` item 5. Depois: ativar a Fase 5 - Integração ponta a ponta.
 
 ## Backlog
 

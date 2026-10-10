@@ -81,6 +81,17 @@ O botão só aparece quando o SMTP está configurado. Sem credenciais, o app fun
 
 Em máquinas com GNOME, o app pode ser aberto como um aplicativo: script `~/.local/bin/ice` sobe o servidor se necessário e abre o navegador; o ícone "ICE Framework" aparece na grade de aplicativos. Instalação manual, específica de cada máquina — não faz parte do repositório.
 
+### Execução no servidor (Termux/Android com Cloudflare Tunnel)
+
+A instância online roda num Android com Termux, acessível pelo subdomínio protegido por Cloudflare Access:
+
+- **Domínio**: `https://ice.yurilimadev.com` (protegido por email-OTP no Zero Trust).
+- **Código**: `git clone https://github.com/yurilimadev/ice-framework.git ~/ice-framework` + venv com `requirements.txt` (inclui `gunicorn` e `tzdata` — o Termux não tem dados de fuso do sistema).
+- **Serviços** (`termux-services`): `ice-framework` (gunicorn em `127.0.0.1:8000`) e `ice-tunnel` (`cloudflared tunnel run --url http://127.0.0.1:8000 ice`). Ambos em `$PREFIX/var/service/`.
+- **Banco**: `~/ice-framework/data/app.sqlite3` — cópia do banco local, enviada via `scp` com o app parado; re-publicar = re-copiar o arquivo.
+- **Secrets**: `.env` criado no servidor (nunca via git/chat), com `SMTP_*` (necessário para o botão "Enviar resumo") e `SECRET_KEY` fixo gerado no próprio servidor.
+- **Depois de reiniciar o celular**: abrir o Termux (os serviços voltam automaticamente) e rodar `termux-wake-lock` para o Android não matar os processos com a tela apagada.
+
 ## Testes
 
 ```bash
