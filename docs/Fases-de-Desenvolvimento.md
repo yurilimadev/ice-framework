@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Fases 0, 1, 2 e 3 concluídas; Fase 4 em andamento
+**Status:** Fases 0, 1, 2, 3 e 4 concluídas; Fase 5 pronta para ativação
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -126,7 +126,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 4 - Interface do frontend
 
-**Status:** iniciada em 2026-09-27.
+**Status:** concluída em 2026-10-03.
 
 **Objetivo:** criar uma interface limpa para o fluxo diário de tarefas.
 
@@ -160,6 +160,14 @@ existente permanecem no schema `2`, sem nova migração.
 **Saída obrigatória:** fluxo principal navegável sem dados falsos escondendo falhas de integração.
 
 **Critério de saída:** os fluxos definidos em `Discovery.md` funcionam usando o backend real.
+
+**Atualização de 2026-10-03:**
+
+- A Fase 4 foi encerrada com a inspeção visual local aprovada pelo usuário, seguindo `VALIDACAO-VISUAL-F4.md`.
+- Entregas da fase além do roteiro original: gerenciamento de tags (`/tags`), resumo por email (CLI + botão `POST /digest/send`), painel dinâmico com filtro sem recarregar e modo painel fixo (desktop >= 801px).
+- A suíte completa fechou com 53 testes `OK`; o envio real de email foi confirmado via Gmail.
+
+**Verificação registrada:** interface aprovada na inspeção visual de 2026-10-03; suíte com 53 testes aprovados; contrato HTTP atualizado com a rota `POST /digest/send`.
 
 ## Fase 5 - Integração ponta a ponta
 

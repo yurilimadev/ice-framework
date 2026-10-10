@@ -4,11 +4,10 @@ Este é o ponto de entrada para qualquer nova sessão. Leia primeiro este arquiv
 
 ## Estado atual
 
-- Fases 0, 1, 2 e 3 concluídas.
-- Fase 4 em validação.
+- Fases 0, 1, 2, 3 e 4 concluídas.
 - Interface visual implementada pelo Frontend.
 - Suíte automatizada atual: 53 testes aprovados.
-- Pendência atual: inspeção visual renderizada e aceitação formal da Fase 4.
+- Pendência atual: ativar as sessões da Fase 5 (integração ponta a ponta).
 - Próxima fase: integração ponta a ponta.
 
 O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.
@@ -28,7 +27,7 @@ O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.
 
 - `Discovery.md`: decisões de produto, regras de negócio e critérios de aceite.
 - `IDENTIDADE-VISUAL.md`: direção visual e limites da interface.
-- `VALIDACAO-VISUAL-F4.md`: roteiro para inspeção local antes do encerramento da Fase 4.
+- `VALIDACAO-VISUAL-F4.md`: roteiro da inspeção visual da Fase 4 (concluída e aprovada em 2026-10-03).
 
 ### Fases e contratos
 
