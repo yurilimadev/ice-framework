@@ -46,4 +46,11 @@ def create_app(test_config=None):
 
         click.echo(send_digest(app, recipient=to_address))
 
+    @app.cli.command("publish")
+    def publish_command():
+        """Publica o banco local no servidor Termux (usa DEPLOY_*)."""
+        from .publish import publish_database
+
+        click.echo(publish_database(app))
+
     return app

@@ -3,6 +3,7 @@
 - Converse com o usuario em portugues, salvo se ele pedir outro idioma.
 - A fundacao atual usa Flask, `requirements.txt`, `python3 -m flask --app wsgi run` e Docker Compose.
 - Envio de resumo por email: CLI `python3 -m flask --app wsgi send-digest` (ou `--to EMAIL`) ou botao "Enviar resumo" na barra superior (rota `POST /digest/send`, visivel apenas com SMTP configurado); requer `.env` local com `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` e `DIGEST_TO` (modelo em `.env.example`; `.env` fora do git). Nao commitar credenciais.
+- Publicacao no servidor Termux: CLI `python3 -m flask --app wsgi publish` ou botao "Publicar"; requer `.env` local com `DEPLOY_HOST`, `DEPLOY_PORT`, `DEPLOY_KEY_PATH` e `DEPLOY_TARGET_PATH` (`DEPLOY_SV_SERVICE` opcional). Regra: o local publica, o servidor espelha.
 - Nao invente comandos, arquitetura ou convencoes; inspecione os arquivos existentes antes de orientar ou implementar qualquer mudanca.
 - Desenvolva e implemente uma fase por vez; conclua e verifique os criterios da fase atual antes de iniciar a proxima. Nao implemente varias fases de uma vez.
 - O papel do assistente neste repositorio e registrar decisoes, status, verificacoes e handoffs, alem de orientar a proxima sessao; nao cabe ao assistente codar ou iniciar implementacoes por iniciativa propria.

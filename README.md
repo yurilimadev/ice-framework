@@ -81,6 +81,16 @@ O botão só aparece quando o SMTP está configurado. Sem credenciais, o app fun
 
 Em máquinas com GNOME, o app pode ser aberto como um aplicativo: script `~/.local/bin/ice` sobe o servidor se necessário e abre o navegador; o ícone "ICE Framework" aparece na grade de aplicativos. Instalação manual, específica de cada máquina — não faz parte do repositório.
 
+### Publicação do banco no servidor
+
+O PC local é a fonte de verdade; o servidor online (abaixo) é um espelho:
+
+```bash
+python3 -m flask --app wsgi publish
+```
+
+Gera um snapshot consistente do SQLite (backup API), envia por `scp` e reinicia o serviço remoto. Também dispara pelo botão **Publicar** da barra superior do app local (visível apenas com as variáveis `DEPLOY_*` no `.env`). Tarefas criadas diretamente no servidor são sobrescritas na próxima publicação.
+
 ### Execução no servidor (Termux/Android com Cloudflare Tunnel)
 
 A instância online roda num Android com Termux, acessível pelo subdomínio protegido por Cloudflare Access:

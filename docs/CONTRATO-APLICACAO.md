@@ -26,6 +26,7 @@ Este documento define as rotas HTTP, os formulários e o contexto dos templates 
 | `POST` | `/tasks/<int:task_id>/reopen` | Reabrir tarefa | Redirect `303` para `/` |
 | `POST` | `/tasks/<int:task_id>/delete` | Excluir tarefa permanentemente | Redirect `303` para `/` |
 | `POST` | `/digest/send` | Enviar resumo das tarefas por email (SMTP_* + DIGEST_TO) | Redirect `303` para a tela de origem |
+| `POST` | `/publish` | Publicar banco local no servidor Termux (DEPLOY_*; botao visivel apenas com configuracao) | Redirect `303` para a tela de origem |
 | `GET` | `/health` | Verificar aplicação, banco e schema | JSON `200` |
 
 Não criar rotas para autenticação, usuários, API JSON ou funcionalidades fora do MVP nesta fase.

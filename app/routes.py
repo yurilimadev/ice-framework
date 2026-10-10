@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import date
 
 import smtplib
+import sqlite3
+import subprocess
 
 from flask import (
     Blueprint,
@@ -18,6 +20,7 @@ from flask import (
 
 from .db import get_db
 from .digest import send_digest
+from .publish import publish_database
 from .tasks import (
     TagNotFoundError,
     Task,
@@ -44,7 +47,11 @@ def _digest_availability():
         config.get(key)
         for key in ("SMTP_HOST", "SMTP_USER", "SMTP_PASSWORD", "SMTP_FROM", "DIGEST_TO")
     )
-    return {"digest_ready": ready}
+    publish_ready = all(
+        config.get(key)
+        for key in ("DEPLOY_HOST", "DEPLOY_KEY_PATH", "DEPLOY_TARGET_PATH")
+    )
+    return {"digest_ready": ready, "publish_ready": publish_ready}
 
 
 def _back_url():
@@ -381,6 +388,17 @@ def send_digest_email():
         message = send_digest(current_app)
     except (RuntimeError, smtplib.SMTPException, OSError) as error:
         flash(f"Nao consegui enviar o resumo: {error}", "error")
+        return redirect(_back_url(), code=303)
+    flash(message, "success")
+    return redirect(_back_url(), code=303)
+
+
+@tasks_bp.post("/publish")
+def publish():
+    try:
+        message = publish_database(current_app)
+    except (RuntimeError, sqlite3.Error, subprocess.SubprocessError, OSError) as error:
+        flash(f"Nao consegui publicar: {error}", "error")
         return redirect(_back_url(), code=303)
     flash(message, "success")
     return redirect(_back_url(), code=303)

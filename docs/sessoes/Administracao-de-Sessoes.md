@@ -628,3 +628,26 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Retorno solicitado: confirmação do Access ativo e do teste por dados móveis.
 - Retorno recebido (2026-10-09): Access ativo, testes ponta a ponta aprovados pelo usuário — app no ar.
 - Status: concluído
+
+
+### Handoff CONTRATO-INFRA-PUBLISH-001 - 2026-10-10
+
+- Origem: Administração/Frontend (sessão unificada)
+- Destino: Administração e Testes
+- Tipo: Contrato
+- Alteração: rota nova `POST /publish` (publica o banco local no servidor Termux; post/redirect/get 303; flash de sucesso/erro; disponibilidade da UI depende de `DEPLOY_*`). `CONTRATO-APLICACAO.md` atualizado.
+- Retorno necessário de: Administração (ciência); Testes (cobertura em `tests/test_publish.py` e `tests/test_routes.py`).
+- Status: concluído
+
+### Handoff INFRA-PUBLISH-001 - 2026-10-10
+
+- Origem: Administração/Frontend (sessão unificada)
+- Destino: Administração
+- Tipo: Infraestrutura/Produto
+- Alteração: sincronização local -> servidor entregue (BACKLOG item 5): CLI `publish` (`app/publish.py`: snapshot por backup API + scp + `sv down/up ice-framework`), botão `Publicar` no topbar do app local (`data-busy-form` genérico também usado pelo Enviar resumo), variáveis `DEPLOY_*` no `.env` local e em `.env.example`; código do servidor sincronizado via `git pull`; `requirements.txt` inalterado (sem novas dependências).
+- Verificação executada: suíte com 59 testes `OK`; publicação real com tarefa-teste visível em `https://ice.yurilimadev.com` e remoção confirmada após republicação.
+- Regra registrada: local publica, servidor espelha (sobrescrita é esperada).
+- Pendência futura: cron de publicação automática (decidir se faz sentido).
+- Retorno necessário de: Administração.
+- Retorno solicitado: ciência da entrega; nada bloqueante.
+- Status: concluído

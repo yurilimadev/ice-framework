@@ -104,14 +104,13 @@
 })();
 
 (() => {
-  const form = document.querySelector("form[data-digest-form]");
-  if (!form) return;
-
-  form.addEventListener("submit", () => {
-    const button = form.querySelector("button[data-digest-send]");
-    if (!button) return;
-    button.disabled = true;
-    const label = button.querySelector("[data-digest-label]");
-    if (label) label.textContent = "Enviando...";
+  document.querySelectorAll("form[data-busy-form]").forEach((form) => {
+    form.addEventListener("submit", () => {
+      const button = form.querySelector("button[data-busy-button]");
+      if (!button) return;
+      button.disabled = true;
+      const label = form.querySelector("[data-busy-text]");
+      if (label && form.dataset.busyLabel) label.textContent = form.dataset.busyLabel;
+    });
   });
 })();

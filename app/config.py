@@ -22,6 +22,11 @@ def load_config():
         "SMTP_PASSWORD": os.getenv("SMTP_PASSWORD"),
         "SMTP_FROM": os.getenv("SMTP_FROM"),
         "DIGEST_TO": os.getenv("DIGEST_TO"),
+        "DEPLOY_HOST": os.getenv("DEPLOY_HOST"),
+        "DEPLOY_PORT": os.getenv("DEPLOY_PORT", "8022"),
+        "DEPLOY_KEY_PATH": os.getenv("DEPLOY_KEY_PATH"),
+        "DEPLOY_TARGET_PATH": os.getenv("DEPLOY_TARGET_PATH"),
+        "DEPLOY_SV_SERVICE": os.getenv("DEPLOY_SV_SERVICE", "ice-framework"),
     }
 
 

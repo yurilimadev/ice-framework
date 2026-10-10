@@ -1,6 +1,6 @@
 # Contexto Atual
 
-**Atualizado em:** 2026-09-27
+**Atualizado em:** 2026-10-10
 
 Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler todo o histórico. Detalhes permanentes devem permanecer nos contratos, no discovery ou no registro de sessões.
 
@@ -37,7 +37,8 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Tela de tags no modo painel (desktop ≥801px): cabeçalho fixo e tabela rolando dentro do card; painel fixo agora limitado corretamente a desktop (mobile mantém rolagem normal).
 - Email do resumo redesenhado na identidade ICE com versão texto puro anexada (multipart/alternative).
 - Lançador local fora do repositório: comando `ice` (`~/.local/bin`) e ícone "ICE Framework" no GNOME (`app-framework.desktop`); sobe o servidor se necessário e abre `http://127.0.0.1:5000`.
-- Suíte automatizada atual: `53` testes, resultado `OK` (inclui `tests/test_digest.py`).
+- Sincronização local -> servidor (2026-10-10): CLI `publish` + botão `Publicar` (rota `POST /publish`, contrato atualizado); snapshot consistente via backup API + scp + restart do serviço remoto; regra: local publica, servidor espelha; verificado ponta a ponta (tarefa-teste publicada e vista em `ice.yurilimadev.com`).
+- Suíte automatizada atual: `59` testes, resultado `OK` (inclui `tests/test_publish.py`).
 
 ## Bloqueio atual
 

@@ -22,4 +22,4 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 
 ## 5. Sincronizacao local <-> servidor Termux
 
-**Status:** a fazer (sessao de 2026-10-10). Publicar o estado do banco local no servidor (`ice.yurilimadev.com`) automaticamente: candidatas sao CLI `publish` (snapshot consistente do SQLite via backup API + scp + `sv restart ice-framework`), botao na interface do app local e/ou cron. Decidir mecanismo e protecao contra pisos de sobrescrita (o que acontece com tarefas criadas direto no servidor).
+**Status:** implementado (2026-10-10). Regra aprovada pelo usuario: local publica, servidor espelha (tarefa criada direto no servidor e sobrescrita na proxima publicacao). Gatilhos: CLI `python3 -m flask --app wsgi publish` e botao `Publicar` na barra superior (rota `POST /publish`, visivel apenas com DEPLOY_* no `.env` local). Snapshot consistente via backup API do SQLite; antivirus via restart do servico remoto. Cron ficou para decisao futura.

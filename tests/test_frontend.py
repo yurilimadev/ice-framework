@@ -255,9 +255,27 @@ class DigestButtonTestCase(unittest.TestCase):
         self._configure_smtp()
         body = self.client.get("/").get_data(as_text=True)
         self.assertIn("Enviar resumo", body)
-        self.assertIn("data-digest-form", body)
+        self.assertIn("data-busy-form", body)
         self.assertIn("/digest/send", body)
 
         body_tags = self.client.get("/tags").get_data(as_text=True)
         self.assertIn("Enviar resumo", body_tags)
         self.assertIn('class="panel-mode"', body_tags)
+
+    def test_botao_publicar_somente_com_deploy_configurado(self):
+        body = self.client.get("/").get_data(as_text=True)
+        self.assertNotIn("Publicar", body)
+
+        self.app.config.update(
+            {
+                "DEPLOY_HOST": "usuario@servidor",
+                "DEPLOY_KEY_PATH": "/tmp/chave-teste",
+                "DEPLOY_TARGET_PATH": "~/ice-framework/data/app.sqlite3",
+            }
+        )
+        body = self.client.get("/").get_data(as_text=True)
+        self.assertIn("Publicar", body)
+        self.assertIn("/publish", body)
+
+        body_tags = self.client.get("/tags").get_data(as_text=True)
+        self.assertIn("Publicar", body_tags)
