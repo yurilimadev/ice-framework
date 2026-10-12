@@ -91,6 +91,8 @@ python3 -m flask --app wsgi publish
 
 Gera um snapshot consistente do SQLite (backup API), envia por `scp` e reinicia o serviço remoto. Também dispara pelo botão **Publicar** da barra superior do app local (visível apenas com as variáveis `DEPLOY_*` no `.env`). Tarefas criadas diretamente no servidor são sobrescritas na próxima publicação.
 
+`DEPLOY_HOST` aceita um alias de `~/.ssh/config` (como `ice-termux`, já com `Port`/`User`/`IdentityFile`) — assim a mudança de IP na rede local se resolve editando uma linha do `~/.ssh/config`, sem tocar no app.
+
 ### Execução no servidor (Termux/Android com Cloudflare Tunnel)
 
 A instância online roda num Android com Termux, acessível pelo subdomínio protegido por Cloudflare Access:
