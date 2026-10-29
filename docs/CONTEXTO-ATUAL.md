@@ -46,7 +46,7 @@ Nenhum bloqueio. Migração concluída (2026-10-09): app no ar em `https://ice.y
 
 ## Próxima decisão
 
-Sessão de 2026-10-10: desenhar e escolher o mecanismo de sincronização local <-> servidor Termux (CLI `publish`, botão na interface e/ou cron) — detalhes em `BACKLOG.md` item 5. Depois: ativar a Fase 5 - Integração ponta a ponta.
+Ativar a **Fase 5 - Integração ponta a ponta** (sessões de backend, frontend e testes; fluxos ponta a ponta do backend real). Em refine: sincronização local ↔ servidor (item 5, implementado) e o Ciclo 2 de grupos Projeto/Área (item 6, planejado) — ambos em `BACKLOG.md`.
 
 ## Backlog
 

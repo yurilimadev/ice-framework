@@ -651,3 +651,14 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Retorno necessário de: Administração.
 - Retorno solicitado: ciência da entrega; nada bloqueante.
 - Status: concluído
+
+
+### Handoff ADM-PLANO-GRUPOS-001 - 2026-10-10
+
+- Origem: Administracao (decisao do usuario)
+- Destino: Administracao (futuro ciclo)
+- Tipo: Planejamento
+- Registro: evolucao "PARA-lite" aprovada pelo usuario e desenhada em `BACKLOG.md` item 6 — grupos Projeto/Area agrupando cards ICE (sem PARA completo, sem agregacao de score, card solto continua), execucao pos-fases 5-7 (Ciclo 2: Fases 8-10).
+- Retorno necessario de: ninguem (decisao ja tomada; execucao aguarda fila).
+- Condicao de desbloqueio: Fases 5, 6 e 7 concluidas.
+- Status: registrado (aguardando fila)
