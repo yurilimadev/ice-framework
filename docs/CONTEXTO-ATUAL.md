@@ -6,8 +6,8 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Fase ativa
 
-- **Fase 5 - Integração ponta a ponta**: roteiro `VALIDACAO-E2E-F5.md` executado (5/5 blocos; 1 achado corrigido — mescla com tags compartilhadas). **Aguardando aceite do usuário** para encerramento e ativação da Fase 6.
-- Fases 0-4 concluídas.
+- **Fase 6 - Testes e endurecimento**: auditoria de limites executada (`VALIDACAO-ENDURECIMENTO-F6.md`) — zero defeitos novos; **aguardando aceite do usuário**.
+- Fases 0-5 concluídas (Fase 5 fechada com o relatório aprovado e o BE-F5-001 corrigido).
 
 
 ## Estado das sessões
@@ -42,11 +42,11 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Bloqueio atual
 
-Nenhum bloqueio. Migração concluída (2026-10-09): app no ar em `https://ice.yurilimadev.com` com Cloudflare Access ativo e testes ponta a ponta aprovados pelo usuário.
+Nenhum bloqueio de projeto. Nota de infra (2026-10-31): o Android descarregou e saiu do ar; recolocado pelo usuário — serviços voltaram sozinhos ao abrir o Termux, wake-lock reaplicado, `https://ice.yurilimadev.com` saudável de novo. Recomendo reserva de DHCP no roteador e a reabertura do Termux após qualquer reinício.
 
 ## Próxima decisão
 
-Ativar a **Fase 5 - Integração ponta a ponta** (sessões de backend, frontend e testes; fluxos ponta a ponta do backend real). Em refine: sincronização local ↔ servidor (item 5, implementado) e o Ciclo 2 de grupos Projeto/Área (item 6, planejado) — ambos em `BACKLOG.md`.
+Aceitar a auditoria da Fase 6 e liberar a **Fase 7 — Backup, restauração e entrega** (cópia/restauração do volume SQLite com dados preservados). Depois: Ciclo 2 de grupos Projeto/Área (`BACKLOG.md` item 6).
 
 ## Backlog
 

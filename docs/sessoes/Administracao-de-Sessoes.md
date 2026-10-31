@@ -696,6 +696,19 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Destino: Administracao (aceite do usuario)
 - Tipo: Relatorio de verificacao
 - Registro: roteiro execute `docs/VALIDACAO-E2E-F5.md`: 5/5 blocos aprovados; 1 achado (mescla 500) corrigido e reverificado; 60 testes OK; persistencia pos-restart integra.
-- Retorno solicitado: aceite do usuario para encerramento formal da Fase 5.
-- Condicao de desbloqueio: aceite em conversa; liberacao da Fase 6 (endurecimento).
+- Retorno recebido (2026-10-31): usuario pediu seguir com o combinado apos o relatorio — aceite registrado.
+- Status: concluido
+
+
+### Handoff ADM-F5-CLOSE-001 - 2026-10-31
+
+- Registro: Fase 5 concluida com aceite do usuario (roteiro `VALIDACAO-E2E-F5.md`: 5/5 blocos; BE-F5-001 corrigido e revalidado; 60 testes OK). Fase 6 ativada na sequencia (mesma conversa), conforme fila de fases.
+- Status: concluido
+
+### Handoff ADM-F6-001 - 2026-10-31
+
+- Registro: Fase 6 (Testes e endurecimento) ativada; auditoria de limites executada imediatamente, com resultados em `docs/VALIDACAO-ENDURECIMENTO-F6.md` (limites do score, entradas invalidas 400, confirmacao de exclusao, persistencia; zero defeitos novos).
+- Pendencia de infra registrada: Android descarregou e saiu da rede (530 na borda); usuario recolocou online; servicos subiram sozinhos ao abrir o Termux; wake-lock reaplicado; `https://ice.yurilimadev.com` saudavel de novo.
+- Retorno solicitado: aceite do usuario para encerramento da Fase 6.
+- Condicao de desbloqueio: aceite em conversa; liberacao da Fase 7 (backup, restauracao e entrega).
 - Status: aberto (aguardando aceite)

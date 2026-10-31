@@ -171,7 +171,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 5 - Integração ponta a ponta
 
-**Status:** em aceite do usuário (roteiro executado em 2026-10-31).
+**Status:** concluída em 2026-10-31 (aceite do usuário após o relatório).
 
 **Objetivo:** validar que persistência, rotas e interface representam o mesmo comportamento.
 
@@ -192,6 +192,8 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 6 - Testes e endurecimento
 
+**Status:** em aceite do usuário (auditoria executada em 2026-10-31).
+
 **Objetivo:** garantir comportamento previsível nos limites do MVP.
 
 **Atividades:**
@@ -206,6 +208,8 @@ existente permanecem no schema `2`, sem nova migração.
 **Sessão principal:** testes.
 
 **Critério de saída:** nenhuma falha crítica ou regra de aceite sem cobertura ou justificativa registrada.
+
+**Verificação registrada:** `docs/VALIDACAO-ENDURECIMENTO-F6.md` — limites do score (1 e 1000), entradas invalidas -> 400 com mensagem no campo, confirmacao de exclusao, persistencia pos-restart; zero defeitos novos; suite com 60 testes OK.
 
 ## Fase 7 - Backup, restauração e entrega
 
