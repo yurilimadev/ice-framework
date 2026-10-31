@@ -662,3 +662,40 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Retorno necessario de: ninguem (decisao ja tomada; execucao aguarda fila).
 - Condicao de desbloqueio: Fases 5, 6 e 7 concluidas.
 - Status: registrado (aguardando fila)
+
+
+### Handoff ADM-F5-001 - 2026-10-31
+
+- Origem: Administracao (ativacao solicitada pelo usuario)
+- Destino: BE-005 (suporte), FE-005 (verificacao visual/contrato), QA-005 (execucao do roteiro)
+- Tipo: Ativacao de fase
+- Registro: Fase 5 ativada; roteiro `docs/VALIDACAO-E2E-F5.md` definido (5 blocos: ciclo do card, atraso/overdue, tags, ordenacoes, persistencia + evidencia de publicacao INFRA-PUBLISH-001).
+- Retorno solicitado: relatorio QA-005 para aceite do usuario.
+- Status: concluido
+
+### Handoff BE-F5-001 - 2026-10-31
+
+- Origem: QA-005 (bloco C do roteiro E2E)
+- Destino: Backend
+- Tipo: Correcao de dominio
+- Alteracao: `merge_tags` agora remove pares task_tag conflitantes (tarefa com origem e destino) antes do UPDATE; `IntegrityError` 500 eliminado. Regressao adicionada na suite.
+- Verificacao executada: revalidacao e2e do fluxo de mescla aprovada; suite com 60 testes OK.
+- Status: concluido
+
+### Handoff FE-005 - 2026-10-31
+
+- Origem: Administracao
+- Destino: Frontend
+- Tipo: Verificacao de contrato
+- Registro: nenhum ajuste de interface necessario; seletores do contratoreakem em todos os blocos (data-task-id, indicadores de atraso/conclusao, chips de tags, estados vazios); nenhuma divergencia de contrato encontrada.
+- Status: concluido
+
+### Handoff QA-005 - 2026-10-31
+
+- Origem: Administracao
+- Destino: Administracao (aceite do usuario)
+- Tipo: Relatorio de verificacao
+- Registro: roteiro execute `docs/VALIDACAO-E2E-F5.md`: 5/5 blocos aprovados; 1 achado (mescla 500) corrigido e reverificado; 60 testes OK; persistencia pos-restart integra.
+- Retorno solicitado: aceite do usuario para encerramento formal da Fase 5.
+- Condicao de desbloqueio: aceite em conversa; liberacao da Fase 6 (endurecimento).
+- Status: aberto (aguardando aceite)

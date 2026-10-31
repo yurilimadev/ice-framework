@@ -6,10 +6,9 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Fase ativa
 
-- Fase concluída: **Fase 4 - Interface do frontend** (encerrada em 2026-10-03, inspeção visual aprovada pelo usuário).
-- Próxima fase: **Fase 5 - Integração ponta a ponta** — pronta para ativação.
-- Sessões previstas para a Fase 5: backend, frontend e testes.
-- Critério de saída da Fase 5: fluxos ponta a ponta passam sem dados ou regras duplicadas de forma conflitante.
+- **Fase 5 - Integração ponta a ponta**: roteiro `VALIDACAO-E2E-F5.md` executado (5/5 blocos; 1 achado corrigido — mescla com tags compartilhadas). **Aguardando aceite do usuário** para encerramento e ativação da Fase 6.
+- Fases 0-4 concluídas.
+
 
 ## Estado das sessões
 
@@ -38,7 +37,8 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Email do resumo redesenhado na identidade ICE com versão texto puro anexada (multipart/alternative).
 - Lançador local fora do repositório: comando `ice` (`~/.local/bin`) e ícone "ICE Framework" no GNOME (`app-framework.desktop`); sobe o servidor se necessário e abre `http://127.0.0.1:5000`.
 - Sincronização local -> servidor (2026-10-10): CLI `publish` + botão `Publicar` (rota `POST /publish`, contrato atualizado); snapshot consistente via backup API + scp + restart do serviço remoto; regra: local publica, servidor espelha; verificado ponta a ponta (tarefa-teste publicada e vista em `ice.yurilimadev.com`).
-- Suíte automatizada atual: `59` testes, resultado `OK` (inclui `tests/test_publish.py`).
+- Correção da Fase 5: `merge_tags` com tags compartilhadas na mesma tarefa (BE-F5-001) corrigido; suíte com regressão nova.
+- Suíte automatizada atual: `60` testes, resultado `OK`.
 
 ## Bloqueio atual
 

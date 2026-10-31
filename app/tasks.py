@@ -349,6 +349,15 @@ class TaskRepository:
             if source is None:
                 raise TagNotFoundError(f"Tag origem nao encontrada: {source_id}")
             self.connection.execute(
+                """
+                DELETE FROM task_tags
+                WHERE tag_id = ? AND task_id IN (
+                    SELECT task_id FROM task_tags WHERE tag_id = ?
+                )
+                """,
+                (target_id, source_id),
+            )
+            self.connection.execute(
                 "UPDATE task_tags SET tag_id = ? WHERE tag_id = ?", (target_id, source_id)
             )
             self.connection.execute("DELETE FROM tags WHERE id = ?", (source_id,))

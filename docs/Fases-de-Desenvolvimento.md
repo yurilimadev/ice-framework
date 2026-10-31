@@ -171,6 +171,8 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 5 - Integração ponta a ponta
 
+**Status:** em aceite do usuário (roteiro executado em 2026-10-31).
+
 **Objetivo:** validar que persistência, rotas e interface representam o mesmo comportamento.
 
 **Atividades:**
@@ -185,6 +187,8 @@ existente permanecem no schema `2`, sem nova migração.
 **Sessões envolvidas:** backend, frontend e testes.
 
 **Critério de saída:** fluxos ponta a ponta passam sem dados ou regras duplicadas de forma conflitante.
+
+**Verificação registrada:** `docs/VALIDACAO-E2E-F5.md` — 5/5 blocos aprovados; achado BE-F5-001 (mescla com tags compartilhadas -> 500) corrigido com regressao; suite com 60 testes OK. Aceite pendente.
 
 ## Fase 6 - Testes e endurecimento
 

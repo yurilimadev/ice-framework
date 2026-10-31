@@ -265,3 +265,19 @@ class TagManagementTestCase(unittest.TestCase):
             self.assertEqual(target, "Beta")
             self.assertEqual(repository.get(task.id).tags, ("Beta",))
             self.assertEqual(len(repository.list_tags_with_usage()), 1)
+
+    def test_merge_com_tags_compartilhadas_na_mesma_task_nao_duplica(self):
+        with self.app.app_context():
+            repository = TaskRepository(get_db(), "America/Sao_Paulo")
+            task = repository.create("Com as duas", 5, 5, 5, tags=["Alpha", "Beta"])
+            self.assertEqual(repository.get(task.id).tags, ("Alpha", "Beta"))
+
+            usage = {
+                entry["name"]: entry["id"]
+                for entry in repository.list_tags_with_usage()
+            }
+            target_name = repository.merge_tags(usage["Alpha"], usage["Beta"])
+
+            self.assertEqual(target_name, "Beta")
+            self.assertEqual(repository.get(task.id).tags, ("Beta",))
+            self.assertEqual(len(repository.list_tags_with_usage()), 1)
