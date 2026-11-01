@@ -41,7 +41,7 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 
 ## 7. PARA-lite completo: Recursos e painel em secoes
 
-**Status:** em execucao no Ciclo 3 (2026-10-31); Fases 11 (schema `4` + `recurso`) e 12 (painel em secoes) concluidas, Fase 13 aguardando autorizacao.
+**Status:** em execucao no Ciclo 3 (2026-10-31); Fases 11 (schema `4` + `recurso`) e 12 (painel em secoes) concluidas e Fase 13 (E2E + backup/restauracao + publicacao) executada, aguardando aceite do usuario.
 
 **Origem:** o usuario esclareceu que precisa organizar as tasks em Projetos, Areas, Recursos e Arquivos. Isso amplia o item 6, que havia excluido Recursos.
 
@@ -56,4 +56,4 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 - Tela `/grupos` passa a aceitar `recurso`; o formulario de tarefa oferece os tres tipos.
 - Ordem prevista do Ciclo 3: Fase 11 (schema `4` + dominio) -> Fase 12 (painel em secoes e gestao) -> Fase 13 (E2E + publicacao).
 
-**Bloqueio:** Fase 13 depende de autorizacao explicita do usuario; respeitar uma fase por vez.
+**Bloqueio:** nao ha bloqueio tecnico; Ciclo 3 aguarda aceite explicito do usuario.

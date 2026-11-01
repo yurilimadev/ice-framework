@@ -140,6 +140,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 | BE-009 | Contexto e painel em seções | 12 | concluída | Seções Projetos/Áreas/Recursos/Arquivos/Sem grupo e remoção do filtro de grupo |
 | FE-007 | Interface de Recursos e seções | 12 | concluída | Painel em seções, tipo Recurso e estilos aplicados |
 | QA-010 | Testes do painel em seções | 12 | concluída | Seções, formulários e regressões validados; 75 testes OK |
+| QA-011 | E2E e publicação do Ciclo 3 | 13 | em validação | Drills local e Termux aprovados; aguardando aceite do usuário |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -1045,3 +1046,43 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Registro: Fase 12 concluída com painel em seções e gestão de Recursos/Arquivos. Suíte com `75` testes `OK`.
 - Próximo passo: abrir a Fase 13 (E2E + publicação do Ciclo 3) quando o usuário autorizar.
 - Status: concluído
+
+### Handoff ADM-F13-001 - 2026-10-31
+
+- Origem: Administração (autorização do usuário: "Pode iniciar.")
+- Destino: Testes (`QA-011`), Backend e Administração
+- Tipo: INFRA/UI
+- Alteração: Fase 13 aberta para validar Projetos, Áreas, Recursos e Arquivos ponta a ponta e publicar o schema `4`.
+- Arquivos ou áreas afetadas: `docs/VALIDACAO-E2E-F13.md`, banco local, `https://ice.yurilimadev.com`.
+- Ação obrigatória do destino: executar E2E local, backup/restauração, publicação e confirmação no servidor.
+- Retorno necessário de: `QA-011`.
+- Condição de desbloqueio: aceite do usuário para encerrar o Ciclo 3.
+- Status: concluído
+
+### Handoff QA-F13-001 - 2026-10-31
+
+- Origem: Testes (`QA-011`)
+- Destino: Administração (aceite do usuário)
+- Tipo: Relatório de validação
+- Registro: `docs/VALIDACAO-E2E-F13.md` — drill local com as cinco seções, três tipos, arquivamento, cards soltos, reinício e backup/restauração em schema `4`; drill no Termux com código `33190be`, publicação, cinco seções, grupo `recurso` e backup/restauração; dados `Validacao F13` removidos e servidor republicado com `5` tarefas e `0` grupos.
+- Retorno necessário de: usuário.
+- Retorno solicitado: aceite para encerrar a Fase 13 e o Ciclo 3.
+- Verificação executada: suíte com `75` testes `OK`; `/health` local e remoto em schema `4`; `PRAGMA integrity_check = ok` nas duas pontas.
+- Bloqueios: nenhum.
+- Status: em validação
+
+### Handoff INFRA-F13-001 - 2026-10-31
+
+- Origem: Backend/Administração
+- Destino: Administração
+- Tipo: INFRA
+- Alteração: código do servidor atualizado de `27aa558` para `33190be`; banco local migrado de schema `3` para `4`; publicação com grupos temporários de validação e posterior limpeza.
+- Verificação executada: `/health` remoto schema `4`; cinco seções no painel; `/grupos` `200`; banco remoto com `4` grupos e `4` vínculos durante a validação; backup/restauração com integridade; estado final com `5` tarefas e `0` grupos.
+- Retorno necessário de: Administração.
+- Status: concluído
+
+### Handoff ADM-F13-HOLD-001 - 2026-10-31
+
+- Registro: Fase 13 executada e critério de saída atendido; documentação de validação registrada. Fase e Ciclo 3 permanecem **aguardando aceite explícito do usuário**.
+- Próximo passo: se aceito, marcar Fase 13/Ciclo 3 como concluídos e atualizar os snapshots.
+- Status: em validação

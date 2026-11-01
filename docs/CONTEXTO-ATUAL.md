@@ -7,14 +7,15 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 ## Fase ativa
 
 - **Fases 11 e 12 do Ciclo 3**: concluídas em 2026-10-31.
+- **Fase 13**: executada em 2026-10-31 — aguardando aceite do usuário para encerrar o Ciclo 3.
 - Entregue na Fase 11: `kind='recurso'`, migração `3 -> 4` preservando grupos e vínculos; `Arquivos` segue como `status='archived'`.
 - Entregue na Fase 12: painel em seções Projetos, Áreas, Recursos, Arquivos e Sem grupo; tipo Recurso na gestão e no formulário.
-- Próximo passo: autorizar a Fase 13 (E2E + publicação do Ciclo 3).
+- Entregue/validado na Fase 13: E2E local e no Termux, backup/restauração e publicação em schema `4`; servidor espelhando 5 tarefas e 0 grupos.
 - Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
 - Entregue na Fase 8: schema `3` com `grupos` e `tasks.grupo_id`; CRUD/arquivamento de grupo; vínculo e desvínculo de cards; exclusão preserva tarefas e tags.
 - Entregue na Fase 9: tela `/grupos`, campo `grupo_id` no formulário, filtro `group` no painel e badge Projeto/Área nos cards.
 - Entregue/validado na Fase 10: E2E local e no Termux, backup/restauração em schema `3`, publicação e espelho no servidor; dados de validação removidos.
-- App: código em schema `4`; banco local e `https://ice.yurilimadev.com` ainda em schema `3` até o próximo reinício/publicação (Fase 13). Backups funcionais nas duas pontas.
+- App: código e bancos local/online em schema `4`; servidor espelhando 5 tarefas e 0 grupos. Backups funcionais nas duas pontas.
 - Suíte: 76 testes OK.
 
 
@@ -33,6 +34,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 | `BE-009` | concluída | Contexto de seções entregue |
 | `FE-007` | concluída | Painel em seções e tipo Recurso aplicados |
 | `QA-010` | concluída | Seções validadas; Fase 12 encerrada |
+| `QA-011` | em validação | Drills F13 aprovados; aguardando aceite do usuário |
 | `BE-003` | concluída | Suporte somente para regressões ou mudanças de contrato |
 | `FE-001` | concluída | Interface aprovada na inspeção visual de 2026-10-03 |
 | `QA-004` | concluída | Inspeção visual aprovada; 53 testes OK |
@@ -64,6 +66,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Ciclo 2 fechado com aceite do usuário (2026-10-31).
 - Fase 11 concluída: migração `004_grupos_recurso.sql` (schema `4`), `GroupKind.RESOURCE` e preservação de grupos/vínculos; suíte com regressões de upgrade `3 -> 4`.
 - Fase 12 concluída: painel em seções Projetos/Áreas/Recursos/Arquivos/Sem grupo, tipo Recurso em `/grupos` e no formulário, filtro de grupo removido; verificação HTTP local com as cinco seções.
+- Fase 13 executada: E2E local e no Termux, backup/restauração e publicação em schema `4`; dados de validação removidos; evidência em `docs/VALIDACAO-E2E-F13.md`.
 - Suíte automatizada atual: `75` testes, resultado `OK`.
 
 ## Bloqueio atual
@@ -72,11 +75,11 @@ Nenhum bloqueio de projeto. Nota de infra (2026-10-31): o Android descarregou e 
 
 ## Próxima decisão
 
-Abrir a **Fase 13 — validação e publicação do Ciclo 3** quando o usuário autorizar: E2E com Projetos/Áreas/Recursos/Arquivos, backup/restauração em schema `4` e publicação no Termux.
+Ouvir o usuário sobre o aceite da Fase 13; se aprovado, marcar a Fase 13 e o Ciclo 3 como concluídos. Depois, definir o próximo ciclo/backlog. Handoffs da Fase 13: `QA-F13-001`, `INFRA-F13-001` e `ADM-F13-HOLD-001`.
 
 ## Backlog
 
-- `BACKLOG.md` item 7: Recursos e painel em seções (Ciclo 3); Fases 11 e 12 concluídas, Fase 13 aguardando autorização.
+- `BACKLOG.md` item 7: Recursos e painel em seções (Ciclo 3); Fases 11 e 12 concluídas, Fase 13 executada e aguardando aceite.
 - `BACKLOG.md` item 6: grupos Projeto/Área concluídos no Ciclo 2 (Fases 8 a 10).
 - Demais demandas registradas: filtro de tags, agendamento de notificações por email, cron de publicação.
 
@@ -91,5 +94,5 @@ Abrir a **Fase 13 — validação e publicação do Ciclo 3** quando o usuário 
 
 ## Último versionamento
 
-- Último commit publicado: `27aa558` (encerramento do Ciclo 2 com aceite da Fase 10).
-- Alterações locais pendentes: Fases 11 e 12 implementadas (schema `4`, painel em seções, testes e documentação); nada commitado.
+- Último commit publicado: `33190be` (Ciclo 3: Recursos e painel em seções com schema `4`).
+- Alterações locais pendentes: documentação da Fase 13 (`VALIDACAO-E2E-F13.md` e snapshots); nenhuma alteração de código pendente.

@@ -6,9 +6,9 @@ Este é o ponto de entrada para qualquer nova sessão. Leia primeiro este arquiv
 
 - Ciclo 1 completo: Fases 0 a 7 concluídas (2026-10-31).
 - Ciclo 2 completo: Fases 8 a 10 concluídas em 2026-10-31 (aceite do usuário).
-- Ciclo 3 ativo: Fases 11 (schema `4` + Recursos) e 12 (painel em seções) concluídas.
+- Ciclo 3 ativo: Fases 11 (schema `4` + Recursos) e 12 (painel em seções) concluídas; Fase 13 executada aguardando aceite.
 - Interface atual inclui Projetos, Áreas, Recursos, Arquivos e Sem grupo em `/` e a gestão em `/grupos`.
-- Código em schema `4`; bancos local/online ainda em `3` até a publicação da Fase 13.
+- Código e bancos local/online em schema `4`; servidor espelhando 5 tarefas e 0 grupos.
 - Suíte automatizada atual: 75 testes aprovados.
 
 O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.

@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 ativo — Fases 11 e 12 concluídas em 2026-10-31
+**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 ativo — Fases 11 e 12 concluídas e Fase 13 executada, aguardando aceite do usuário
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -350,7 +350,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 13 - Validação e publicação do Ciclo 3
 
-**Status:** aguardando ativação (Fases 11 e 12 concluídas).
+**Status:** executada em 2026-10-31 — aguardando aceite do usuário.
 
 **Objetivo:** validar Projetos, Áreas, Recursos e Arquivos ponta a ponta e publicar no servidor.
 
@@ -365,6 +365,8 @@ existente permanecem no schema `2`, sem nova migração.
 **Sessões envolvidas:** testes, backend e administração.
 
 **Critério de saída:** fluxos dos quatro conceitos aprovados nas duas instâncias; backup/restauração e publicação preservam os dados.
+
+**Verificação registrada:** `docs/VALIDACAO-E2E-F13.md` — drill local (seções, filtros, reinício e backup/restauração em schema `4`) e drill no Termux (código em `33190be`, publicação, cinco seções, grupos `projeto`/`area`/`recurso`/arquivado e backup/restauração) aprovados; dados de validação removidos e servidor republicado com `5` tarefas e `0` grupos. Aceite do usuário pendente.
 
 ## Regra de avanço
 
