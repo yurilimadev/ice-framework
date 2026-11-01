@@ -709,6 +709,23 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 
 - Registro: Fase 6 (Testes e endurecimento) ativada; auditoria de limites executada imediatamente, com resultados em `docs/VALIDACAO-ENDURECIMENTO-F6.md` (limites do score, entradas invalidas 400, confirmacao de exclusao, persistencia; zero defeitos novos).
 - Pendencia de infra registrada: Android descarregou e saiu da rede (530 na borda); usuario recolocou online; servicos subiram sozinhos ao abrir o Termux; wake-lock reaplicado; `https://ice.yurilimadev.com` saudavel de novo.
-- Retorno solicitado: aceite do usuario para encerramento da Fase 6.
-- Condicao de desbloqueio: aceite em conversa; liberacao da Fase 7 (backup, restauracao e entrega).
+- Retorno recebido (2026-10-31): usuario seguiu com o combinado - aceite registrado.
+- Status: concluido
+
+
+### Handoff ADM-F6-CLOSE-001 - 2026-10-31
+
+- Registro: Fase 6 concluida com aceite do usuario (`VALIDACAO-ENDURECIMENTO-F6.md`, zero defeitos novos). Fase 7 ativada na sequencia.
+- Status: concluido
+
+### Handoff INFRA-RECOVER-002 - 2026-10-31
+
+- Registro: Android/Termux passou por reinicios no dia (usuario reportou). Servicos voltam sozinhos ao abrir o Termux; wake-lock reaplicado; orientado bateria "Sem restricoes" no Termux e reserva de DHCP.
+- Status: concluido
+
+### Handoff ADM-F7-001 - 2026-10-31
+
+- Registro: Fase 7 executada - drills de backup/restauracao nas duas instancias aprovados (`VALIDACAO-RESTAURACAO-F7.md`); comandos reais documentados no `README.md`.
+- Retorno solicitado: aceite do usuario para fechamento formal do Ciclo 1 (fases 0-7).
+- Condicao de desbloqueio: aceite em conversa; Ciclo 2 (grupos Projeto/Area) transposto para `Fases-de-Desenvolvimento.md` e ativado.
 - Status: aberto (aguardando aceite)

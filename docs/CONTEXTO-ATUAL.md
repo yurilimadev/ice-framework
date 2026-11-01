@@ -6,8 +6,8 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Fase ativa
 
-- **Fase 6 - Testes e endurecimento**: auditoria de limites executada (`VALIDACAO-ENDURECIMENTO-F6.md`) — zero defeitos novos; **aguardando aceite do usuário**.
-- Fases 0-5 concluídas (Fase 5 fechada com o relatório aprovado e o BE-F5-001 corrigido).
+- **Fase 7 - Backup, restauração e entrega**: ensaio nas duas instâncias aprovado (`VALIDACAO-RESTAURACAO-F7.md`) — **aguardando aceite do usuário** para fechar o Ciclo 1.
+- Fases 0-6 concluídas.
 
 
 ## Estado das sessões
@@ -46,7 +46,7 @@ Nenhum bloqueio de projeto. Nota de infra (2026-10-31): o Android descarregou e 
 
 ## Próxima decisão
 
-Aceitar a auditoria da Fase 6 e liberar a **Fase 7 — Backup, restauração e entrega** (cópia/restauração do volume SQLite com dados preservados). Depois: Ciclo 2 de grupos Projeto/Área (`BACKLOG.md` item 6).
+Aceitar a validação da Fase 7 e **fechar o Ciclo 1**. Depois: Ciclo 2 — grupos Projeto/Área (transpor Fases 8-10 de `BACKLOG.md` item 6 para `Fases-de-Desenvolvimento.md` e ativar).
 
 ## Backlog
 

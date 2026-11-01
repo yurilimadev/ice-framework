@@ -192,7 +192,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 6 - Testes e endurecimento
 
-**Status:** em aceite do usuário (auditoria executada em 2026-10-31).
+**Status:** concluída em 2026-10-31 (aceite do usuário).
 
 **Objetivo:** garantir comportamento previsível nos limites do MVP.
 
@@ -213,6 +213,8 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 7 - Backup, restauração e entrega
 
+**Status:** em aceite do usuário (ensaio executado em 2026-10-31).
+
 **Objetivo:** comprovar a portabilidade da instância.
 
 **Atividades:**
@@ -226,6 +228,8 @@ existente permanecem no schema `2`, sem nova migração.
 **Sessões envolvidas:** backend e testes.
 
 **Critério de saída:** uma cópia do volume restaura a mesma instância sem perda de dados.
+
+**Verificação registrada:** `docs/VALIDACAO-RESTAURACAO-F7.md` — drills local e Termux aprovados (snapshot consistente + instância limpa restaurada com os mesmos dados); comandos reais documentados no `README.md`.
 
 ## Regra de avanço
 

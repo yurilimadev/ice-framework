@@ -77,6 +77,33 @@ python3 -m flask --app wsgi send-digest --to outro@email.com
 
 O botão só aparece quando o SMTP está configurado. Sem credenciais, o app funciona normalmente — só o envio de email fica indisponível.
 
+### Backup e restauração
+
+O banco é um único arquivo SQLite. Backup consistente (backup API do SQLite; funciona com o app rodando):
+
+```bash
+python3 - << 'BKP'
+import os, sqlite3, time
+from pathlib import Path
+
+raiz = Path(os.environ.get("ICE_ROOT", "."))
+origem = raiz / "data/app.sqlite3"
+alvo = raiz / f"backups/backup-{time.strftime('%Y%m%d-%H%M%S')}.sqlite3"
+alvo.parent.mkdir(exist_ok=True)
+
+con = sqlite3.connect(f"file:{origem}?mode=ro", uri=True)
+dest = sqlite3.connect(alvo)
+con.backup(dest)
+dest.close()
+con.close()
+print("backup:", alvo)
+BKP
+```
+
+Restaurar: parar o app, colocar o arquivo de backup em `data/app.sqlite3` (ou apontar `APP_DATABASE_PATH` para ele) e subir de novo. No Termux: `sv down ice-framework` / `sv up ice-framework`. Verificação pós-restauração: `PRAGMA integrity_check` + `GET /health`.
+
+No Android, mantenha o Termux com bateria "Sem restrições" e reabra o Termux após reinícios do aparelho (os serviços sobem sozinhos).
+
 ### Lançador local (opcional, fora do repositório)
 
 Em máquinas com GNOME, o app pode ser aberto como um aplicativo: script `~/.local/bin/ice` sobe o servidor se necessário e abre o navegador; o ícone "ICE Framework" aparece na grade de aplicativos. Instalação manual, específica de cada máquina — não faz parte do repositório.
