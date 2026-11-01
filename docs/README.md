@@ -4,10 +4,10 @@ Este é o ponto de entrada para qualquer nova sessão. Leia primeiro este arquiv
 
 ## Estado atual
 
-- Fases 0, 1, 2, 3 e 4 concluídas.
+- Ciclo 1 completo: Fases 0 a 7 concluídas (2026-10-31).
 - Interface visual implementada pelo Frontend.
 - Suíte automatizada atual: 53 testes aprovados.
-- Pendência atual: ativar as sessões da Fase 5 (integração ponta a ponta).
+- Pendência atual: ativar o Ciclo 2 (grupos Projeto/Área — `BACKLOG.md` item 6).
 - Próxima fase: integração ponta a ponta.
 
 O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.

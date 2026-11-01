@@ -726,6 +726,13 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 ### Handoff ADM-F7-001 - 2026-10-31
 
 - Registro: Fase 7 executada - drills de backup/restauracao nas duas instancias aprovados (`VALIDACAO-RESTAURACAO-F7.md`); comandos reais documentados no `README.md`.
-- Retorno solicitado: aceite do usuario para fechamento formal do Ciclo 1 (fases 0-7).
-- Condicao de desbloqueio: aceite em conversa; Ciclo 2 (grupos Projeto/Area) transposto para `Fases-de-Desenvolvimento.md` e ativado.
-- Status: aberto (aguardando aceite)
+- Retorno recebido (2026-10-31): usuario aceitou explicitamente.
+- Status: concluido
+
+
+### Handoff ADM-CICLO1-CLOSE-001 - 2026-10-31
+
+- Registro: CICLO 1 FECHADO com aceite explicito do usuario. Fases 0 a 7 concluidas; MVP entregue (app local + `ice.yurilimadev.com` com Access); drills de backup/restauracao aprovados nas duasinstancias; rodapé de entregas fora do plano original: sincronizacao local->servidor (publish), envio de resumo por email (CLI + botao), launcher `ice`, migracao Termux + tunnel.
+- Aprendizados registrados na sessao: ambiente Android exige reabertura do Termux apos reinicios (bateria), `tzdata` via wheel no Termux, `.env` lido so na inicializacao, alias SSH para independencia de IP, correcao de mescla de tags (BE-F5-001).
+- Próximo passo: ativar o Ciclo 2 (grupos Projeto/Area) conforme `BACKLOG.md` item 6 - depende de deciso explicita do usuario.
+- Status: aguardando decisao de ativacao do Ciclo 2

@@ -1,13 +1,14 @@
 # Contexto Atual
 
-**Atualizado em:** 2026-10-10
+**Atualizado em:** 2026-10-31
 
 Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler todo o histórico. Detalhes permanentes devem permanecer nos contratos, no discovery ou no registro de sessões.
 
 ## Fase ativa
 
-- **Fase 7 - Backup, restauração e entrega**: ensaio nas duas instâncias aprovado (`VALIDACAO-RESTAURACAO-F7.md`) — **aguardando aceite do usuário** para fechar o Ciclo 1.
-- Fases 0-6 concluídas.
+- **Nenhuma fase aberta** — Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
+- App: instância local íntegra + `https://ice.yurilimadev.com` no ar com Access; backups funcionais nas duas pontas (drills aprovados).
+- Suíte: 60 testes OK.
 
 
 ## Estado das sessões
@@ -46,7 +47,7 @@ Nenhum bloqueio de projeto. Nota de infra (2026-10-31): o Android descarregou e 
 
 ## Próxima decisão
 
-Aceitar a validação da Fase 7 e **fechar o Ciclo 1**. Depois: Ciclo 2 — grupos Projeto/Área (transpor Fases 8-10 de `BACKLOG.md` item 6 para `Fases-de-Desenvolvimento.md` e ativar).
+Ativar o **Ciclo 2 — grupos Projeto/Área**: transpor as Fases 8/9/10 (esboço em `BACKLOG.md` item 6) para `Fases-de-Desenvolvimento.md`, abrir handoffs e começar pelo domínio (schema 3).
 
 ## Backlog
 
@@ -63,5 +64,5 @@ Aceitar a validação da Fase 7 e **fechar o Ciclo 1**. Depois: Ciclo 2 — grup
 
 ## Último versionamento
 
-- Último commit publicado: `2e36d91` (Fases 3 e 4 completas no GitHub).
+- Último commit publicado: ver `git log -1` (Ciclo 1 completo; semanas de 2026-10-07 a 10-31).
 - Sem alterações locais pendentes de commit.

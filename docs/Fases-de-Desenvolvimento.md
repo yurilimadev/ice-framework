@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Fases 0, 1, 2, 3 e 4 concluídas; Fase 5 pronta para ativação
+**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 (grupos Projeto/Área) aguarda ativação
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -213,7 +213,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 7 - Backup, restauração e entrega
 
-**Status:** em aceite do usuário (ensaio executado em 2026-10-31).
+**Status:** concluída em 2026-10-31 (aceite do usuário).
 
 **Objetivo:** comprovar a portabilidade da instância.
 
