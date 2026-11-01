@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 ativo — Fases 8 e 9 concluídas em 2026-10-31
+**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 ativo — Fases 8 e 9 concluídas e Fase 10 executada, aguardando aceite do usuário
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -286,7 +286,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 10 - Validação e publicação dos grupos (Ciclo 2)
 
-**Status:** aguardando ativação (Fases 8 e 9 concluídas).
+**Status:** executada em 2026-10-31 — aguardando aceite do usuário.
 
 **Objetivo:** validar o Ciclo 2 ponta a ponta e publicar o schema `3` e os dados no servidor.
 
@@ -302,6 +302,8 @@ existente permanecem no schema `2`, sem nova migração.
 **Sessões envolvidas:** testes (`QA-007`), backend e administração.
 
 **Critério de saída:** fluxos de grupo aprovados nas duas instâncias; backup/restauração e publicação preservam grupos e vínculos sem perda de dados.
+
+**Verificação registrada:** `docs/VALIDACAO-E2E-F10.md` — drill local (fluxos, reinício e backup/restauração com schema `3`) e drill no Termux (código em `982e877`, publicação, `/grupos`, badge, filtro e backup/restauração) aprovados; dados de validação removidos e servidor republicado com `5` tarefas e `0` grupos. Aceite do usuário pendente.
 
 ## Regra de avanço
 

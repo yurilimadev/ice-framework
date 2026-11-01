@@ -5,10 +5,11 @@ Este é o ponto de entrada para qualquer nova sessão. Leia primeiro este arquiv
 ## Estado atual
 
 - Ciclo 1 completo: Fases 0 a 7 concluídas (2026-10-31).
-- Ciclo 2 ativo: Fases 8 (domínio/schema `3`) e 9 (interface e filtros de grupos) concluídas em 2026-10-31.
+- Ciclo 2 ativo: Fases 8 e 9 concluídas; Fase 10 (E2E e publicação) executada em 2026-10-31, aguardando aceite do usuário.
 - Interface visual implementada pelo Frontend, incluindo `/grupos` e badges Projeto/Área.
+- App online em schema `3`; backup/restauração e publicação validadas nas duas pontas.
 - Suíte automatizada atual: 74 testes aprovados.
-- Próximo passo: abrir a Fase 10 (validação E2E e publicação dos grupos) quando autorizado.
+- Próximo passo: aceite do usuário para encerrar a Fase 10 e o Ciclo 2.
 
 O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.
 

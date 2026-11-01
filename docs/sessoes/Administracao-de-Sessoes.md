@@ -134,6 +134,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 | BE-007 | Rotas e contrato de grupos | 9 | concluída | `/grupos`, filtro `group` e contexto de grupos entregues |
 | FE-006 | Interface e filtros de grupos | 9 | concluída | Tela `/grupos`, seleção e badge de grupo aplicados |
 | QA-007 | Testes de interface e fluxos de grupos | 9 | concluída | Fluxos HTTP e de interface validados; 74 testes OK |
+| QA-008 | E2E e publicação dos grupos | 10 | em validação | Drills local e Termux aprovados; aguardando aceite do usuário |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -863,3 +864,47 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Registro: Fase 9 concluída com rotas, tela `/grupos`, campo de grupo no formulário, filtro no painel e badges nos cards. Suíte com `74` testes `OK`; verificação HTTP local aprovada.
 - Próximo passo: abrir a Fase 10 (validação E2E e publicação no servidor) quando o usuário autorizar.
 - Status: concluído
+
+### Handoff ADM-F10-001 - 2026-10-31
+
+- Origem: Administração (autorização do usuário: "Fase 10. Pode começar.")
+- Destino: Testes (`QA-008`), Backend e Administração
+- Tipo: INFRA/CONTRATO
+- Alteração: Fase 10 aberta para validar grupos ponta a ponta e publicar o schema `3` e os dados no servidor Termux.
+- Arquivos ou áreas afetadas: `docs/VALIDACAO-E2E-F10.md`, banco local, `https://ice.yurilimadev.com`, `publish`.
+- Ação obrigatória do destino: executar E2E local, validar reinício e backup/restauração, publicar e confirmar o espelho no servidor.
+- Retorno necessário de: `QA-008`.
+- Retorno solicitado: evidência dos drills e confirmação do espelho.
+- Condição de desbloqueio: aceite do usuário para encerrar o Ciclo 2.
+- Verificação executada: Fase 9 concluída com 74 testes `OK`.
+- Status: concluído
+
+### Handoff QA-F10-001 - 2026-10-31
+
+- Origem: Testes (`QA-008`)
+- Destino: Administração (aceite do usuário)
+- Tipo: Relatório de validação
+- Registro: `docs/VALIDACAO-E2E-F10.md` — drill local com fluxos de grupo, reinício e backup/restauração em schema `3`; drill no Termux com código em `982e877`, publicação, `/grupos`, badge, filtro e backup/restauração; grupo/card de validação removidos e servidor republicado com `5` tarefas e `0` grupos.
+- Retorno necessário de: usuário.
+- Retorno solicitado: aceite para encerrar a Fase 10 e o Ciclo 2.
+- Condição de desbloqueio: confirmação do usuário.
+- Verificação executada: suíte com `74` testes `OK`; `/health` local e remoto em schema `3`; `PRAGMA integrity_check = ok` nas duas pontas; `https://ice.yurilimadev.com` operante.
+- Bloqueios: nenhum.
+- Status: em validação
+
+### Handoff INFRA-F10-001 - 2026-10-31
+
+- Origem: Backend/Administração
+- Destino: Administração
+- Tipo: INFRA
+- Alteração: código do servidor atualizado de `066008c` para `982e877` via `git pull --ff-only`; banco local migrado para schema `3`; publicação feita com `python3 -m flask --app wsgi publish`.
+- Verificação executada: `/health` remoto com `schema_version = 3`; `/grupos` `200`; banco remoto com grupo/vinculo de validação antes da limpeza; backup/restauração remota com integridade e vinculo preservados; servidor final com `5` tarefas, `0` grupos e sem resíduo de `Card F10`.
+- Pendência registrada: `server.log` não versionado no `~/ice-framework` do Termux; nenhum impacto funcional.
+- Retorno necessário de: Administração.
+- Status: concluído
+
+### Handoff ADM-F10-HOLD-001 - 2026-10-31
+
+- Registro: Fase 10 executada e critério de saída atendido; documentação de validação registrada. Fase e Ciclo 2 permanecem **aguardando aceite explícito do usuário** antes do encerramento formal.
+- Próximo passo: ouvir o usuário; se aceito, marcar Fase 10/Ciclo 2 como concluídos e atualizar os snapshots.
+- Status: em validação
