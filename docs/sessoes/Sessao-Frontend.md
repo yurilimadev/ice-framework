@@ -83,6 +83,14 @@ Construir uma interface web limpa, leve e responsiva para o fluxo diário de pri
 - Estado arquivado, contagem de tarefas, estados vazios e confirmação de exclusão tratados.
 - Preservados identidade visual, acessibilidade, responsividade e seletores das fases anteriores.
 
+## Fase 12 - Painel em seções (concluída)
+
+- Painel organizado por seções: Projetos, Áreas, Recursos, Arquivos e Sem grupo.
+- Uma subseção por grupo com seus cards; grupos sem cards ficam em `/grupos`.
+- Tipo `recurso` disponível na tela de grupos e no formulário de tarefa.
+- Badge de Recurso e estilos de seção aplicados na identidade ICE.
+- Filtro de grupo removido do painel; mantidos status, atraso, tags e ordenação.
+
 ## Atividades
 
 ### Frontend-01 - Estrutura visual

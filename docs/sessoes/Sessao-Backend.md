@@ -184,6 +184,34 @@ Resolver os handoffs `QA-002-F01` e `QA-002-F02` antes de qualquer atividade da 
 - **Retorno solicitado:** consumo do contexto, seletores e resultado da matriz HTTP.
 - **Condição de conclusão:** nenhuma divergência de contrato aberta.
 
+### Backend-08 - Schema 4 e Recursos (Fase 11)
+
+- Criar `004_grupos_recurso.sql` recriando `grupos` para aceitar `projeto`, `area` e `recurso`.
+- Preservar ids, nomes, status, `created_at` e vínculos de `tasks` durante a migração.
+- Ampliar `GroupKind` e a validação de domínio.
+- Manter `Arquivos` como `status='archived'`, sem novo tipo.
+- Testar banco novo e upgrade `3 -> 4` com grupos e tarefas vinculadas.
+
+**Retorno necessário:**
+
+- **Para:** Testes e Administração.
+- **Retorno solicitado:** evidência da migração e resultado da suíte.
+- **Condição de conclusão:** critério de saída da Fase 11 verificado.
+
+### Backend-09 - Contexto do painel em seções (Fase 12)
+
+- Montar `sections` na ordem Projetos, Áreas, Recursos, Arquivos e Sem grupo.
+- Agrupar cards por grupo ativo do respectivo tipo; mover grupos arquivados para Arquivos.
+- Omitir do painel grupos sem cards; manter todos em `/grupos`.
+- Remover o filtro `group` da listagem e do contexto.
+- Incluir `status` no objeto `group` de cada tarefa.
+
+**Retorno necessário:**
+
+- **Para:** Frontend e Testes.
+- **Retorno solicitado:** consumo do contexto e resultado da validação.
+- **Condição de conclusão:** critério de saída da Fase 12 verificado.
+
 ## Handoffs obrigatórios
 
 - Mudou regra de score, deadline, status, filtro ou ordenação: informar frontend e testes.

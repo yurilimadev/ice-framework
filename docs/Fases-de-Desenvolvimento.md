@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31
+**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 ativo — Fases 11 e 12 concluídas em 2026-10-31
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -304,6 +304,67 @@ existente permanecem no schema `2`, sem nova migração.
 **Critério de saída:** fluxos de grupo aprovados nas duas instâncias; backup/restauração e publicação preservam grupos e vínculos sem perda de dados.
 
 **Verificação registrada:** `docs/VALIDACAO-E2E-F10.md` — drill local (fluxos, reinício e backup/restauração com schema `3`) e drill no Termux (código em `982e877`, publicação, `/grupos`, badge, filtro e backup/restauração) aprovados; dados de validação removidos e servidor republicado com `5` tarefas e `0` grupos. Aceite do usuário registrado em 2026-10-31.
+
+## Fase 11 - Domínio e schema 4: Recursos (Ciclo 3)
+
+**Status:** concluída em 2026-10-31.
+
+**Objetivo:** ampliar os grupos para aceitar `recurso`, mantendo `Arquivos` como status `archived` e preservando grupos, tarefas e vínculos existentes.
+
+**Atividades:**
+
+- Criar a migração `004_grupos_recurso.sql` para o schema `4`.
+- Recriar a tabela `grupos` com `kind` aceitando `projeto`, `area` e `recurso`, preservando ids, nomes, status e `created_at`.
+- Manter `tasks.grupo_id` e os vínculos existentes durante a migração.
+- Ampliar `GroupKind` e a validação de domínio para `recurso`.
+- Confirmar que `status='archived'` continua representando Arquivos, sem novo tipo.
+- Cobrir banco novo, upgrade `3 -> 4` com grupos/vínculos e CRUD de grupo `recurso`.
+
+**Sessões envolvidas:** backend e testes.
+
+**Critério de saída:** banco novo e banco `3` migram para `4` sem perder grupos, tarefas, tags ou vínculos; grupo `recurso` funciona no domínio.
+
+**Verificação registrada:** `004_grupos_recurso.sql` recria `grupos` com `kind` aceitando `recurso`, preservando ids, status e vínculos; upgrade `3 -> 4` testado com grupo arquivado e tarefa vinculada (`PRAGMA foreign_key_check` limpo) e em cópia do banco local (5 tarefas preservadas); `GroupKind.RESOURCE` cria e agrupa tarefas. Suíte completa com `76` testes `OK`.
+
+## Fase 12 - Painel em seções e gestão de Recursos/Arquivos (Ciclo 3)
+
+**Status:** concluída em 2026-10-31.
+
+**Objetivo:** organizar o painel em seções por grupo e expor Projetos, Áreas, Recursos e Arquivos na interface.
+
+**Atividades:**
+
+- Atualizar `CONTRATO-APLICACAO.md` para o contexto de seções e o tipo `recurso`.
+- Exibir títulos de tipo na ordem Projetos, Áreas, Recursos, Arquivos e Sem grupo.
+- Dentro de cada tipo, criar uma subseção por grupo com seus cards; grupos sem cards ficam em `/grupos`.
+- Mover os cards de grupos arquivados para a seção Arquivos.
+- Remover o filtro de grupo do painel; manter os filtros de status, atraso, tags e ordenação.
+- Permitir criar/renomear grupos do tipo `recurso` em `/grupos` e oferecer os três tipos no formulário de tarefa.
+- Preservar badges, acessibilidade, responsividade, filtro dinâmico e seletores existentes.
+
+**Sessões envolvidas:** backend (contexto/contrato), frontend e testes.
+
+**Critério de saída:** painel renderiza as seções corretas para grupos ativos, arquivados e cards soltos, sem regressão dos fluxos existentes.
+
+**Verificação registrada:** painel renderiza `Projetos`, `Áreas`, `Recursos`, `Arquivos` e `Sem grupo` na ordem definida; grupos ativos aparecem por tipo, arquivados em `Arquivos`, grupos vazios ficam em `/grupos` e o filtro de grupo foi removido do painel. `/grupos` e o formulário de tarefa aceitam `recurso`. Suíte completa com `75` testes `OK`; verificação HTTP local com as cinco seções e os cards correspondentes.
+
+## Fase 13 - Validação e publicação do Ciclo 3
+
+**Status:** aguardando ativação (Fases 11 e 12 concluídas).
+
+**Objetivo:** validar Projetos, Áreas, Recursos e Arquivos ponta a ponta e publicar no servidor.
+
+**Atividades:**
+
+- Executar roteiro E2E com os três tipos, arquivamento, cards soltos e seções do painel.
+- Validar reinício e backup/restauração em schema `4`.
+- Publicar o schema `4` e os dados no servidor via `publish`.
+- Confirmar que o servidor espelha grupos, status, vínculos e seções.
+- Registrar evidência e aceite do usuário.
+
+**Sessões envolvidas:** testes, backend e administração.
+
+**Critério de saída:** fluxos dos quatro conceitos aprovados nas duas instâncias; backup/restauração e publicação preservam os dados.
 
 ## Regra de avanço
 

@@ -1,3 +1,4 @@
+import re
 import smtplib
 import tempfile
 import unittest
@@ -346,6 +347,15 @@ class ApplicationRoutesTestCase(unittest.TestCase):
         self.assertIn("Saude", body)
         self.assertIn("Grupo criado.", body)
 
+        created_resource = self.client.post(
+            "/grupos", data={"name": "Referencias", "kind": "recurso"}
+        )
+        self.assertEqual(created_resource.status_code, 303)
+        body = self.client.get("/grupos").get_data(as_text=True)
+        self.assertIn("Referencias", body)
+        self.assertIn('data-group-kind="recurso"', body)
+        self.assertIn("Recurso", body)
+
         with self.app.app_context():
             area = next(
                 item
@@ -370,63 +380,61 @@ class ApplicationRoutesTestCase(unittest.TestCase):
             self.client.get("/grupos").get_data(as_text=True),
         )
 
-    def test_task_form_card_and_filter_expose_group_link(self):
-        group = self.create_group("Estudos", "projeto")
-        other = self.create_group("Saude", "area")
+    def test_panel_organizes_tasks_in_group_sections(self):
+        project = self.create_group("Projeto X", "projeto")
+        area = self.create_group("Area Y", "area")
+        resource = self.create_group("Recurso Z", "recurso")
+        archived = self.create_group("Arquivado W", "projeto")
+        with self.app.app_context():
+            GroupRepository(get_db()).archive(archived.id)
+
+        aligned = self.create_task("Card projeto", grupo_id=project.id)
+        self.create_task("Card area", grupo_id=area.id)
+        self.create_task("Card recurso", grupo_id=resource.id)
+        self.create_task("Card arquivado", grupo_id=archived.id)
+        self.create_task("Card solto")
 
         form_body = self.client.get("/tasks/new").get_data(as_text=True)
         self.assertIn('name="grupo_id"', form_body)
-        self.assertIn("Estudos", form_body)
-        self.assertIn("Saude", form_body)
+        self.assertIn("Projeto X (Projeto)", form_body)
+        self.assertIn("Area Y (Área)", form_body)
+        self.assertIn("Recurso Z (Recurso)", form_body)
 
-        create_response = self.client.post(
-            "/tasks",
-            data={
-                "title": "Tarefa agrupada",
-                "impact": "5",
-                "confidence": "6",
-                "ease": "7",
-                "deadline": "",
-                "tags": "Backend",
-                "grupo_id": str(group.id),
-            },
-        )
-        self.assertEqual(create_response.status_code, 303)
-
-        body = self.client.get("/").get_data(as_text=True)
-        self.assertIn('data-group-id="%s"' % group.id, body)
-        self.assertIn('data-group-kind="projeto"', body)
-        self.assertIn("Estudos", body)
-
-        self.create_task("Tarefa sem grupo")
-
-        filtered = self.client.get(f"/?group={group.id}").get_data(as_text=True)
-        self.assertIn("Tarefa agrupada", filtered)
-        self.assertNotIn("Tarefa sem grupo", filtered)
-
-        loose = self.client.get("/?group=none").get_data(as_text=True)
-        self.assertIn("Tarefa sem grupo", loose)
-        self.assertNotIn("Tarefa agrupada", loose)
-
-        with self.app.app_context():
-            task = TaskRepository(get_db()).list()[0]
-
-        update_response = self.client.post(
-            f"/tasks/{task.id}",
-            data={
-                "title": "Tarefa reagrupada",
-                "impact": "5",
-                "confidence": "6",
-                "ease": "7",
-                "deadline": "",
-                "tags": "Backend",
-                "grupo_id": str(other.id),
-            },
-        )
-        self.assertEqual(update_response.status_code, 303)
         body = self.client.get("/?status=all").get_data(as_text=True)
-        self.assertIn('data-group-id="%s"' % other.id, body)
-        self.assertNotIn('data-group-id="%s"' % group.id, body)
+        self.assertEqual(
+            re.findall(r'data-group-section="([^"]+)"', body),
+            ["projetos", "areas", "recursos", "arquivos", "sem-grupo"],
+        )
+        for title in ("Projetos", "Áreas", "Recursos", "Arquivos", "Sem grupo"):
+            self.assertIn(title, body)
+        for group in (project, area, resource, archived):
+            self.assertIn(f'data-section-group-id="{group.id}"', body)
+        for title in (
+            "Card projeto",
+            "Card area",
+            "Card recurso",
+            "Card arquivado",
+            "Card solto",
+        ):
+            self.assertIn(title, body)
+        self.assertNotIn('name="group"', body)
+
+        updated = self.client.post(
+            f"/tasks/{aligned.id}",
+            data={
+                "title": "Card projeto reagrupado",
+                "impact": "5",
+                "confidence": "6",
+                "ease": "7",
+                "deadline": "",
+                "tags": "",
+                "grupo_id": str(resource.id),
+            },
+        )
+        self.assertEqual(updated.status_code, 303)
+        body = self.client.get("/").get_data(as_text=True)
+        self.assertIn("Card projeto reagrupado", body)
+        self.assertIn(f'data-section-group-id="{resource.id}"', body)
 
     def test_deleting_group_route_detaches_task_and_preserves_tags(self):
         group = self.create_group("Temporario", "area")
@@ -456,13 +464,6 @@ class ApplicationRoutesTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertIn(b'data-error-field="grupo_id"', response.data)
-
-    def test_invalid_group_filter_returns_400(self):
-        for value in ("abc", "0", "-1"):
-            with self.subTest(value=value):
-                response = self.client.get(f"/?group={value}")
-                self.assertEqual(response.status_code, 400)
-                self.assertIn(b'data-error-field="group"', response.data)
 
     def test_missing_group_returns_404(self):
         self.assertEqual(self.client.post("/grupos/999/rename").status_code, 404)

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import kind_label %}
 {% block title %}{% if task %}Editar tarefa{% else %}Nova tarefa{% endif %} - ICE Framework{% endblock %}
 {% block content %}
 <section class="form-layout" aria-labelledby="form-title">
@@ -66,7 +67,7 @@
       <select id="grupo_id" name="grupo_id"{% if errors.grupo_id %} aria-invalid="true" aria-describedby="error-grupo_id"{% endif %}>
         <option value="">Sem grupo</option>
         {% for group in groups %}
-          <option value="{{ group.id }}"{% if form_values.grupo_id == group.id|string %} selected{% endif %}>{{ group.name }} ({% if group.kind == "projeto" %}Projeto{% else %}Área{% endif %}{% if group.status == "archived" %}, arquivado{% endif %})</option>
+          <option value="{{ group.id }}"{% if form_values.grupo_id == group.id|string %} selected{% endif %}>{{ group.name }} ({{ kind_label(group.kind.value) }}{% if group.status.value == "archived" %}, arquivado{% endif %})</option>
         {% endfor %}
       </select>
       <span class="field-help">Opcional. O card continua valido sem grupo.</span>

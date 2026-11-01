@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import kind_label %}
 {% block title %}Gerenciar Grupos - ICE Framework{% endblock %}
 {% block body_class %} class="panel-mode"{% endblock %}
 {% block content %}
@@ -35,6 +36,7 @@
       <select id="group-kind" name="kind">
         <option value="projeto">Projeto</option>
         <option value="area">Área</option>
+        <option value="recurso">Recurso</option>
       </select>
     </div>
     <button class="button button-primary" type="submit">Criar grupo</button>
@@ -57,11 +59,11 @@
             <tr data-group-id="{{ group.id }}" data-group-kind="{{ group.kind }}" data-group-status="{{ group.status }}">
               <td class="tag-name-cell">
                 <span class="group-badge" data-group-kind="{{ group.kind }}">
-                  <span class="group-kind">{% if group.kind == "projeto" %}Projeto{% else %}Área{% endif %}</span>
+                  <span class="group-kind">{{ kind_label(group.kind) }}</span>
                   {{ group.name }}
                 </span>
               </td>
-              <td>{% if group.kind == "projeto" %}Projeto{% else %}Área{% endif %}</td>
+              <td>{{ kind_label(group.kind) }}</td>
               <td><span class="tag-usage{% if group.task_count == 0 %} tag-unused{% endif %}">{{ group.task_count }}</span></td>
               <td><span class="group-status group-status-{{ group.status }}">{% if group.status == "active" %}Ativo{% else %}Arquivado{% endif %}</span></td>
               <td class="tag-actions">

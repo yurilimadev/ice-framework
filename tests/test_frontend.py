@@ -82,22 +82,36 @@ class FrontendInterfaceTestCase(unittest.TestCase):
         self.assertRegex(body, r'<select[^>]+id="grupo_id"')
         self.assertIn('aria-labelledby="form-title"', body)
 
-    def test_group_page_and_card_badges_follow_interface_contract(self):
+    def test_group_page_and_panel_sections_follow_interface_contract(self):
         group = self.create_group("Estudos", "projeto")
+        resource = self.create_group("Referencias", "recurso")
         self.create_task("Card agrupado", ["Work"], grupo_id=group.id)
+        self.create_task("Card de recurso", grupo_id=resource.id)
+        self.create_task("Card solto")
 
         index = self.client.get("/").get_data(as_text=True)
-        self.assertIn('name="group"', index)
-        self.assertIn("Sem grupo", index)
-        self.assertIn("Estudos (Projeto)", index)
-        self.assertIn(f'data-group-id="{group.id}"', index)
-        self.assertIn('data-group-kind="projeto"', index)
-        self.assertIn('class="group-badge"', index)
+        for marker in (
+            'data-group-section="projetos"',
+            'data-group-section="recursos"',
+            'data-group-section="sem-grupo"',
+            f'data-group-id="{group.id}"',
+            'data-group-kind="projeto"',
+            'class="group-badge"',
+            "Estudos",
+            "Sem grupo",
+        ):
+            self.assertIn(marker, index)
+        self.assertNotIn('name="group"', index)
+
+        form_body = self.client.get("/tasks/new").get_data(as_text=True)
+        self.assertIn("Estudos (Projeto)", form_body)
+        self.assertIn("Referencias (Recurso)", form_body)
 
         groups_page = self.client.get("/grupos").get_data(as_text=True)
         self.assertIn('id="groups-title"', groups_page)
         self.assertIn('action="/grupos"', groups_page)
         self.assertIn('name="kind"', groups_page)
+        self.assertIn('<option value="recurso">Recurso</option>', groups_page)
         self.assertIn(f'data-group-id="{group.id}"', groups_page)
         self.assertIn("Arquivar", groups_page)
         self.assertIn("Renomear", groups_page)
@@ -109,6 +123,8 @@ class FrontendInterfaceTestCase(unittest.TestCase):
         )
         self.assertIn(".group-badge", css)
         self.assertIn('[data-group-kind="area"]', css)
+        self.assertIn('[data-group-kind="recurso"]', css)
+        self.assertIn(".group-sections", css)
         self.assertIn(".group-create-form", css)
 
     def test_overdue_and_completed_states_have_text_and_contract_selectors(self):

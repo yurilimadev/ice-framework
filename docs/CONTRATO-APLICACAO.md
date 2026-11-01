@@ -46,13 +46,12 @@ Não criar rotas para autenticação, usuários, API JSON ou funcionalidades for
 | `status` | `open`, `completed`, `all` | `open` | Define o status consultado |
 | `overdue` | `1` | ausente | Filtra tarefas abertas atrasadas |
 | `tag` | repetido | ausente | Exige que a tarefa contenha todas as tags informadas |
-| `group` | id inteiro ou `none` | ausente | Filtra por grupo; `none` mostra somente cards soltos |
 | `order` | `score`, `deadline`, `created_at` | `score` | Usa a ordenação definida pelo domínio |
 
 Exemplo:
 
 ```text
-/?status=open&overdue=1&tag=Backend&tag=Estudo&group=2&order=deadline
+/?status=open&overdue=1&tag=Backend&tag=Estudo&order=deadline
 ```
 
 Parâmetros inválidos devem gerar erro de validação controlado, sem exceção não tratada.
@@ -73,6 +72,8 @@ Os campos de criação e edição usam os nomes abaixo:
 
 O adaptador HTTP deve separar `tags` por vírgula, remover espaços externos e enviar a lista ao `TaskRepository`. Tags vazias ou inválidas devem ser rejeitadas pelo domínio e apresentadas no campo correspondente. Um `grupo_id` inexistente gera erro no campo `grupo_id`; campo ausente na edição preserva o vínculo atual.
 
+No gerenciamento de grupos, `kind` aceita `projeto`, `area` ou `recurso`. Arquivar é uma ação de status (`active` para `archived`); não existe um tipo “arquivo”.
+
 ## Ações de status e exclusão
 
 - Concluir e reabrir são ações distintas e usam `POST`.
@@ -85,12 +86,20 @@ O adaptador HTTP deve separar `tags` por vírgula, remover espaços externos e e
 
 O template da listagem deve receber:
 
-- `tasks`: tarefas retornadas pelo domínio, incluindo `score`, indicador derivado de atraso, `grupo_id` e `group` (`id`, `name`, `kind`) quando houver vínculo.
+- `tasks`: tarefas retornadas pelo domínio, incluindo `score`, indicador derivado de atraso, `grupo_id` e `group` (`id`, `name`, `kind`, `status`) quando houver vínculo.
+- `sections`: seções do painel na ordem Projetos, Áreas, Recursos, Arquivos e Sem grupo. Cada seção traz `title`, `slug`, `count`, `groups` e, para cards soltos, `tasks`. Cada grupo traz `id`, `name`, `kind`, `status` e a lista de cards.
 - `available_tags`: tags existentes para os controles de filtro.
-- `available_groups`: grupos existentes para o filtro e para os formulários.
-- `filters`: valores ativos de `status`, `overdue`, `tag`, `group` e `order`.
+- `filters`: valores ativos de `status`, `overdue`, `tag` e `order`.
 - `errors`: erros de validação quando houver re-renderização do formulário.
 - `messages`: mensagens de sucesso ou orientação para o usuário, consumidas uma única vez.
+
+Regras das seções:
+
+- Projetos, Áreas e Recursos reúnem grupos ativos do respectivo `kind`.
+- Arquivos reúne grupos com `status='archived'`, qualquer que seja o `kind`.
+- Sem grupo reúne cards sem vínculo.
+- Grupos sem cards não aparecem no painel; continuam disponíveis em `/grupos`.
+- O filtro de grupo foi removido do painel; os demais filtros continuam válidos.
 
 O template de criação/edição deve receber:
 
@@ -104,9 +113,11 @@ O template de `/grupos` recebe `groups` com `id`, `name`, `kind`, `status` e `ta
 ## Seletores de interface
 
 - Cards: `data-task-id`, `data-task-status`, `data-overdue`.
-- Grupo no card: `data-group-id`, `data-group-kind` (`projeto`/`area`).
+- Seções do painel: `data-group-section` com `projetos`, `areas`, `recursos`, `arquivos` ou `sem-grupo`.
+- Bloco de grupo: `data-section-group-id` e `data-section-group-status`.
+- Grupo no card: `data-group-id`, `data-group-kind` (`projeto`/`area`/`recurso`).
 - Tela de grupos: `data-group-id`, `data-group-kind`, `data-group-status` na linha; `groups-title` no heading.
-- Filtro: `name="group"` com valores vazio, `none` ou id do grupo.
+- Formulário de tarefa: `name="grupo_id"` com valor vazio ou id de grupo.
 
 ## Handoff entre setores
 

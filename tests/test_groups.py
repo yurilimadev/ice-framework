@@ -184,7 +184,7 @@ class GroupRepositoryTestCase(unittest.TestCase):
                 }
             )
             with upgraded_app.app_context():
-                self.assertEqual(get_schema_version(), 3)
+                self.assertEqual(get_schema_version(), 4)
                 task = TaskRepository(get_db()).get(1)
                 self.assertEqual(task.title, "Tarefa antiga")
                 self.assertIsNone(task.grupo_id)
@@ -192,6 +192,80 @@ class GroupRepositoryTestCase(unittest.TestCase):
                 group = GroupRepository(get_db()).create("Novo", "projeto")
                 linked = TaskRepository(get_db()).set_group(task.id, group.id)
                 self.assertEqual(linked.grupo_id, group.id)
+
+    def test_upgrade_from_schema_3_to_4_preserves_groups_and_links(self):
+        migrations = Path(__file__).resolve().parents[1] / "migrations"
+        with tempfile.TemporaryDirectory() as upgrade_directory:
+            upgrade_path = Path(upgrade_directory) / "app.sqlite3"
+            connection = sqlite3.connect(upgrade_path)
+            try:
+                for migration in (
+                    "001_foundation.sql",
+                    "002_tasks.sql",
+                    "003_grupos.sql",
+                ):
+                    connection.executescript((migrations / migration).read_text())
+                created_at = datetime.now(timezone.utc).replace(
+                    microsecond=0
+                ).isoformat()
+                connection.execute(
+                    """
+                    INSERT INTO grupos (id, name, kind, status, created_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (7, "Area antiga", "area", "archived", created_at),
+                )
+                connection.execute(
+                    """
+                    INSERT INTO tasks
+                        (id, title, impact, confidence, ease, deadline, status,
+                         created_at, grupo_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (11, "Vinculada antiga", 2, 3, 4, None, "open", created_at, 7),
+                )
+                connection.commit()
+            finally:
+                connection.close()
+
+            upgraded_app = create_app(
+                {
+                    "TESTING": True,
+                    "APP_DATABASE_PATH": str(upgrade_path),
+                    "APP_TIMEZONE": "America/Sao_Paulo",
+                }
+            )
+            with upgraded_app.app_context():
+                self.assertEqual(get_schema_version(), 4)
+                groups = GroupRepository(get_db())
+                tasks = TaskRepository(get_db())
+                old_group = groups.get(7)
+                self.assertEqual(old_group.name, "Area antiga")
+                self.assertEqual(old_group.kind, GroupKind.AREA)
+                self.assertEqual(old_group.status, GroupStatus.ARCHIVED)
+                self.assertEqual(tasks.get(11).grupo_id, 7)
+
+                resource = groups.create("Referencias", "recurso")
+                self.assertEqual(resource.kind, GroupKind.RESOURCE)
+                linked = tasks.set_group(11, resource.id)
+                self.assertEqual(linked.grupo_id, resource.id)
+                self.assertEqual(
+                    get_db().execute("PRAGMA foreign_key_check").fetchall(), []
+                )
+
+    def test_resource_group_aggregates_tasks(self):
+        with self.app.app_context():
+            groups = self.groups()
+            tasks = self.tasks()
+            resource = groups.create("Referencias", GroupKind.RESOURCE)
+            task = tasks.create("Ler material", 3, 4, 5, grupo_id=resource.id)
+
+            self.assertEqual(resource.kind, GroupKind.RESOURCE)
+            self.assertEqual(tasks.get(task.id).grupo_id, resource.id)
+            self.assertEqual(
+                [item.id for item in groups.list(status=GroupStatus.ACTIVE)],
+                [resource.id],
+            )
 
 
 if __name__ == "__main__":

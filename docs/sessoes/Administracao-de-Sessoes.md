@@ -135,6 +135,11 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 | FE-006 | Interface e filtros de grupos | 9 | concluída | Tela `/grupos`, seleção e badge de grupo aplicados |
 | QA-007 | Testes de interface e fluxos de grupos | 9 | concluída | Fluxos HTTP e de interface validados; 74 testes OK |
 | QA-008 | E2E e publicação dos grupos | 10 | concluída | Drills local e Termux aprovados; Ciclo 2 encerrado |
+| BE-008 | Schema `4` e domínio de Recursos | 11 | concluída | Migração `3 -> 4` e `GroupKind.RESOURCE` entregues |
+| QA-009 | Testes do schema `4` | 11 | concluída | Upgrade, vínculos e grupo `recurso` validados; 76 testes OK |
+| BE-009 | Contexto e painel em seções | 12 | concluída | Seções Projetos/Áreas/Recursos/Arquivos/Sem grupo e remoção do filtro de grupo |
+| FE-007 | Interface de Recursos e seções | 12 | concluída | Painel em seções, tipo Recurso e estilos aplicados |
+| QA-010 | Testes do painel em seções | 12 | concluída | Seções, formulários e regressões validados; 75 testes OK |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -920,4 +925,123 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Registro: CICLO 2 FECHADO com aceite do usuário. Fases 8 (schema `3` + domínio de grupos), 9 (interface e filtros) e 10 (E2E, backup/restauração e publicação) concluídas.
 - Estado final: `https://ice.yurilimadev.com` em schema `3`; `/grupos` disponível; servidor espelhando 5 tarefas e 0 grupos; commits `982e877` (código) e `c7281f8` (documentação).
 - Próximo passo: aguardar definição do próximo ciclo/backlog; itens candidatos registrados em `BACKLOG.md` (filtro de tags, agendamento de e-mail, cron de publicação).
+- Status: concluído
+
+### Handoff ADM-PLANO-PARA-002 - 2026-10-31
+
+- Origem: Administração (decisões do usuário sobre PARA-lite)
+- Destino: Administração (Ciclo 3 futuro)
+- Tipo: Planejamento
+- Registro: o usuário pediu Projetos, Áreas, Recursos e Arquivos para organizar as tasks. Decisões: `recurso` é um novo tipo de grupo que agrupa tasks; `Arquivos` é a visão de grupos com `status='archived'` (não um novo tipo); o painel passa a organizar os cards em seções por grupo.
+- Plano: Fase 11 (schema `4` + domínio `recurso`), Fase 12 (painel em seções e gestão) e Fase 13 (E2E + publicação), registradas em `Fases-de-Desenvolvimento.md`.
+- Observação: a migração `3 -> 4` exige recriar `grupos` para ampliar o `CHECK(kind)` preservando ids e vínculos de `tasks`.
+- Retorno necessário de: usuário.
+- Retorno solicitado: autorização para iniciar a Fase 11.
+- Condição de desbloqueio: autorização explícita.
+- Status: registrado (aguardando autorização)
+
+### Handoff ADM-F11-001 - 2026-10-31
+
+- Origem: Administração (autorização do usuário: "Sim, pode prosseguir.")
+- Destino: Backend (`BE-008`) e Testes (`QA-009`)
+- Tipo: SCHEMA
+- Alteração: Fase 11 aberta para ampliar os grupos ao tipo `recurso`, mantendo `Arquivos` como `status='archived'`.
+- Arquivos ou áreas afetadas: `migrations/004_grupos_recurso.sql`, `app/tasks.py`, `tests/test_groups.py`, `docs/CONTRATO-DOMINIO.md`.
+- Ação obrigatória do destino: Backend implementa schema `4` e domínio; Testes validam banco novo e upgrade `3 -> 4` com grupos/vínculos.
+- Retorno necessário de: `BE-008` e `QA-009`.
+- Retorno solicitado: migração, operações e resultado da suíte.
+- Condição de desbloqueio: critério de saída da Fase 11 verificado antes da Fase 12.
+- Status: concluído
+
+### Handoff BE-F11-001 - 2026-10-31
+
+- Origem: Backend (`BE-008`)
+- Destino: Testes (`QA-009`) e Administração
+- Tipo: SCHEMA
+- Alteração: criada `004_grupos_recurso.sql`, que recria `grupos` com `CHECK(kind)` incluindo `recurso`, copia ids/nomes/status/`created_at` e recria o índice de status; ampliado `GroupKind` com `RESOURCE`.
+- Arquivos ou áreas afetadas: `migrations/004_grupos_recurso.sql`, `app/tasks.py`, `tests/test_groups.py`, `tests/test_foundation.py`, `README.md`, `docs/CONTRATO-DOMINIO.md`.
+- Comportamento anterior: schema `3`, `kind` aceitava apenas `projeto` e `area`.
+- Comportamento novo: schema `4`, `kind` aceita `recurso`; `Arquivos` continua sendo `status='archived'`; grupos e vínculos existentes são preservados.
+- Ação obrigatória do destino: Testes validam upgrade com grupo arquivado e tarefa vinculada, integridade referencial e criação de recurso.
+- Retorno necessário de: `QA-009`.
+- Retorno solicitado: cenários, falhas e decisão sobre o critério de saída.
+- Condição de desbloqueio: nenhuma regressão aberta.
+- Verificação executada: suíte completa com `76` testes `OK`; upgrade em cópia do banco local preservou 5 tarefas e `PRAGMA foreign_key_check` ficou vazio.
+- Bloqueios: nenhum na Fase 11; Fase 12 aguarda ativação.
+- Status: concluído
+
+### Handoff QA-F11-001 - 2026-10-31
+
+- Origem: Testes (`QA-009`)
+- Destino: Administração
+- Tipo: SCHEMA
+- Alteração: validação independente da Fase 11 concluída sem falhas.
+- Cenários executados: banco novo em schema `4`; upgrade `3 -> 4` com grupo `area` arquivado e tarefa vinculada; preservação de id, nome, kind e status; `PRAGMA foreign_key_check` vazio; criação de grupo `recurso` e vínculo de tarefa; validação de kinds inválidos.
+- Verificação executada: `python3 -m unittest discover -s tests` com `76` testes `OK`.
+- Retorno necessário de: Administração.
+- Retorno solicitado: encerramento da Fase 11 e autorização para a Fase 12.
+- Condição de desbloqueio: aceite da Administração.
+- Bloqueios: nenhum.
+- Status: concluído
+
+### Handoff ADM-F11-CLOSE-001 - 2026-10-31
+
+- Registro: Fase 11 concluída com schema `4`, `GroupKind.RESOURCE` e migração `3 -> 4` preservando grupos/vínculos. Suíte com `76` testes `OK`.
+- Próximo passo: abrir a Fase 12 (painel em seções e gestão de Recursos/Arquivos) quando o usuário autorizar.
+- Status: concluído
+
+### Handoff ADM-F12-001 - 2026-10-31
+
+- Origem: Administração (autorização do usuário: "Pois pode ir para a interface.")
+- Destino: Backend (`BE-009`), Frontend (`FE-007`) e Testes (`QA-010`)
+- Tipo: UI/CONTRATO
+- Alteração: Fase 12 aberta para organizar o painel em seções e expor Recursos e Arquivos na interface.
+- Arquivos ou áreas afetadas: `app/routes.py`, `app/templates/`, `app/static/styles.css`, `docs/CONTRATO-APLICACAO.md`, `tests/test_routes.py`, `tests/test_frontend.py`.
+- Ação obrigatória do destino: implementar seções, tipo `recurso` na gestão/formulário e remover o filtro de grupo do painel.
+- Retorno necessário de: `BE-009`, `FE-007`, `QA-010`.
+- Condição de desbloqueio: critério de saída da Fase 12 verificado antes da Fase 13.
+- Status: concluído
+
+### Handoff BE-F12-001 - 2026-10-31
+
+- Origem: Backend (`BE-009`)
+- Destino: Frontend (`FE-007`), Testes (`QA-010`) e Administração
+- Tipo: CONTRATO
+- Alteração: `sections` passou a ser o contexto do painel, com seções `projetos`, `areas`, `recursos`, `arquivos` e `sem-grupo`; o filtro `group` foi removido da listagem; `group` por tarefa agora inclui `status`.
+- Arquivos ou áreas afetadas: `app/routes.py`, `docs/CONTRATO-APLICACAO.md`.
+- Comportamento novo: grupos ativos aparecem na seção do seu tipo; grupos arquivados vão para Arquivos; grupos sem cards são omitidos do painel; cards soltos vão para Sem grupo.
+- Ação obrigatória do destino: Frontend renderiza o contexto; Testes validam ordem, agrupamento e ausência do filtro.
+- Retorno necessário de: `FE-007`, `QA-010`.
+- Verificação executada: `python3 -m unittest tests.test_routes -v` sem falhas; verificação HTTP local com cinco seções.
+- Status: concluído
+
+### Handoff FE-F12-001 - 2026-10-31
+
+- Origem: Frontend (`FE-007`)
+- Destino: Testes (`QA-010`) e Administração
+- Tipo: UI
+- Alteração: painel em seções com títulos Projetos, Áreas, Recursos, Arquivos e Sem grupo; subseção por grupo; Recurso disponível em `/grupos` e no formulário de tarefa; estilos de seção e badge de Recurso.
+- Arquivos ou áreas afetadas: `app/templates/index.html`, `app/templates/_macros.html`, `app/templates/groups.html`, `app/templates/task_form.html`, `app/static/styles.css`.
+- Seletores: `data-group-section`, `data-section-group-id`, `data-section-group-status`, `data-group-kind="recurso"`.
+- Ação obrigatória do destino: validar seções, ordem, formulários e estilos.
+- Retorno necessário de: `QA-010`.
+- Verificação executada: `python3 -m unittest tests.test_frontend -v` sem falhas.
+- Status: concluído
+
+### Handoff QA-F12-001 - 2026-10-31
+
+- Origem: Testes (`QA-010`)
+- Destino: Administração
+- Tipo: UI/CONTRATO
+- Alteração: Fase 12 validada sem falhas.
+- Cenários executados: seções na ordem Projetos, Áreas, Recursos, Arquivos e Sem grupo; grupo arquivado em Arquivos; grupo vazio omitido do painel; cards soltos em Sem grupo; criação de `recurso` em `/grupos`; formulário com os três tipos; filtro de grupo ausente do painel; reagrupamento de card refletido nas seções.
+- Verificação executada: `python3 -m unittest discover -s tests` com `75` testes `OK`; verificação HTTP local em `/?status=all`, `/grupos`, `/tasks/new`.
+- Retorno necessário de: Administração.
+- Retorno solicitado: encerramento da Fase 12 e autorização para a Fase 13.
+- Status: concluído
+
+### Handoff ADM-F12-CLOSE-001 - 2026-10-31
+
+- Registro: Fase 12 concluída com painel em seções e gestão de Recursos/Arquivos. Suíte com `75` testes `OK`.
+- Próximo passo: abrir a Fase 13 (E2E + publicação do Ciclo 3) quando o usuário autorizar.
 - Status: concluído

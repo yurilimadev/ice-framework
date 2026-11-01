@@ -37,7 +37,7 @@ Um grupo organiza cards em um Projeto ou uma Área, sem alterar o score ou as ta
 |---|---|---|
 | `id` | inteiro | Identificador persistido, maior que zero |
 | `name` | texto | Obrigatório, espaços externos removidos, entre 1 e 30 caracteres |
-| `kind` | texto | `projeto` ou `area` |
+| `kind` | texto | `projeto`, `area` ou `recurso` |
 | `status` | texto | `active` ou `archived` |
 | `created_at` | timestamp | Instante de criação armazenado em UTC, em ISO 8601 |
 
@@ -45,7 +45,8 @@ Regras do grupo:
 
 - Um card pode pertencer a no máximo um grupo; `grupo_id` vazio mantém o card solto.
 - Excluir um grupo solta seus cards (`ON DELETE SET NULL`), sem excluir tarefas ou tags.
-- Arquivar um grupo apenas muda seu `status`; os vínculos das tarefas permanecem.
+- Arquivar um grupo apenas muda seu `status`; os vínculos das tarefas permanecem. A visão de grupos arquivados é o conceito de Arquivos.
+- `Recursos` é um tipo de grupo (`recurso`) que também agrupa tarefas.
 - Tags continuam transversais e não pertencem ao grupo.
 - Não existe score agregado nem ordinal por grupo.
 
@@ -63,11 +64,12 @@ Regras do grupo:
 
 ## Persistência
 
-O schema `3` usa as tabelas `tasks`, `tags`, `task_tags` e `grupos`. Tags podem
+O schema `4` usa as tabelas `tasks`, `tags`, `task_tags` e `grupos`. Tags podem
 ser reutilizadas entre tarefas sem gerar linhas duplicadas. `tasks.grupo_id` é
-nulo por padrão e referencia `grupos(id)` com `ON DELETE SET NULL`. A
-restauração do SQLite preserva os fatores ICE, as tags e os vínculos de grupo;
-o score é reconstruído a partir dos fatores ICE.
+nulo por padrão e referencia `grupos(id)` com `ON DELETE SET NULL`. A migração
+`3 -> 4` recria `grupos` para ampliar `kind` e preserva ids, status e vínculos
+das tarefas. A restauração do SQLite preserva os fatores ICE, as tags e os
+vínculos de grupo; o score é reconstruído a partir dos fatores ICE.
 
 O acesso do domínio nesta fase é feito por `TaskRepository` e
 `GroupRepository`. As rotas de aplicação estão fora deste contrato e devem

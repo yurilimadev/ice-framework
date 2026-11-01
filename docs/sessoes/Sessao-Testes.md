@@ -315,6 +315,41 @@ cenários visuais permanece com o `QA-004`.
 - **Retorno solicitado:** cenários executados, falhas e decisão sobre a Fase 10.
 - **Condição de conclusão:** fluxos de grupo aprovados sem regressão.
 
+### Testes-12 - Schema 4 e Recursos (Fase 11)
+
+- Validar banco novo em schema `4`.
+- Validar upgrade `3 -> 4` com grupo `area` arquivado e tarefa vinculada.
+- Confirmar preservação de ids, nomes, status, `created_at` e vínculos.
+- Verificar `PRAGMA foreign_key_check` após a migração.
+- Confirmar criação de grupo `recurso` e rejeição de kinds inválidos.
+- Executar a suíte completa.
+
+**Retorno necessário:**
+
+- **De:** `BE-008`.
+- **Retorno solicitado:** migração e operações implementadas.
+- **Para:** Administração.
+- **Retorno solicitado:** cenários, falhas e decisão sobre a Fase 12.
+- **Condição de conclusão:** upgrade e vínculos preservados sem regressão.
+
+### Testes-13 - Painel em seções (Fase 12)
+
+- Validar a ordem e o conteúdo das seções Projetos, Áreas, Recursos, Arquivos e Sem grupo.
+- Confirmar grupo arquivado em Arquivos e grupo vazio omitido do painel.
+- Confirmar cards soltos em Sem grupo.
+- Validar criação de grupo `recurso` em `/grupos` e os três tipos no formulário de tarefa.
+- Confirmar remoção do filtro de grupo do painel.
+- Verificar reagrupamento de card refletido nas seções.
+- Executar suíte completa e verificação HTTP local.
+
+**Retorno necessário:**
+
+- **De:** `BE-009` e `FE-007`.
+- **Retorno solicitado:** contexto e telas implementados.
+- **Para:** Administração.
+- **Retorno solicitado:** cenários, falhas e decisão sobre a Fase 13.
+- **Condição de conclusão:** seções e formulários aprovados sem regressão.
+
 ## Classificação de falhas
 
 - `BACKEND`: regra, validação, persistência, rota ou resposta incorreta.

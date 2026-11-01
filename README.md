@@ -18,12 +18,12 @@ O **score** é o produto das três dimensões — `I × C × F`, de 1 a 1000 —
 - **Filtro dinâmico** — clicar em qualquer filtro (status, atrasadas, tags, ordenação) atualiza a lista na hora, sem recarregar a página; a URL acompanha o filtro, então dá para salvar/compartilhar uma vista já filtrada. O botão "Aplicar filtros" existe apenas como fallback para navegadores sem JavaScript.
 - **Modo painel (desktop)** — cabeçalho e filtros ficam fixos e a lista rola dentro do próprio painel; em telas pequenas a página rola normalmente.
 - **Tags** — cada tarefa pode ter várias tags; a tela "Gerenciar Tags" permite renomear, excluir (desvinculando das tarefas, com confirmação) e mesclar tags.
-- **Grupos** — cards podem ser organizados em Projetos ou Áreas pela tela "Gerenciar Grupos"; o painel filtra por grupo ou por cards soltos, e o card exibe um distintivo do tipo.
+- **Grupos** — cards podem ser organizados em Projetos, Áreas e Recursos pela tela "Gerenciar Grupos"; o painel exibe seções por grupo, os arquivados vão para Arquivos, e os cards soltos ficam em "Sem grupo".
 - **Ciclo de vida** — criar, editar, concluir, reabrir e excluir tarefas, com avisos efêmeros (4 segundos) de sucesso/erro e confirmação antes de exclusões.
 - **Resumo por email** — envia um email com as tarefas abertas (por score), contagem de atrasadas e prazos, com destaque para as atrasadas. Disparável por botão na barra superior ou por comando no terminal (ver abaixo).
 - **Saúde** — `GET /health` responde `status`, `database` e `schema_version` em JSON.
 
-O backend é **Flask** com **SQLite** (migrações versionadas por `PRAGMA user_version`, schema atual `3`), renderização server-side e um pouco de JavaScript vanilla — sem frameworks no front, sem dependências além do Flask e do `python-dotenv`.
+O backend é **Flask** com **SQLite** (migrações versionadas por `PRAGMA user_version`, schema atual `4`), renderização server-side e um pouco de JavaScript vanilla — sem frameworks no front, sem dependências além do Flask e do `python-dotenv`.
 
 ## Como executar
 
@@ -39,7 +39,7 @@ O app sobe em `http://127.0.0.1:5000`. Verificação:
 
 ```bash
 curl http://127.0.0.1:5000/health
-# {"status":"ok","database":"ok","schema_version":3}
+# {"status":"ok","database":"ok","schema_version":4}
 ```
 
 ### Docker Compose

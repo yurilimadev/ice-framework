@@ -6,10 +6,10 @@ Este é o ponto de entrada para qualquer nova sessão. Leia primeiro este arquiv
 
 - Ciclo 1 completo: Fases 0 a 7 concluídas (2026-10-31).
 - Ciclo 2 completo: Fases 8 a 10 concluídas em 2026-10-31 (aceite do usuário).
-- Interface visual implementada pelo Frontend, incluindo `/grupos` e badges Projeto/Área.
-- App online em schema `3`; backup/restauração e publicação validadas nas duas pontas.
-- Suíte automatizada atual: 74 testes aprovados.
-- Próximo passo: definir o próximo ciclo/backlog com o usuário.
+- Ciclo 3 ativo: Fases 11 (schema `4` + Recursos) e 12 (painel em seções) concluídas.
+- Interface atual inclui Projetos, Áreas, Recursos, Arquivos e Sem grupo em `/` e a gestão em `/grupos`.
+- Código em schema `4`; bancos local/online ainda em `3` até a publicação da Fase 13.
+- Suíte automatizada atual: 75 testes aprovados.
 
 O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.
 

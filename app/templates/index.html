@@ -1,6 +1,66 @@
 {% extends "base.html" %}
+{% from "_macros.html" import kind_label %}
 {% block title %}Tarefas - ICE Framework{% endblock %}
 {% block body_class %} class="panel-mode"{% endblock %}
+
+{% macro task_card(task) %}
+<article class="task-card{% if task.overdue %} is-overdue{% endif %}{% if task.status == 'completed' %} is-completed{% endif %}" data-task-id="{{ task.id }}" data-task-status="{{ task.status }}"{% if task.overdue %} data-overdue{% endif %}>
+  <div class="task-card-topline">
+    <div class="task-badges">
+      <span class="status-label{% if task.overdue %} status-overdue{% elif task.status == 'completed' %} status-completed{% endif %}">
+        {% if task.overdue %}<span aria-hidden="true">!</span> Atrasada{% elif task.status == 'completed' %}<span aria-hidden="true">&#10003;</span> Concluida{% else %}<span aria-hidden="true">&#9675;</span> Aberta{% endif %}
+      </span>
+      {% if task.group %}
+        <span class="group-badge" data-group-id="{{ task.group.id }}" data-group-kind="{{ task.group.kind }}">
+          <span class="group-kind">{{ kind_label(task.group.kind) }}</span>
+          {{ task.group.name }}
+        </span>
+      {% endif %}
+    </div>
+    <span class="task-index">#{{ "%02d"|format(task.index) }}</span>
+  </div>
+  <div class="task-card-main">
+    <div class="task-copy">
+      <h3>{{ task.title }}</h3>
+      <div class="tag-list" aria-label="Tags">
+        {% for tag in task.tags %}<span class="tag-chip">{{ tag }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="score-block" aria-label="Score ICE {{ task.score }}">
+      <span class="score-value">{{ task.score }}</span>
+      <span class="score-caption">ICE SCORE</span>
+    </div>
+  </div>
+  <div class="score-meter" aria-hidden="true"><span style="width: {{ (task.score / 10)|round(0, 'floor') }}%"></span></div>
+  <div class="task-details">
+    <div class="ice-breakdown" aria-label="Dimensoes ICE">
+      <span><b>I</b> {{ task.impact }}</span>
+      <span><b>C</b> {{ task.confidence }}</span>
+      <span><b>F</b> {{ task.ease }}</span>
+    </div>
+    <span class="deadline{% if task.overdue %} deadline-overdue{% endif %}">
+      <span aria-hidden="true">&#9679;</span>
+      {% if task.deadline %}{{ task.deadline.strftime("%d/%m/%Y") }}{% else %}Sem deadline{% endif %}
+    </span>
+  </div>
+  <div class="task-actions">
+    <a class="text-action" href="{{ url_for('tasks.edit_task', task_id=task.id) }}">Editar</a>
+    {% if task.status == "open" %}
+      <form method="post" action="{{ url_for('tasks.complete_task', task_id=task.id) }}">
+        <button class="text-action" type="submit">Concluir</button>
+      </form>
+    {% else %}
+      <form method="post" action="{{ url_for('tasks.reopen_task', task_id=task.id) }}">
+        <button class="text-action" type="submit">Reabrir</button>
+      </form>
+    {% endif %}
+    <form method="post" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" onsubmit="return window.confirm('Excluir esta tarefa permanentemente?');">
+      <button class="text-action text-action-danger" type="submit">Excluir</button>
+    </form>
+  </div>
+</article>
+{% endmacro %}
+
 {% block content %}
 <section class="hero-section" aria-labelledby="page-title">
   <div>
@@ -59,17 +119,6 @@
         <span>Somente atrasadas</span>
       </label>
 
-      <div class="field-group">
-        <label for="group">Grupo</label>
-        <select id="group" name="group">
-          <option value=""{% if not filters.group %} selected{% endif %}>Todos os grupos</option>
-          <option value="none"{% if filters.group == "none" %} selected{% endif %}>Sem grupo</option>
-          {% for group in available_groups %}
-            <option value="{{ group.id }}"{% if filters.group == group.id|string %} selected{% endif %}>{{ group.name }} ({% if group.kind == "projeto" %}Projeto{% else %}Área{% endif %})</option>
-          {% endfor %}
-        </select>
-      </div>
-
       <fieldset class="tag-fieldset">
         <legend>Tags</legend>
         {% if available_tags %}
@@ -121,63 +170,35 @@
         <a class="button button-primary" href="{{ url_for('tasks.new_task') }}">Criar primeira tarefa</a>
       </div>
     {% else %}
-      <div class="task-list">
-        {% for task in tasks %}
-          <article class="task-card{% if task.overdue %} is-overdue{% endif %}{% if task.status == 'completed' %} is-completed{% endif %}" data-task-id="{{ task.id }}" data-task-status="{{ task.status }}"{% if task.overdue %} data-overdue{% endif %}>
-            <div class="task-card-topline">
-              <div class="task-badges">
-                <span class="status-label{% if task.overdue %} status-overdue{% elif task.status == 'completed' %} status-completed{% endif %}">
-                  {% if task.overdue %}<span aria-hidden="true">!</span> Atrasada{% elif task.status == 'completed' %}<span aria-hidden="true">&#10003;</span> Concluida{% else %}<span aria-hidden="true">&#9675;</span> Aberta{% endif %}
-                </span>
-                {% if task.group %}
-                  <span class="group-badge" data-group-id="{{ task.group.id }}" data-group-kind="{{ task.group.kind }}">
-                    <span class="group-kind">{% if task.group.kind == "projeto" %}Projeto{% else %}Área{% endif %}</span>
-                    {{ task.group.name }}
+      <div class="group-sections">
+        {% for section in sections %}
+          <section class="group-section" data-group-section="{{ section.slug }}" aria-labelledby="section-{{ section.slug }}">
+            <header class="group-section-heading">
+              <h3 id="section-{{ section.slug }}">{{ section.title }}</h3>
+              <span class="result-count">{{ section.count }} card{% if section.count != 1 %}s{% endif %}</span>
+            </header>
+
+            {% for block in section.groups %}
+              <div class="group-block" data-section-group-id="{{ block.group.id }}" data-section-group-status="{{ block.group.status }}">
+                <div class="group-block-heading">
+                  <span class="group-badge" data-group-id="{{ block.group.id }}" data-group-kind="{{ block.group.kind }}">
+                    <span class="group-kind">{{ kind_label(block.group.kind) }}</span>
+                    {{ block.group.name }}
                   </span>
-                {% endif %}
-              </div>
-              <span class="task-index">#{{ "%02d"|format(loop.index) }}</span>
-            </div>
-            <div class="task-card-main">
-              <div class="task-copy">
-                <h3>{{ task.title }}</h3>
-                <div class="tag-list" aria-label="Tags">
-                  {% for tag in task.tags %}<span class="tag-chip">{{ tag }}</span>{% endfor %}
+                  <span class="group-block-count">{{ block.tasks|length }} card{% if block.tasks|length != 1 %}s{% endif %}</span>
+                </div>
+                <div class="task-list">
+                  {% for task in block.tasks %}{{ task_card(task) }}{% endfor %}
                 </div>
               </div>
-              <div class="score-block" aria-label="Score ICE {{ task.score }}">
-                <span class="score-value">{{ task.score }}</span>
-                <span class="score-caption">ICE SCORE</span>
+            {% endfor %}
+
+            {% if section.tasks %}
+              <div class="task-list">
+                {% for task in section.tasks %}{{ task_card(task) }}{% endfor %}
               </div>
-            </div>
-            <div class="score-meter" aria-hidden="true"><span style="width: {{ (task.score / 10)|round(0, 'floor') }}%"></span></div>
-            <div class="task-details">
-              <div class="ice-breakdown" aria-label="Dimensoes ICE">
-                <span><b>I</b> {{ task.impact }}</span>
-                <span><b>C</b> {{ task.confidence }}</span>
-                <span><b>F</b> {{ task.ease }}</span>
-              </div>
-              <span class="deadline{% if task.overdue %} deadline-overdue{% endif %}">
-                <span aria-hidden="true">&#9679;</span>
-                {% if task.deadline %}{{ task.deadline.strftime("%d/%m/%Y") }}{% else %}Sem deadline{% endif %}
-              </span>
-            </div>
-            <div class="task-actions">
-              <a class="text-action" href="{{ url_for('tasks.edit_task', task_id=task.id) }}">Editar</a>
-              {% if task.status == "open" %}
-                <form method="post" action="{{ url_for('tasks.complete_task', task_id=task.id) }}">
-                  <button class="text-action" type="submit">Concluir</button>
-                </form>
-              {% else %}
-                <form method="post" action="{{ url_for('tasks.reopen_task', task_id=task.id) }}">
-                  <button class="text-action" type="submit">Reabrir</button>
-                </form>
-              {% endif %}
-              <form method="post" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" onsubmit="return window.confirm('Excluir esta tarefa permanentemente?');">
-                <button class="text-action text-action-danger" type="submit">Excluir</button>
-              </form>
-            </div>
-          </article>
+            {% endif %}
+          </section>
         {% endfor %}
       </div>
     {% endif %}

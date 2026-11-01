@@ -173,6 +173,14 @@ select:focus, input:not([type="checkbox"]):not([type="radio"]):focus { border-co
 .group-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .55rem; color: var(--ink-soft); background: var(--ice); border-radius: 99px; font-size: .7rem; font-weight: 700; }
 .group-kind { padding: .1rem .35rem; color: #fff; background: var(--cyan-dark); border-radius: 99px; font-size: .58rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .group-badge[data-group-kind="area"] .group-kind { background: #306578; }
+.group-badge[data-group-kind="recurso"] .group-kind { background: #5b7f82; }
+.group-sections { display: grid; gap: var(--space-5); }
+.group-section { display: grid; gap: var(--space-4); }
+.group-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+.group-section-heading h3 { margin: 0; font-size: 1.1rem; letter-spacing: -.02em; }
+.group-block { display: grid; gap: var(--space-3); }
+.group-block-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.group-block-count { color: var(--muted); font-size: .7rem; }
 .status-label { color: var(--cyan-dark); font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .status-label span { display: inline-grid; width: 1.1rem; height: 1.1rem; margin-right: .25rem; place-items: center; color: #fff; background: var(--cyan-dark); border-radius: 50%; font-size: .65rem; }
 .status-label.status-overdue { color: var(--danger); }

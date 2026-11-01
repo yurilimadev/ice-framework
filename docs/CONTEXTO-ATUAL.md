@@ -6,14 +6,16 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Fase ativa
 
-- **Nenhuma fase aberta** — Ciclo 2 fechado (2026-10-31): Fases 8, 9 e 10 concluídas com aceite do usuário.
-- Próximo passo: definir próximo ciclo/backlog; não há implementação autorizada no momento.
+- **Fases 11 e 12 do Ciclo 3**: concluídas em 2026-10-31.
+- Entregue na Fase 11: `kind='recurso'`, migração `3 -> 4` preservando grupos e vínculos; `Arquivos` segue como `status='archived'`.
+- Entregue na Fase 12: painel em seções Projetos, Áreas, Recursos, Arquivos e Sem grupo; tipo Recurso na gestão e no formulário.
+- Próximo passo: autorizar a Fase 13 (E2E + publicação do Ciclo 3).
 - Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
 - Entregue na Fase 8: schema `3` com `grupos` e `tasks.grupo_id`; CRUD/arquivamento de grupo; vínculo e desvínculo de cards; exclusão preserva tarefas e tags.
 - Entregue na Fase 9: tela `/grupos`, campo `grupo_id` no formulário, filtro `group` no painel e badge Projeto/Área nos cards.
 - Entregue/validado na Fase 10: E2E local e no Termux, backup/restauração em schema `3`, publicação e espelho no servidor; dados de validação removidos.
-- App: instância local íntegra + `https://ice.yurilimadev.com` no ar com Access, agora em schema `3`; backups funcionais nas duas pontas.
-- Suíte: 74 testes OK.
+- App: código em schema `4`; banco local e `https://ice.yurilimadev.com` ainda em schema `3` até o próximo reinício/publicação (Fase 13). Backups funcionais nas duas pontas.
+- Suíte: 76 testes OK.
 
 
 ## Estado das sessões
@@ -26,6 +28,11 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 | `FE-006` | concluída | Tela `/grupos` e filtros aplicados |
 | `QA-007` | concluída | Fluxos de grupo validados; Fase 9 encerrada |
 | `QA-008` | concluída | Drills F10 aprovados; Ciclo 2 encerrado |
+| `BE-008` | concluída | Schema `4` e `GroupKind.RESOURCE` entregues |
+| `QA-009` | concluída | Upgrade `3 -> 4` validado; Fase 11 encerrada |
+| `BE-009` | concluída | Contexto de seções entregue |
+| `FE-007` | concluída | Painel em seções e tipo Recurso aplicados |
+| `QA-010` | concluída | Seções validadas; Fase 12 encerrada |
 | `BE-003` | concluída | Suporte somente para regressões ou mudanças de contrato |
 | `FE-001` | concluída | Interface aprovada na inspeção visual de 2026-10-03 |
 | `QA-004` | concluída | Inspeção visual aprovada; 53 testes OK |
@@ -55,7 +62,9 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Fase 9 concluída: rotas `/grupos` e filtro `group`, tela de gestão, campo `grupo_id` nos formulários e badge Projeto/Área nos cards; verificação HTTP local em `/`, `/grupos`, `/tasks/new`, `/?group=<id>` e `/?group=none` com `200`.
 - Fase 10 concluída: E2E local e no Termux, reinício, backup/restauração com schema `3`, publicação e espelho no servidor; código remoto em `982e877`; grupo/card de validação removidos e servidor republicado com 5 tarefas e 0 grupos. Evidência em `docs/VALIDACAO-E2E-F10.md`.
 - Ciclo 2 fechado com aceite do usuário (2026-10-31).
-- Suíte automatizada atual: `74` testes, resultado `OK`.
+- Fase 11 concluída: migração `004_grupos_recurso.sql` (schema `4`), `GroupKind.RESOURCE` e preservação de grupos/vínculos; suíte com regressões de upgrade `3 -> 4`.
+- Fase 12 concluída: painel em seções Projetos/Áreas/Recursos/Arquivos/Sem grupo, tipo Recurso em `/grupos` e no formulário, filtro de grupo removido; verificação HTTP local com as cinco seções.
+- Suíte automatizada atual: `75` testes, resultado `OK`.
 
 ## Bloqueio atual
 
@@ -63,11 +72,12 @@ Nenhum bloqueio de projeto. Nota de infra (2026-10-31): o Android descarregou e 
 
 ## Próxima decisão
 
-Definir o próximo ciclo/backlog com o usuário. Itens candidatos em `BACKLOG.md`: otimização do filtro de tags, agendamento do resumo por email e cron de publicação. Nenhuma implementação autorizada no momento.
+Abrir a **Fase 13 — validação e publicação do Ciclo 3** quando o usuário autorizar: E2E com Projetos/Áreas/Recursos/Arquivos, backup/restauração em schema `4` e publicação no Termux.
 
 ## Backlog
 
-- `BACKLOG.md` item 6: grupos Projeto/Área concluídos no Ciclo 2 (Fases 8 a 10). Possíveis acréscimos futuros seguem fora do escopo: score agregado, ordinal por grupo e tela de Arquivo dedicada.
+- `BACKLOG.md` item 7: Recursos e painel em seções (Ciclo 3); Fases 11 e 12 concluídas, Fase 13 aguardando autorização.
+- `BACKLOG.md` item 6: grupos Projeto/Área concluídos no Ciclo 2 (Fases 8 a 10).
 - Demais demandas registradas: filtro de tags, agendamento de notificações por email, cron de publicação.
 
 ## Referências obrigatórias
@@ -81,5 +91,5 @@ Definir o próximo ciclo/backlog com o usuário. Itens candidatos em `BACKLOG.md
 
 ## Último versionamento
 
-- Último commit publicado: `c7281f8` (Fase 10: E2E e publicação dos grupos validados).
-- Alterações locais pendentes: encerramento documental do Ciclo 2 (aceite e snapshots); nenhuma alteração de código pendente.
+- Último commit publicado: `27aa558` (encerramento do Ciclo 2 com aceite da Fase 10).
+- Alterações locais pendentes: Fases 11 e 12 implementadas (schema `4`, painel em seções, testes e documentação); nada commitado.

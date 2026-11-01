@@ -45,6 +45,7 @@ class TaskStatus(str, Enum):
 class GroupKind(str, Enum):
     PROJECT = "projeto"
     AREA = "area"
+    RESOURCE = "recurso"
 
 
 class GroupStatus(str, Enum):
@@ -68,7 +69,7 @@ def validate_group_kind(kind: GroupKind | str) -> GroupKind:
         return GroupKind(kind)
     except (TypeError, ValueError):
         raise ValidationError(
-            "O tipo do grupo deve ser 'projeto' ou 'area'.", "kind"
+            "O tipo do grupo deve ser 'projeto', 'area' ou 'recurso'.", "kind"
         ) from None
 
 

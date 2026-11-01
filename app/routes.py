@@ -88,12 +88,86 @@ def _task_view(task: Task, groups_by_id):
         "score": task.score,
         "overdue": task.is_overdue(today),
         "grupo_id": task.grupo_id,
-        "group": (
-            {"id": group.id, "name": group.name, "kind": group.kind.value}
-            if group is not None
-            else None
-        ),
+        "group": _group_view(group) if group is not None else None,
     }
+
+
+def _group_view(group):
+    return {
+        "id": group.id,
+        "name": group.name,
+        "kind": group.kind.value,
+        "status": group.status.value,
+    }
+
+
+GROUP_SECTIONS = (
+    ("projeto", "Projetos", "projetos"),
+    ("area", "Áreas", "areas"),
+    ("recurso", "Recursos", "recursos"),
+)
+
+
+def _build_group_sections(task_views, groups_by_id):
+    blocks = {
+        group.id: {"group": _group_view(group), "tasks": []}
+        for group in groups_by_id.values()
+    }
+    loose = []
+    for task in task_views:
+        group = groups_by_id.get(task["grupo_id"])
+        if group is None:
+            loose.append(task)
+        else:
+            blocks[group.id]["tasks"].append(task)
+
+    sections = []
+    for kind, title, slug in GROUP_SECTIONS:
+        groups = [
+            block
+            for block in blocks.values()
+            if block["group"]["kind"] == kind
+            and block["group"]["status"] == "active"
+            and block["tasks"]
+        ]
+        if groups:
+            sections.append(
+                {
+                    "title": title,
+                    "slug": slug,
+                    "groups": groups,
+                    "tasks": [],
+                    "count": sum(len(block["tasks"]) for block in groups),
+                }
+            )
+
+    archived = [
+        block
+        for block in blocks.values()
+        if block["group"]["status"] == "archived" and block["tasks"]
+    ]
+    if archived:
+        sections.append(
+            {
+                "title": "Arquivos",
+                "slug": "arquivos",
+                "groups": archived,
+                "tasks": [],
+                "count": sum(len(block["tasks"]) for block in archived),
+            }
+        )
+
+    if loose:
+        sections.append(
+            {
+                "title": "Sem grupo",
+                "slug": "sem-grupo",
+                "groups": [],
+                "tasks": loose,
+                "count": len(loose),
+            }
+        )
+    return sections
 
 
 def _messages():
@@ -106,35 +180,32 @@ def _render_index(repository, *, filters, errors=None):
     if errors:
         tasks = []
     else:
-        group_kwargs = {}
-        if filters["group"] == "none":
-            group_kwargs["grupo_id"] = None
-        elif filters["group"]:
-            group_kwargs["grupo_id"] = int(filters["group"])
         try:
             tasks = repository.list(
                 status=filters["status_value"],
                 overdue=filters["overdue_value"],
                 tags=filters["tags"],
                 order_by=filters["order"],
-                **group_kwargs,
             )
         except (ValidationError, ValueError) as error:
             field = getattr(error, "field", None) or "filters"
             errors = {field: str(error)}
             tasks = []
 
+    task_views = [_task_view(task, groups_by_id) for task in tasks]
+    for index, task in enumerate(task_views, start=1):
+        task["index"] = index
+
     return render_template(
         "index.html",
-        tasks=[_task_view(task, groups_by_id) for task in tasks],
+        tasks=task_views,
+        sections=_build_group_sections(task_views, groups_by_id),
         available_tags=repository.available_tags(),
-        available_groups=groups,
         filters={
             "status": filters["status"],
             "overdue": filters["overdue"],
             "tag": filters["tags"],
             "order": filters["order"],
-            "group": filters["group"],
         },
         errors=errors or {},
         messages=_messages(),
@@ -167,15 +238,6 @@ def _list_filters():
     except ValidationError as error:
         raise ValidationError(str(error), "tag") from None
 
-    group = request.args.get("group", "")
-    if group not in ("", "none"):
-        try:
-            validate_group_id(int(group))
-        except (TypeError, ValueError, ValidationError):
-            raise ValidationError(
-                "O filtro de grupo deve usar um id valido ou 'none'.", "group"
-            ) from None
-
     return {
         "status": status,
         "status_value": status_values[status],
@@ -183,7 +245,6 @@ def _list_filters():
         "overdue_value": True if overdue == "1" else None,
         "tags": tags,
         "order": order,
-        "group": group,
     }
 
 
@@ -287,7 +348,6 @@ def index():
             "overdue_value": None,
             "tags": request.args.getlist("tag"),
             "order": request.args.get("order", "score"),
-            "group": request.args.get("group", ""),
         }
         response = _render_index(repository, filters=filters, errors={error.field: str(error)})
         return response, 400

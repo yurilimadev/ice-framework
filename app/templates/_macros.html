@@ -1,0 +1,3 @@
+{% macro kind_label(kind) -%}
+{% if kind == "projeto" %}Projeto{% elif kind == "area" %}Área{% else %}Recurso{% endif %}
+{%- endmacro %}
