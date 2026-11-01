@@ -6,12 +6,12 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Fase ativa
 
-- **Fases 8 e 9 do Ciclo 2**: concluídas em 2026-10-31.
-- **Fase 10**: executada em 2026-10-31 — aguardando aceite do usuário para encerrar o Ciclo 2.
+- **Nenhuma fase aberta** — Ciclo 2 fechado (2026-10-31): Fases 8, 9 e 10 concluídas com aceite do usuário.
+- Próximo passo: definir próximo ciclo/backlog; não há implementação autorizada no momento.
+- Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
 - Entregue na Fase 8: schema `3` com `grupos` e `tasks.grupo_id`; CRUD/arquivamento de grupo; vínculo e desvínculo de cards; exclusão preserva tarefas e tags.
 - Entregue na Fase 9: tela `/grupos`, campo `grupo_id` no formulário, filtro `group` no painel e badge Projeto/Área nos cards.
 - Entregue/validado na Fase 10: E2E local e no Termux, backup/restauração em schema `3`, publicação e espelho no servidor; dados de validação removidos.
-- Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
 - App: instância local íntegra + `https://ice.yurilimadev.com` no ar com Access, agora em schema `3`; backups funcionais nas duas pontas.
 - Suíte: 74 testes OK.
 
@@ -25,7 +25,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 | `BE-007` | concluída | Suporte a regressões das rotas de grupo |
 | `FE-006` | concluída | Tela `/grupos` e filtros aplicados |
 | `QA-007` | concluída | Fluxos de grupo validados; Fase 9 encerrada |
-| `QA-008` | em validação | Drills F10 aprovados; aguardando aceite do usuário |
+| `QA-008` | concluída | Drills F10 aprovados; Ciclo 2 encerrado |
 | `BE-003` | concluída | Suporte somente para regressões ou mudanças de contrato |
 | `FE-001` | concluída | Interface aprovada na inspeção visual de 2026-10-03 |
 | `QA-004` | concluída | Inspeção visual aprovada; 53 testes OK |
@@ -53,20 +53,21 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Ciclo 2 ativado em 2026-10-31 a pedido do usuário; Fases 8/9/10 transpostas para `Fases-de-Desenvolvimento.md` e `ADM-F8-001` aberto para Backend e Testes.
 - Fase 8 concluída: migração `003_grupos.sql` (schema `3`), `GroupRepository`, vínculo `tasks.grupo_id` e `tests/test_groups.py`; upgrade de cópia do banco local `2 -> 3` preservou 5 tarefas e 5 tags; excluir grupo solta cards sem excluir tags.
 - Fase 9 concluída: rotas `/grupos` e filtro `group`, tela de gestão, campo `grupo_id` nos formulários e badge Projeto/Área nos cards; verificação HTTP local em `/`, `/grupos`, `/tasks/new`, `/?group=<id>` e `/?group=none` com `200`.
-- Fase 10 executada: E2E local e no Termux, reinício, backup/restauração com schema `3`, publicação e espelho no servidor; código remoto em `982e877`; grupo/card de validação removidos e servidor republicado com 5 tarefas e 0 grupos. Evidência em `docs/VALIDACAO-E2E-F10.md`.
+- Fase 10 concluída: E2E local e no Termux, reinício, backup/restauração com schema `3`, publicação e espelho no servidor; código remoto em `982e877`; grupo/card de validação removidos e servidor republicado com 5 tarefas e 0 grupos. Evidência em `docs/VALIDACAO-E2E-F10.md`.
+- Ciclo 2 fechado com aceite do usuário (2026-10-31).
 - Suíte automatizada atual: `74` testes, resultado `OK`.
 
 ## Bloqueio atual
 
-Nenhum bloqueio técnico. O encerramento da Fase 10 e do Ciclo 2 aguarda aceite explícito do usuário. Nota de infra (2026-10-31): o Android descarregou e saiu do ar; recolocado pelo usuário — serviços voltaram sozinhos ao abrir o Termux, wake-lock reaplicado, `https://ice.yurilimadev.com` saudável de novo. Recomendo reserva de DHCP no roteador e a reabertura do Termux após qualquer reinício.
+Nenhum bloqueio de projeto. Nota de infra (2026-10-31): o Android descarregou e saiu do ar; recolocado pelo usuário — serviços voltaram sozinhos ao abrir o Termux, wake-lock reaplicado, `https://ice.yurilimadev.com` saudável de novo. Recomendo reserva de DHCP no roteador e a reabertura do Termux após qualquer reinício.
 
 ## Próxima decisão
 
-Ouvir o usuário sobre o aceite da Fase 10; se aprovado, marcar Fase 10 e Ciclo 2 como concluídos, atualizar os snapshots e definir o próximo ciclo/backlog. Handoffs da Fase 10: `QA-F10-001`, `INFRA-F10-001` e `ADM-F10-HOLD-001`.
+Definir o próximo ciclo/backlog com o usuário. Itens candidatos em `BACKLOG.md`: otimização do filtro de tags, agendamento do resumo por email e cron de publicação. Nenhuma implementação autorizada no momento.
 
 ## Backlog
 
-- `BACKLOG.md` item 6: grupos Projeto/Área implementados nas Fases 8 e 9 e validados/publicados na Fase 10; aguardando aceite do Ciclo 2.
+- `BACKLOG.md` item 6: grupos Projeto/Área concluídos no Ciclo 2 (Fases 8 a 10). Possíveis acréscimos futuros seguem fora do escopo: score agregado, ordinal por grupo e tela de Arquivo dedicada.
 - Demais demandas registradas: filtro de tags, agendamento de notificações por email, cron de publicação.
 
 ## Referências obrigatórias
@@ -80,5 +81,5 @@ Ouvir o usuário sobre o aceite da Fase 10; se aprovado, marcar Fase 10 e Ciclo 
 
 ## Último versionamento
 
-- Último commit publicado: `982e877` (Ciclo 2: schema `3`, interface e filtros de grupos).
-- Alterações locais pendentes: documentação da Fase 10 (`VALIDACAO-E2E-F10.md` e snapshots); nenhuma alteração de código pendente.
+- Último commit publicado: `c7281f8` (Fase 10: E2E e publicação dos grupos validados).
+- Alterações locais pendentes: encerramento documental do Ciclo 2 (aceite e snapshots); nenhuma alteração de código pendente.

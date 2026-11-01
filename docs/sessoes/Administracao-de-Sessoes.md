@@ -134,7 +134,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 | BE-007 | Rotas e contrato de grupos | 9 | concluída | `/grupos`, filtro `group` e contexto de grupos entregues |
 | FE-006 | Interface e filtros de grupos | 9 | concluída | Tela `/grupos`, seleção e badge de grupo aplicados |
 | QA-007 | Testes de interface e fluxos de grupos | 9 | concluída | Fluxos HTTP e de interface validados; 74 testes OK |
-| QA-008 | E2E e publicação dos grupos | 10 | em validação | Drills local e Termux aprovados; aguardando aceite do usuário |
+| QA-008 | E2E e publicação dos grupos | 10 | concluída | Drills local e Termux aprovados; Ciclo 2 encerrado |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -889,8 +889,9 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Retorno solicitado: aceite para encerrar a Fase 10 e o Ciclo 2.
 - Condição de desbloqueio: confirmação do usuário.
 - Verificação executada: suíte com `74` testes `OK`; `/health` local e remoto em schema `3`; `PRAGMA integrity_check = ok` nas duas pontas; `https://ice.yurilimadev.com` operante.
+- Retorno recebido (2026-10-31): "pode continuar" — aceite registrado.
 - Bloqueios: nenhum.
-- Status: em validação
+- Status: concluído
 
 ### Handoff INFRA-F10-001 - 2026-10-31
 
@@ -905,6 +906,18 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 
 ### Handoff ADM-F10-HOLD-001 - 2026-10-31
 
-- Registro: Fase 10 executada e critério de saída atendido; documentação de validação registrada. Fase e Ciclo 2 permanecem **aguardando aceite explícito do usuário** antes do encerramento formal.
-- Próximo passo: ouvir o usuário; se aceito, marcar Fase 10/Ciclo 2 como concluídos e atualizar os snapshots.
-- Status: em validação
+- Registro: Fase 10 executada e critério de saída atendido; documentação de validação registrada.
+- Aceite recebido em 2026-10-31 ("pode continuar"): Fase 10 e Ciclo 2 encerrados nos handoffs `ADM-F10-CLOSE-001` e `ADM-CICLO2-CLOSE-001`.
+- Status: concluído
+
+### Handoff ADM-F10-CLOSE-001 - 2026-10-31
+
+- Registro: Fase 10 concluída com aceite do usuário ("pode continuar"). Drills local e Termux aprovados; publicação e espelho validados; suíte com `74` testes `OK`.
+- Status: concluído
+
+### Handoff ADM-CICLO2-CLOSE-001 - 2026-10-31
+
+- Registro: CICLO 2 FECHADO com aceite do usuário. Fases 8 (schema `3` + domínio de grupos), 9 (interface e filtros) e 10 (E2E, backup/restauração e publicação) concluídas.
+- Estado final: `https://ice.yurilimadev.com` em schema `3`; `/grupos` disponível; servidor espelhando 5 tarefas e 0 grupos; commits `982e877` (código) e `c7281f8` (documentação).
+- Próximo passo: aguardar definição do próximo ciclo/backlog; itens candidatos registrados em `BACKLOG.md` (filtro de tags, agendamento de e-mail, cron de publicação).
+- Status: concluído

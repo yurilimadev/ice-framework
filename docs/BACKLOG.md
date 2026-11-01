@@ -27,7 +27,7 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 
 ## 6. Agrupamento de tasks (grupos Projeto / Area - "PARA-lite")
 
-**Status:** implementado e validado no Ciclo 2 (2026-10-31); Fases 8 e 9 concluidas (schema `3`, `/grupos`, filtro e badges) e Fase 10 executada (E2E + backup/restauracao + publicacao no servidor), aguardando aceite final do usuario. Decisoes do usuario: (1) escopo = apenas agrupamento de tasks, sem PARA completo (sem Recursos, sem agregacao de score); (2) cards vivem dentro de grupos, card solto continua existindo (grupo_id funciona); (3) entra como Ciclo 2 apos as fases 5-7.
+**Status:** concluido no Ciclo 2 (2026-10-31, aceite do usuario). Fases 8 a 10 entregues: schema `3`, `/grupos`, filtro e badges, E2E, backup/restauracao e publicacao no servidor. Possiveis acrescimos futuros (fora do escopo): score agregado do grupo, ordinal por grupo e tela de Arquivo dedicada. Decisoes do usuario: (1) escopo = apenas agrupamento de tasks, sem PARA completo (sem Recursos, sem agregacao de score); (2) cards vivem dentro de grupos, card solto continua existindo (grupo_id funciona); (3) entra como Ciclo 2 apos as fases 5-7.
 
 **Desenho registrado:**
 - Schema 3: tabela `grupos` (id, name 1-30, kind 'projeto'|'area', status 'active'|'archived', created_at); `tasks.grupo_id` nulo referenciando grupos; excluir grupo solta os cards (ON DELETE SET NULL).

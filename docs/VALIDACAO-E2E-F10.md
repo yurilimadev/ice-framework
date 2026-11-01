@@ -1,6 +1,6 @@
 # Validacao E2E e publicacao dos grupos (Fase 10)
 
-**Status:** executada em 2026-10-31 — **aguardando aceite do usuario**
+**Status:** concluída em 2026-10-31 — aceite do usuario registrado
 
 Criterio de saida: fluxos de grupo aprovados nas duas instancias; backup/restauracao e publicacao preservam grupos e vinculos sem perda de dados.
 
