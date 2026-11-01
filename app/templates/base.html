@@ -17,6 +17,7 @@
       </a>
       <nav class="topnav" aria-label="Navegacao principal">
         <a class="nav-link" href="{{ url_for('tasks.index') }}">Painel</a>
+        <a class="nav-link" href="{{ url_for('tasks.list_groups') }}">Grupos</a>
         <a class="nav-link" href="{{ url_for('tasks.list_tags') }}">Tags</a>
         {% if digest_ready or publish_ready %}
         {% if publish_ready %}

@@ -22,6 +22,8 @@ from .db import get_db
 from .digest import send_digest
 from .publish import publish_database
 from .tasks import (
+    GroupNotFoundError,
+    GroupRepository,
     TagNotFoundError,
     Task,
     TaskNotFoundError,
@@ -31,6 +33,7 @@ from .tasks import (
     normalize_tags,
     parse_deadline,
     today_in_timezone,
+    validate_group_id,
     validate_ice_value,
     validate_tag_name,
     validate_title,
@@ -65,8 +68,13 @@ def _repository() -> TaskRepository:
     return TaskRepository(get_db(), current_app.config["APP_TIMEZONE"])
 
 
-def _task_view(task: Task):
+def _group_repository() -> GroupRepository:
+    return GroupRepository(get_db())
+
+
+def _task_view(task: Task, groups_by_id):
     today = today_in_timezone(current_app.config["APP_TIMEZONE"])
+    group = groups_by_id.get(task.grupo_id) if task.grupo_id else None
     return {
         "id": task.id,
         "title": task.title,
@@ -79,6 +87,12 @@ def _task_view(task: Task):
         "tags": task.tags,
         "score": task.score,
         "overdue": task.is_overdue(today),
+        "grupo_id": task.grupo_id,
+        "group": (
+            {"id": group.id, "name": group.name, "kind": group.kind.value}
+            if group is not None
+            else None
+        ),
     }
 
 
@@ -87,15 +101,23 @@ def _messages():
 
 
 def _render_index(repository, *, filters, errors=None):
+    groups = _group_repository().list()
+    groups_by_id = {group.id: group for group in groups}
     if errors:
         tasks = []
     else:
+        group_kwargs = {}
+        if filters["group"] == "none":
+            group_kwargs["grupo_id"] = None
+        elif filters["group"]:
+            group_kwargs["grupo_id"] = int(filters["group"])
         try:
             tasks = repository.list(
                 status=filters["status_value"],
                 overdue=filters["overdue_value"],
                 tags=filters["tags"],
                 order_by=filters["order"],
+                **group_kwargs,
             )
         except (ValidationError, ValueError) as error:
             field = getattr(error, "field", None) or "filters"
@@ -104,13 +126,15 @@ def _render_index(repository, *, filters, errors=None):
 
     return render_template(
         "index.html",
-        tasks=[_task_view(task) for task in tasks],
+        tasks=[_task_view(task, groups_by_id) for task in tasks],
         available_tags=repository.available_tags(),
+        available_groups=groups,
         filters={
             "status": filters["status"],
             "overdue": filters["overdue"],
             "tag": filters["tags"],
             "order": filters["order"],
+            "group": filters["group"],
         },
         errors=errors or {},
         messages=_messages(),
@@ -143,6 +167,15 @@ def _list_filters():
     except ValidationError as error:
         raise ValidationError(str(error), "tag") from None
 
+    group = request.args.get("group", "")
+    if group not in ("", "none"):
+        try:
+            validate_group_id(int(group))
+        except (TypeError, ValueError, ValidationError):
+            raise ValidationError(
+                "O filtro de grupo deve usar um id valido ou 'none'.", "group"
+            ) from None
+
     return {
         "status": status,
         "status_value": status_values[status],
@@ -150,6 +183,7 @@ def _list_filters():
         "overdue_value": True if overdue == "1" else None,
         "tags": tags,
         "order": order,
+        "group": group,
     }
 
 
@@ -162,6 +196,7 @@ def _form_values(task: Task | None = None):
             "ease": "",
             "deadline": "",
             "tags": "",
+            "grupo_id": "",
         }
     return {
         "title": task.title,
@@ -170,6 +205,7 @@ def _form_values(task: Task | None = None):
         "ease": str(task.ease),
         "deadline": task.deadline.isoformat() if task.deadline else "",
         "tags": ", ".join(task.tags),
+        "grupo_id": str(task.grupo_id) if task.grupo_id else "",
     }
 
 
@@ -181,6 +217,7 @@ def _parse_form(form):
         "ease": form.get("ease", ""),
         "deadline": form.get("deadline", ""),
         "tags": form.get("tags", ""),
+        "grupo_id": form.get("grupo_id", ""),
     }
     errors = {}
     parsed = {}
@@ -209,17 +246,32 @@ def _parse_form(form):
         parsed["tags"] = normalize_tags(raw_tags)
     except ValidationError as error:
         errors[error.field] = str(error)
+
+    if "grupo_id" in form:
+        raw_group = values["grupo_id"].strip()
+        if not raw_group:
+            parsed["grupo_id"] = None
+        else:
+            try:
+                parsed["grupo_id"] = validate_group_id(int(raw_group))
+            except (TypeError, ValueError, ValidationError):
+                errors["grupo_id"] = "Selecione um grupo valido."
     return values, parsed, errors
+
+
+def _render_task_form(task, *, errors=None, form_values=None):
+    return render_template(
+        "task_form.html",
+        task=task,
+        errors=errors or {},
+        form_values=form_values or _form_values(task),
+        groups=_group_repository().list(),
+    )
 
 
 def _form_error_context(task, values, error):
     errors = {getattr(error, "field", None) or "form": str(error)}
-    return render_template(
-        "task_form.html",
-        task=task,
-        errors=errors,
-        form_values=values,
-    ), 400
+    return _render_task_form(task, errors=errors, form_values=values), 400
 
 
 @tasks_bp.get("/")
@@ -235,6 +287,7 @@ def index():
             "overdue_value": None,
             "tags": request.args.getlist("tag"),
             "order": request.args.get("order", "score"),
+            "group": request.args.get("group", ""),
         }
         response = _render_index(repository, filters=filters, errors={error.field: str(error)})
         return response, 400
@@ -243,24 +296,21 @@ def index():
 
 @tasks_bp.get("/tasks/new")
 def new_task():
-    return render_template(
-        "task_form.html",
-        task=None,
-        errors={},
-        form_values=_form_values(),
-    )
+    return _render_task_form(None)
 
 
 @tasks_bp.post("/tasks")
 def create_task():
     values, parsed, errors = _parse_form(request.form)
     if errors:
-        return render_template(
-            "task_form.html", task=None, errors=errors, form_values=values
-        ), 400
+        return _render_task_form(None, errors=errors, form_values=values), 400
 
     try:
         _repository().create(**parsed)
+    except GroupNotFoundError:
+        return _form_error_context(
+            None, values, ValidationError("Selecione um grupo existente.", "grupo_id")
+        )
     except ValidationError as error:
         return _form_error_context(None, values, error)
     flash("Tarefa criada.", "success")
@@ -273,12 +323,7 @@ def edit_task(task_id):
         task = _repository().get(task_id)
     except TaskNotFoundError:
         abort(404)
-    return render_template(
-        "task_form.html",
-        task=task,
-        errors={},
-        form_values=_form_values(task),
-    )
+    return _render_task_form(task)
 
 
 @tasks_bp.post("/tasks/<int:task_id>")
@@ -291,12 +336,14 @@ def update_task(task_id):
 
     values, parsed, errors = _parse_form(request.form)
     if errors:
-        return render_template(
-            "task_form.html", task=task, errors=errors, form_values=values
-        ), 400
+        return _render_task_form(task, errors=errors, form_values=values), 400
 
     try:
         repository.update(task_id, **parsed)
+    except GroupNotFoundError:
+        return _form_error_context(
+            task, values, ValidationError("Selecione um grupo existente.", "grupo_id")
+        )
     except ValidationError as error:
         return _form_error_context(task, values, error)
     flash("Tarefa atualizada.", "success")
@@ -380,6 +427,61 @@ def merge_tags():
         return redirect(url_for("tasks.list_tags"), code=303)
     flash(f"Tags mescladas em '{target_name}'.", "success")
     return redirect(url_for("tasks.list_tags"), code=303)
+
+
+@tasks_bp.get("/grupos")
+def list_groups():
+    return render_template(
+        "groups.html",
+        groups=_group_repository().list_with_usage(),
+        messages=_messages(),
+    )
+
+
+@tasks_bp.post("/grupos")
+def create_group():
+    try:
+        _group_repository().create(
+            request.form.get("name", ""), request.form.get("kind", "")
+        )
+    except ValidationError as error:
+        flash(str(error), "error")
+        return redirect(url_for("tasks.list_groups"), code=303)
+    flash("Grupo criado.", "success")
+    return redirect(url_for("tasks.list_groups"), code=303)
+
+
+@tasks_bp.post("/grupos/<int:group_id>/rename")
+def rename_group(group_id):
+    try:
+        _group_repository().rename(group_id, request.form.get("name", ""))
+    except GroupNotFoundError:
+        abort(404)
+    except ValidationError as error:
+        flash(str(error), "error")
+        return redirect(url_for("tasks.list_groups"), code=303)
+    flash("Grupo renomeado.", "success")
+    return redirect(url_for("tasks.list_groups"), code=303)
+
+
+@tasks_bp.post("/grupos/<int:group_id>/archive")
+def archive_group(group_id):
+    try:
+        _group_repository().archive(group_id)
+    except GroupNotFoundError:
+        abort(404)
+    flash("Grupo arquivado.", "success")
+    return redirect(url_for("tasks.list_groups"), code=303)
+
+
+@tasks_bp.post("/grupos/<int:group_id>/delete")
+def delete_group(group_id):
+    try:
+        _group_repository().delete(group_id)
+    except GroupNotFoundError:
+        abort(404)
+    flash("Grupo excluido. Os cards ficaram sem grupo.", "success")
+    return redirect(url_for("tasks.list_groups"), code=303)
 
 
 @tasks_bp.post("/digest/send")

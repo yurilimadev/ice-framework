@@ -19,6 +19,7 @@ Uma tarefa possui os campos:
 | `status` | texto | `open` ou `completed` |
 | `created_at` | timestamp | Instante de criação armazenado em UTC, em ISO 8601 |
 | `tags` | lista de textos | Cada tag tem no máximo 30 caracteres |
+| `grupo_id` | inteiro ou vazio | Referência opcional a um grupo; `vazio` representa card solto |
 
 O score não é armazenado como fonte independente. Ele é derivado sempre por:
 
@@ -27,6 +28,26 @@ impact x confidence x ease
 ```
 
 O valor máximo é `1000`.
+
+## Grupo
+
+Um grupo organiza cards em um Projeto ou uma Área, sem alterar o score ou as tags da tarefa:
+
+| Campo | Tipo | Regra |
+|---|---|---|
+| `id` | inteiro | Identificador persistido, maior que zero |
+| `name` | texto | Obrigatório, espaços externos removidos, entre 1 e 30 caracteres |
+| `kind` | texto | `projeto` ou `area` |
+| `status` | texto | `active` ou `archived` |
+| `created_at` | timestamp | Instante de criação armazenado em UTC, em ISO 8601 |
+
+Regras do grupo:
+
+- Um card pode pertencer a no máximo um grupo; `grupo_id` vazio mantém o card solto.
+- Excluir um grupo solta seus cards (`ON DELETE SET NULL`), sem excluir tarefas ou tags.
+- Arquivar um grupo apenas muda seu `status`; os vínculos das tarefas permanecem.
+- Tags continuam transversais e não pertencem ao grupo.
+- Não existe score agregado nem ordinal por grupo.
 
 ## Regras
 
@@ -42,24 +63,38 @@ O valor máximo é `1000`.
 
 ## Persistência
 
-O schema `2` usa as tabelas `tasks`, `tags` e `task_tags`. Tags podem ser
-reutilizadas entre tarefas sem gerar linhas duplicadas. A restauração do
-SQLite preserva os fatores ICE, e o score é reconstruído a partir deles.
+O schema `3` usa as tabelas `tasks`, `tags`, `task_tags` e `grupos`. Tags podem
+ser reutilizadas entre tarefas sem gerar linhas duplicadas. `tasks.grupo_id` é
+nulo por padrão e referencia `grupos(id)` com `ON DELETE SET NULL`. A
+restauração do SQLite preserva os fatores ICE, as tags e os vínculos de grupo;
+o score é reconstruído a partir dos fatores ICE.
 
-O acesso do domínio nesta fase é feito por `TaskRepository`. As rotas de
-aplicação estão fora deste contrato e devem seguir `CONTRATO-APLICACAO.md`.
+O acesso do domínio nesta fase é feito por `TaskRepository` e
+`GroupRepository`. As rotas de aplicação estão fora deste contrato e devem
+seguir `CONTRATO-APLICACAO.md`.
 
 ## Operações disponíveis
 
 O `TaskRepository` fornece as operações usadas pelo adaptador HTTP:
 
-- `create`: cria uma tarefa aberta.
+- `create`: cria uma tarefa aberta, opcionalmente vinculada a um grupo.
 - `get`: recupera uma tarefa ou gera `TaskNotFoundError`.
-- `list`: filtra por status, atraso e tags e ordena por score, deadline ou criação.
-- `update`: atualiza os campos editáveis e recalcula o score derivado.
+- `list`: filtra por status, atraso, tags e grupo; `grupo_id` com id filtra o grupo, `None` filtra cards soltos e a ausência do parâmetro não filtra por grupo. Ordena por score, deadline ou criação.
+- `update`: atualiza os campos editáveis, incluindo `grupo_id`, e recalcula o score derivado.
+- `set_group`: vincula a tarefa a um grupo ou, com `None`, a deixa solta.
+- `clear_group`: remove o vínculo da tarefa com qualquer grupo.
 - `complete`: muda o status para `completed`.
 - `reopen`: muda o status para `open`.
 - `delete`: remove permanentemente a tarefa e seus vínculos de tags.
+
+O `GroupRepository` fornece:
+
+- `create`: cria um grupo ativo com `name` e `kind`.
+- `get`: recupera um grupo ou gera `GroupNotFoundError`.
+- `list`: lista grupos e pode filtrar por `status`.
+- `rename`: altera o nome do grupo.
+- `archive`: muda o status para `archived`.
+- `delete`: remove o grupo e solta as tarefas vinculadas.
 
 Entradas inválidas geram `ValidationError` com campo e mensagem controlados. O
 adaptador HTTP é responsável por transformar essa exceção em erro de formulário.

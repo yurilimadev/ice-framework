@@ -169,6 +169,10 @@ select:focus, input:not([type="checkbox"]):not([type="radio"]):focus { border-co
 .task-card.is-completed { opacity: .7; }
 .task-card-topline, .task-card-main, .task-details, .task-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .task-card-topline { margin-bottom: .85rem; }
+.task-badges { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.group-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .55rem; color: var(--ink-soft); background: var(--ice); border-radius: 99px; font-size: .7rem; font-weight: 700; }
+.group-kind { padding: .1rem .35rem; color: #fff; background: var(--cyan-dark); border-radius: 99px; font-size: .58rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.group-badge[data-group-kind="area"] .group-kind { background: #306578; }
 .status-label { color: var(--cyan-dark); font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .status-label span { display: inline-grid; width: 1.1rem; height: 1.1rem; margin-right: .25rem; place-items: center; color: #fff; background: var(--cyan-dark); border-radius: 50%; font-size: .65rem; }
 .status-label.status-overdue { color: var(--danger); }
@@ -230,7 +234,7 @@ select:focus, input:not([type="checkbox"]):not([type="radio"]):focus { border-co
 .form-two-col { grid-template-columns: 1fr 1fr; }
 .form-actions { display: flex; justify-content: flex-end; gap: .65rem; margin-top: .25rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
 
-.tags-page { max-width: 830px; margin: 0 auto; display: grid; gap: var(--space-5); }
+.tags-page, .groups-page { max-width: 830px; margin: 0 auto; display: grid; gap: var(--space-5); }
 .tags-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .tags-header .back-link { display: flex; margin-bottom: var(--space-4); }
 .tags-header h1 { max-width: none; margin-bottom: .4rem; font-size: clamp(1.9rem, 4vw, 3rem); }
@@ -251,6 +255,12 @@ select:focus, input:not([type="checkbox"]):not([type="radio"]):focus { border-co
 .merge-section { margin-top: var(--space-2); padding: 1.25rem; border: 1px dashed #b8dfe2; border-radius: var(--radius-md); }
 .merge-form { display: flex; align-items: end; gap: var(--space-4); }
 .merge-form .field-group { flex: 1; }
+.group-create-form { display: flex; align-items: end; gap: var(--space-4); padding: 1.25rem; border: 1px dashed #b8dfe2; border-radius: var(--radius-md); }
+.group-create-form .field-group { flex: 1; }
+.group-create-form .field-group:first-child { flex: 2; }
+.group-create-form .button { flex: 0 0 auto; }
+.group-status { color: var(--cyan-dark); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.group-status-archived { color: var(--muted); }
 
 .site-footer { display: flex; justify-content: space-between; width: min(1180px, calc(100% - 3rem)); margin: 0 auto; padding: 0 0 1.5rem; color: #8db0b4; font-size: .7rem; }
 
@@ -273,10 +283,10 @@ select:focus, input:not([type="checkbox"]):not([type="radio"]):focus { border-co
   body.panel-mode .tag-fieldset legend { margin-bottom: .45rem; }
   body.panel-mode .tag-options { max-height: 8.5rem; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #bcd6da transparent; }
 
-  body.panel-mode .tags-page { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  body.panel-mode .tags-page, body.panel-mode .groups-page { display: flex; flex-direction: column; flex: 1; min-height: 0; }
   body.panel-mode .tags-header { flex: 0 0 auto; }
   body.panel-mode .tags-card { flex: 1; min-height: 0; overflow: auto; }
-  body.panel-mode .merge-section { flex: 0 0 auto; }
+  body.panel-mode .merge-section, body.panel-mode .group-create-form { flex: 0 0 auto; }
 }
 
 /* Botao de envio de resumo e variacao de aviso de erro. */
@@ -357,7 +367,7 @@ button.nav-action:disabled { opacity: .55; cursor: progress; transform: none; }
   .ice-input-grid, .form-two-col { grid-template-columns: 1fr; }
   .form-actions { flex-direction: column-reverse; }
   .form-actions .button { width: 100%; }
-  .merge-form { flex-direction: column; align-items: stretch; }
+  .merge-form, .group-create-form { flex-direction: column; align-items: stretch; }
   .tags-header { flex-direction: column; align-items: flex-start; gap: .5rem; }
   .tag-actions { justify-content: flex-start; }
   .tag-inline-form { flex: 1; }

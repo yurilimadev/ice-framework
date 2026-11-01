@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 (grupos Projeto/Área) aguarda ativação
+**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 ativo — Fases 8 e 9 concluídas em 2026-10-31
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -230,6 +230,78 @@ existente permanecem no schema `2`, sem nova migração.
 **Critério de saída:** uma cópia do volume restaura a mesma instância sem perda de dados.
 
 **Verificação registrada:** `docs/VALIDACAO-RESTAURACAO-F7.md` — drills local e Termux aprovados (snapshot consistente + instância limpa restaurada com os mesmos dados); comandos reais documentados no `README.md`.
+
+## Fase 8 - Domínio e migração de grupos (Ciclo 2)
+
+**Status:** concluída em 2026-10-31.
+
+**Objetivo:** implementar grupos Projeto/Área e o vínculo opcional de tarefas a um grupo, sem alterar as regras atuais de score, tags, deadline ou status.
+
+**Atividades:**
+
+- Criar a migração `003_grupos.sql` para o schema `3`.
+- Criar a tabela `grupos` com `id`, `name` (1 a 30 caracteres), `kind` (`projeto` ou `area`), `status` (`active` ou `archived`) e `created_at`.
+- Adicionar `tasks.grupo_id` nulo, referenciando `grupos`, com `ON DELETE SET NULL`.
+- Implementar no domínio criação, renomeação, arquivamento e exclusão de grupos.
+- Garantir que excluir um grupo solte os cards, sem excluir tarefas nem tags.
+- Permitir vincular e desvincular uma tarefa de um grupo; card solto continua válido.
+- Manter tags transversais e fora do grupo; não agregar score por grupo.
+- Cobrir domínio e migração em testes, incluindo banco novo e upgrade do schema `2` para `3`.
+
+**Sessões envolvidas:** backend (`BE-006`) e testes (`QA-006`).
+
+**Saída obrigatória:** schema `3` reproduzível, operações de grupo no domínio e testes de migração/persistência adicionados à suíte.
+
+**Critério de saída:** banco novo e banco existente migram para `3`; criar, renomear, arquivar e excluir grupo, além de vincular e desvincular cards, funciona sem perder tarefas ou tags.
+
+**Bloqueio:** nenhum. A Fase 9 depende do critério de saída desta fase.
+
+**Verificação registrada:** migração `003_grupos.sql` aplicada em banco novo e em cópia do banco local (schema `2 -> 3`, 5 tarefas e 5 tags preservadas); `GroupRepository` cobriu criar, renomear, arquivar e excluir; vínculo e desvínculo de tarefas funcionaram; excluir grupo soltou o card e preservou tags; `PRAGMA foreign_key_check` limpo. Suíte completa com `67` testes `OK` (7 novos em `tests/test_groups.py`).
+
+## Fase 9 - Interface e filtros de grupos (Ciclo 2)
+
+**Status:** concluída em 2026-10-31.
+
+**Objetivo:** expor os grupos na interface, incluindo gestão, filtro e identificação visual nos cards.
+
+**Atividades:**
+
+- Criar a tela `/grupos` com criar, renomear, arquivar e excluir, seguindo o padrão de `/tags`.
+- Atualizar `CONTRATO-APLICACAO.md` com rotas, formulários, respostas e contexto de grupos.
+- Incluir seleção de grupo nos formulários de criação e edição de tarefa.
+- Adicionar filtro por grupo no painel, preservando o filtro dinâmico e o fallback sem JavaScript.
+- Exibir distintivo Projeto/Área no card e na intro do card.
+- Manter card solto, estados vazios, validações, foco, contraste e responsividade.
+- Preservar os seletores e fluxos já validados nas fases anteriores.
+
+**Sessões envolvidas:** backend (contrato e rotas), frontend (`FE-006`) e testes.
+
+**Saída obrigatória:** telas e rotas de grupo implementadas, contrato atualizado e handoff `CONTRATO`/`UI` para Testes.
+
+**Critério de saída:** criar, renomear, arquivar, excluir, vincular e filtrar grupos funcionam na interface real, sem regressão dos fluxos existentes.
+
+**Bloqueio:** nenhum. A Fase 10 depende desta fase.
+
+**Verificação registrada:** rotas `/grupos` (listar, criar, renomear, arquivar e excluir) e filtro `group` implementados; formulário de tarefa e cards exibem o grupo; exclusão de grupo solta os cards preservando tags. Suíte completa com `74` testes `OK`; verificação HTTP real em servidor local com `/`, `/grupos`, `/tasks/new`, `/?group=<id>`, `/?group=none` e `styles.css` respondendo `200` e contendo os marcadores esperados.
+
+## Fase 10 - Validação e publicação dos grupos (Ciclo 2)
+
+**Status:** aguardando ativação (Fases 8 e 9 concluídas).
+
+**Objetivo:** validar o Ciclo 2 ponta a ponta e publicar o schema `3` e os dados no servidor.
+
+**Atividades:**
+
+- Executar roteiro E2E dos grupos: criar, renomear, arquivar, excluir, vincular card solto e filtrar.
+- Confirmar que excluir grupo solta os cards e preserva tarefas e tags.
+- Validar persistência após reinício e restauração de backup com schema `3`.
+- Publicar o banco e o código no servidor Termux via `publish`.
+- Confirmar que o servidor espelha os mesmos grupos, vínculos e tarefas.
+- Registrar a evidência e o aceite do usuário.
+
+**Sessões envolvidas:** testes (`QA-007`), backend e administração.
+
+**Critério de saída:** fluxos de grupo aprovados nas duas instâncias; backup/restauração e publicação preservam grupos e vínculos sem perda de dados.
 
 ## Regra de avanço
 

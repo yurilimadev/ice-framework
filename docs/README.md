@@ -5,10 +5,10 @@ Este é o ponto de entrada para qualquer nova sessão. Leia primeiro este arquiv
 ## Estado atual
 
 - Ciclo 1 completo: Fases 0 a 7 concluídas (2026-10-31).
-- Interface visual implementada pelo Frontend.
-- Suíte automatizada atual: 53 testes aprovados.
-- Pendência atual: ativar o Ciclo 2 (grupos Projeto/Área — `BACKLOG.md` item 6).
-- Próxima fase: integração ponta a ponta.
+- Ciclo 2 ativo: Fases 8 (domínio/schema `3`) e 9 (interface e filtros de grupos) concluídas em 2026-10-31.
+- Interface visual implementada pelo Frontend, incluindo `/grupos` e badges Projeto/Área.
+- Suíte automatizada atual: 74 testes aprovados.
+- Próximo passo: abrir a Fase 10 (validação E2E e publicação dos grupos) quando autorizado.
 
 O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.
 

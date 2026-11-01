@@ -6,15 +6,24 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 ## Fase ativa
 
-- **Nenhuma fase aberta** — Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
+- **Fases 8 e 9 do Ciclo 2**: concluídas em 2026-10-31.
+- Entregue na Fase 8: schema `3` com `grupos` e `tasks.grupo_id`; CRUD/arquivamento de grupo; vínculo e desvínculo de cards; exclusão preserva tarefas e tags.
+- Entregue na Fase 9: tela `/grupos`, campo `grupo_id` no formulário, filtro `group` no painel e badge Projeto/Área nos cards.
+- Fase 10 (validação E2E e publicação no servidor) pronta para ativação, aguardando autorização do usuário.
+- Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
 - App: instância local íntegra + `https://ice.yurilimadev.com` no ar com Access; backups funcionais nas duas pontas (drills aprovados).
-- Suíte: 60 testes OK.
+- Suíte: 74 testes OK (baseline da Fase 10).
 
 
 ## Estado das sessões
 
 | Sessão | Status | Próximo passo |
 |---|---|---|
+| `BE-006` | concluída | Suporte a regressões do domínio de grupos |
+| `QA-006` | concluída | Schema `3` validado; Fase 8 encerrada |
+| `BE-007` | concluída | Suporte a regressões das rotas de grupo |
+| `FE-006` | concluída | Tela `/grupos` e filtros aplicados |
+| `QA-007` | concluída | Fluxos de grupo validados; Fase 9 encerrada |
 | `BE-003` | concluída | Suporte somente para regressões ou mudanças de contrato |
 | `FE-001` | concluída | Interface aprovada na inspeção visual de 2026-10-03 |
 | `QA-004` | concluída | Inspeção visual aprovada; 53 testes OK |
@@ -39,19 +48,23 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Lançador local fora do repositório: comando `ice` (`~/.local/bin`) e ícone "ICE Framework" no GNOME (`app-framework.desktop`); sobe o servidor se necessário e abre `http://127.0.0.1:5000`.
 - Sincronização local -> servidor (2026-10-10): CLI `publish` + botão `Publicar` (rota `POST /publish`, contrato atualizado); snapshot consistente via backup API + scp + restart do serviço remoto; regra: local publica, servidor espelha; verificado ponta a ponta (tarefa-teste publicada e vista em `ice.yurilimadev.com`).
 - Correção da Fase 5: `merge_tags` com tags compartilhadas na mesma tarefa (BE-F5-001) corrigido; suíte com regressão nova.
-- Suíte automatizada atual: `60` testes, resultado `OK`.
+- Ciclo 2 ativado em 2026-10-31 a pedido do usuário; Fases 8/9/10 transpostas para `Fases-de-Desenvolvimento.md` e `ADM-F8-001` aberto para Backend e Testes.
+- Fase 8 concluída: migração `003_grupos.sql` (schema `3`), `GroupRepository`, vínculo `tasks.grupo_id` e `tests/test_groups.py`; upgrade de cópia do banco local `2 -> 3` preservou 5 tarefas e 5 tags; excluir grupo solta cards sem excluir tags.
+- Fase 9 concluída: rotas `/grupos` e filtro `group`, tela de gestão, campo `grupo_id` nos formulários e badge Projeto/Área nos cards; verificação HTTP local em `/`, `/grupos`, `/tasks/new`, `/?group=<id>` e `/?group=none` com `200`.
+- Suíte automatizada atual: `74` testes, resultado `OK`.
 
 ## Bloqueio atual
 
-Nenhum bloqueio de projeto. Nota de infra (2026-10-31): o Android descarregou e saiu do ar; recolocado pelo usuário — serviços voltaram sozinhos ao abrir o Termux, wake-lock reaplicado, `https://ice.yurilimadev.com` saudável de novo. Recomendo reserva de DHCP no roteador e a reabertura do Termux após qualquer reinício.
+Nenhum bloqueio de projeto. A Fase 10 está pronta para ativação, mas não foi aberta. Nota de infra (2026-10-31): o Android descarregou e saiu do ar; recolocado pelo usuário — serviços voltaram sozinhos ao abrir o Termux, wake-lock reaplicado, `https://ice.yurilimadev.com` saudável de novo. Recomendo reserva de DHCP no roteador e a reabertura do Termux após qualquer reinício.
 
 ## Próxima decisão
 
-Ativar o **Ciclo 2 — grupos Projeto/Área**: transpor as Fases 8/9/10 (esboço em `BACKLOG.md` item 6) para `Fases-de-Desenvolvimento.md`, abrir handoffs e começar pelo domínio (schema 3).
+Abrir a **Fase 10 — validação E2E e publicação dos grupos** quando o usuário autorizar: executar o roteiro dos grupos nas duas instâncias, validar backup/restauração com schema `3` e publicar no servidor via `publish`. Handoffs da Fase 9: `BE-F9-001`, `FE-F9-001`, `QA-F9-001` e `ADM-F9-CLOSE-001`.
 
 ## Backlog
 
-- `BACKLOG.md`: demandas futuras registradas (gerenciamento de tags, filtro dinâmico, notificações por email).
+- `BACKLOG.md` item 6: grupos Projeto/Área em execução (Ciclo 2, Fases 8 e 9 concluídas; Fase 10 pendente).
+- Demais demandas registradas: filtro de tags, agendamento de notificações por email, cron de publicação.
 
 ## Referências obrigatórias
 
@@ -64,5 +77,5 @@ Ativar o **Ciclo 2 — grupos Projeto/Área**: transpor as Fases 8/9/10 (esboço
 
 ## Último versionamento
 
-- Último commit publicado: ver `git log -1` (Ciclo 1 completo; semanas de 2026-10-07 a 10-31).
-- Sem alterações locais pendentes de commit.
+- Último commit publicado: `47eb23e` (Ciclo 1 completo; semanas de 2026-10-07 a 10-31).
+- Alterações locais pendentes: Fases 8 e 9 implementadas (`migrations/003_grupos.sql`, `app/tasks.py`, `app/routes.py`, templates, `styles.css`, testes e documentação do Ciclo 2); nada commitado.

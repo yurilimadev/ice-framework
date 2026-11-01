@@ -6,7 +6,7 @@ from pathlib import Path
 
 from app import create_app
 from app.db import get_db
-from app.tasks import TaskRepository, today_in_timezone
+from app.tasks import GroupRepository, TaskRepository, today_in_timezone
 
 
 class FrontendInterfaceTestCase(unittest.TestCase):
@@ -24,7 +24,7 @@ class FrontendInterfaceTestCase(unittest.TestCase):
     def tearDown(self):
         self.directory.cleanup()
 
-    def create_task(self, title, tags=None):
+    def create_task(self, title, tags=None, grupo_id=None):
         with self.app.app_context():
             return TaskRepository(get_db()).create(
                 title,
@@ -32,7 +32,12 @@ class FrontendInterfaceTestCase(unittest.TestCase):
                 6,
                 7,
                 tags=tags,
+                grupo_id=grupo_id,
             )
+
+    def create_group(self, name="Projeto", kind="projeto"):
+        with self.app.app_context():
+            return GroupRepository(get_db()).create(name, kind)
 
     def test_base_and_empty_state_have_accessible_structure(self):
         response = self.client.get("/")
@@ -73,7 +78,38 @@ class FrontendInterfaceTestCase(unittest.TestCase):
         self.assertRegex(body, r'<input[^>]+id="title"[^>]+required')
         for field in ("impact", "confidence", "ease"):
             self.assertRegex(body, rf'<input[^>]+id="{field}"[^>]+required')
+        self.assertRegex(body, r'<label[^>]+for="grupo_id"')
+        self.assertRegex(body, r'<select[^>]+id="grupo_id"')
         self.assertIn('aria-labelledby="form-title"', body)
+
+    def test_group_page_and_card_badges_follow_interface_contract(self):
+        group = self.create_group("Estudos", "projeto")
+        self.create_task("Card agrupado", ["Work"], grupo_id=group.id)
+
+        index = self.client.get("/").get_data(as_text=True)
+        self.assertIn('name="group"', index)
+        self.assertIn("Sem grupo", index)
+        self.assertIn("Estudos (Projeto)", index)
+        self.assertIn(f'data-group-id="{group.id}"', index)
+        self.assertIn('data-group-kind="projeto"', index)
+        self.assertIn('class="group-badge"', index)
+
+        groups_page = self.client.get("/grupos").get_data(as_text=True)
+        self.assertIn('id="groups-title"', groups_page)
+        self.assertIn('action="/grupos"', groups_page)
+        self.assertIn('name="kind"', groups_page)
+        self.assertIn(f'data-group-id="{group.id}"', groups_page)
+        self.assertIn("Arquivar", groups_page)
+        self.assertIn("Renomear", groups_page)
+        self.assertIn("Excluir", groups_page)
+        self.assertIn("window.confirm", groups_page)
+
+        css = (Path(__file__).parents[1] / "app" / "static" / "styles.css").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(".group-badge", css)
+        self.assertIn('[data-group-kind="area"]', css)
+        self.assertIn(".group-create-form", css)
 
     def test_overdue_and_completed_states_have_text_and_contract_selectors(self):
         overdue = self.create_task("Atrasada", ["Work"])

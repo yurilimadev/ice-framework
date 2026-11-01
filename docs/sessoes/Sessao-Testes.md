@@ -277,6 +277,44 @@ cenários visuais permanece com o `QA-004`.
 - Decisão: não há falha funcional ou de acessibilidade estrutural aberta; a
   Fase 4 aguarda somente inspeção visual renderizada antes da liberação da Fase 5.
 
+### Testes-10 - Domínio e migração de grupos (Fase 8)
+
+- Validar a migração `003_grupos.sql` em banco novo e no upgrade do schema `2` para `3`.
+- Verificar `name` de 1 a 30 caracteres, `kind` `projeto`/`area` e `status` `active`/`archived`.
+- Confirmar criação, renomeação, arquivamento e exclusão de grupo.
+- Confirmar que excluir grupo solta os cards via `ON DELETE SET NULL`, preservando tarefas e tags.
+- Verificar vínculo e desvínculo de tarefa, incluindo card solto (`grupo_id` nulo).
+- Confirmar que tags continuam transversais e que não há score agregado por grupo.
+- Repetir os cenários do domínio existente para garantir ausência de regressão.
+- Encaminhar divergências como `SCHEMA` ou `REGRA` ao Backend.
+
+**Retorno necessário:**
+
+- **De:** `BE-006`.
+- **Retorno solicitado:** schema `3`, operações implementadas e evidência de migração.
+- **Para:** Administração.
+- **Retorno solicitado:** cenários executados, falhas e decisão sobre o critério de saída da Fase 8.
+- **Condição de conclusão:** banco novo e upgrade validados; nenhuma regressão aberta na suíte.
+
+### Testes-11 - Interface e fluxos de grupos (Fase 9)
+
+- Validar `/grupos` em listar, criar, renomear, arquivar e excluir.
+- Validar criação e edição de tarefa com `grupo_id`, incluindo campo vazio (card solto).
+- Validar filtro `group` por id e por `none`, além de grupo inexistente no filtro (`400`).
+- Confirmar badge Projeto/Área e seletores `data-group-id`, `data-group-kind`, `data-group-status`.
+- Confirmar que excluir grupo solta o card e preserva tarefas e tags.
+- Confirmar `404` nas rotas de grupo inexistente e `400` para grupo inexistente no formulário.
+- Verificar ausência de regressão nos fluxos e seletores existentes.
+- Executar a suíte completa e uma verificação HTTP real das páginas principais.
+
+**Retorno necessário:**
+
+- **De:** `BE-007` e `FE-006`.
+- **Retorno solicitado:** rotas, contexto e telas implementados.
+- **Para:** Administração.
+- **Retorno solicitado:** cenários executados, falhas e decisão sobre a Fase 10.
+- **Condição de conclusão:** fluxos de grupo aprovados sem regressão.
+
 ## Classificação de falhas
 
 - `BACKEND`: regra, validação, persistência, rota ou resposta incorreta.

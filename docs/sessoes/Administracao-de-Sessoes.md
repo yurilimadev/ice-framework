@@ -129,6 +129,11 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 | FE-002 | Revisão do contrato de aplicação | 3 | concluída | Contexto confirmado; sessão encerrada |
 | QA-003 | Testes do contrato de aplicação | 3 | concluída | 11 testes HTTP passaram; sessão encerrada |
 | QA-004 | Testes de interface e integração | 4 | concluída | 53 testes e inspeção visual aprovados em 2026-10-03 |
+| BE-006 | Domínio e migração de grupos | 8 | concluída | Schema `3` e operações de grupo entregues; suíte com 67 testes OK |
+| QA-006 | Testes de domínio e migração de grupos | 8 | concluída | Banco novo e upgrade `2 -> 3` validados; Fase 8 concluída |
+| BE-007 | Rotas e contrato de grupos | 9 | concluída | `/grupos`, filtro `group` e contexto de grupos entregues |
+| FE-006 | Interface e filtros de grupos | 9 | concluída | Tela `/grupos`, seleção e badge de grupo aplicados |
+| QA-007 | Testes de interface e fluxos de grupos | 9 | concluída | Fluxos HTTP e de interface validados; 74 testes OK |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -736,3 +741,125 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Aprendizados registrados na sessao: ambiente Android exige reabertura do Termux apos reinicios (bateria), `tzdata` via wheel no Termux, `.env` lido so na inicializacao, alias SSH para independencia de IP, correcao de mescla de tags (BE-F5-001).
 - Próximo passo: ativar o Ciclo 2 (grupos Projeto/Area) conforme `BACKLOG.md` item 6 - depende de deciso explicita do usuario.
 - Status: aguardando decisao de ativacao do Ciclo 2
+
+### Handoff ADM-F8-001 - 2026-10-31
+
+- Origem: Administração (ativação solicitada pelo usuário: "Vamos começar o ciclo 2")
+- Destino: Backend (`BE-006`) e Testes (`QA-006`)
+- Tipo: SCHEMA
+- Alteração: Ciclo 2 ativado; Fase 8 aberta para implementar grupos Projeto/Área e o vínculo opcional `tasks.grupo_id` no schema `3`. Fases 9 e 10 transpostas para `Fases-de-Desenvolvimento.md`, bloqueadas até o critério de saída da Fase 8.
+- Desenho vinculante: `BACKLOG.md` item 6 e Fase 8 em `Fases-de-Desenvolvimento.md`; grupos com `name` 1-30, `kind` `projeto`/`area`, `status` `active`/`archived`, `created_at`; excluir grupo solta os cards via `ON DELETE SET NULL`; tags continuam transversais; sem score agregado e sem ordinal por grupo.
+- Arquivos ou áreas afetadas: `app/tasks.py`, nova `migrations/003_grupos.sql`, `app/db.py` (apenas se necessário), `docs/CONTRATO-DOMINIO.md`, `tests/test_tasks.py` e/ou novo módulo de testes.
+- Comportamento anterior: schema `2`; tarefas sem grupo; nenhuma operação de grupo.
+- Comportamento novo esperado: schema `3` com `grupos` e `tasks.grupo_id`; CRUD e arquivamento de grupo; vínculo/desvínculo de tarefa; exclusão de grupo preserva tarefas e tags.
+- Ação obrigatória do destino: `BE-006` implementa somente o domínio e a migração da Fase 8, atualizando `CONTRATO-DOMINIO.md`; `QA-006` valida independentemente schema novo, upgrade `2 -> 3`, isolamento de cards e preservação de tags.
+- Retorno necessário de: `BE-006` e `QA-006`.
+- Retorno solicitado: `BE-006` deve informar migração, operações, arquivos e resultado da suíte; `QA-006` deve informar cenários, falhas e decisão sobre o critério de saída.
+- Condição de desbloqueio: schema `3` validado em banco novo e existente; critério de saída da Fase 8 verificado e registrado pela Administração antes de abrir a Fase 9.
+- Verificação executada: leitura dos contratos, `BACKLOG.md` item 6, histórico das fases e suíte atual de `60` testes `OK`; nenhum código de grupo existe ainda.
+- Bloqueios: Fases 9 e 10 permanecem bloqueadas; frontend (`FE-006`) não inicia até a Fase 8 fechar.
+- Status: concluído
+
+### Handoff BE-F8-001 - 2026-10-31
+
+- Origem: Backend (`BE-006`)
+- Destino: Testes (`QA-006`) e Administração
+- Tipo: SCHEMA
+- Alteração: implementado o schema `3` com `grupos` (`name` 1-30, `kind` `projeto`/`area`, `status` `active`/`archived`, `created_at`) e `tasks.grupo_id` nulo com `ON DELETE SET NULL`; adicionados `Group`, `GroupKind`, `GroupStatus`, `GroupNotFoundError` e `GroupRepository` em `app/tasks.py`; `TaskRepository` passou a aceitar `grupo_id` em `create`/`update` e expõe `set_group`/`clear_group`.
+- Arquivos ou áreas afetadas: `migrations/003_grupos.sql`, `app/tasks.py`, `tests/test_groups.py`, `tests/test_foundation.py`, `docs/CONTRATO-DOMINIO.md`, `README.md`.
+- Comportamento anterior: schema `2`, sem grupos e sem vínculo de card.
+- Comportamento novo: grupos podem ser criados, renomeados, arquivados e excluídos; cards podem ser vinculados, trocados ou soltos; excluir grupo solta os cards e preserva tarefas e tags; arquivar mantém os vínculos.
+- Ação obrigatória do destino: `QA-006` valida independentemente schema novo, upgrade `2 -> 3`, isolamento de cards e preservação de tags; Administração confirma o critério de saída antes da Fase 9.
+- Retorno necessário de: `QA-006`.
+- Retorno solicitado: cenários executados, evidências e decisão sobre o critério de saída.
+- Condição de desbloqueio: critério da Fase 8 verificado; nenhuma regressão aberta.
+- Verificação executada: suíte completa com `67` testes `OK`; upgrade de cópia do banco local (`5` tarefas, `5` tags) de `2` para `3`; `PRAGMA foreign_key_check` limpo.
+- Bloqueios: nenhum na Fase 8; Fase 9 aguarda ativação.
+- Status: concluído
+
+### Handoff QA-F8-001 - 2026-10-31
+
+- Origem: Testes (`QA-006`)
+- Destino: Administração e Backend
+- Tipo: SCHEMA
+- Alteração: validação independente da Fase 8 concluída sem falhas.
+- Cenários executados: banco novo em schema `3`; upgrade de cópia do banco local `2 -> 3` preservando `5` tarefas e `5` tags; criar, renomear, arquivar e excluir grupo; vincular, trocar e soltar card; arquivar mantendo vínculo; excluir grupo soltando card e preservando tags; `PRAGMA foreign_key_check` sem resultados.
+- Arquivos ou áreas afetadas: `tests/test_groups.py`, `migrations/003_grupos.sql`, `app/tasks.py`.
+- Ação obrigatória do destino: Administração registra a conclusão da Fase 8; Backend permanece disponível para regressões.
+- Retorno necessário de: Administração.
+- Retorno solicitado: encerramento formal da Fase 8 e autorização para abrir a Fase 9.
+- Condição de desbloqueio: aceite da Administração; `FE-006` só inicia após a abertura da Fase 9.
+- Verificação executada: `python3 -m unittest tests.test_groups -v` (7 testes `OK`); `python3 -m unittest discover -s tests` (67 testes `OK`); script de upgrade e operações em cópia do banco real com `foreign_key_check` limpo.
+- Bloqueios: nenhum; Fases 9 e 10 não iniciadas.
+- Status: concluído
+
+### Handoff ADM-F8-CLOSE-001 - 2026-10-31
+
+- Registro: Fase 8 concluída após `BE-006` entregar schema `3`/operações de grupo e `QA-006` validar banco novo, upgrade `2 -> 3`, vínculo/desvínculo, isolamento de cards e preservação de tags. Suíte com `67` testes `OK`.
+- Próximo passo: abrir a Fase 9 (interface e filtros de grupos) quando o usuário autorizar; `FE-006` permanece bloqueada até lá.
+- Status: concluído
+
+### Handoff ADM-F9-001 - 2026-10-31
+
+- Origem: Administração (autorização do usuário: "Autorizado")
+- Destino: Backend (`BE-007`), Frontend (`FE-006`) e Testes (`QA-007`)
+- Tipo: CONTRATO
+- Alteração: Fase 9 aberta para expor grupos na interface: rotas `/grupos`, campo `grupo_id` nos formulários, filtro `group` no painel e distintivo Projeto/Área nos cards.
+- Arquivos ou áreas afetadas: `app/routes.py`, `app/tasks.py`, `app/templates/`, `app/static/styles.css`, `docs/CONTRATO-APLICACAO.md`, `tests/test_routes.py`, `tests/test_frontend.py`.
+- Ação obrigatória do destino: Backend atualiza contrato/rotas; Frontend aplica `/grupos`, seleção e badge; Testes validam os fluxos sem regressão.
+- Retorno necessário de: `BE-007`, `FE-006` e `QA-007`.
+- Retorno solicitado: rotas e contexto implementados, telas/estilos aplicados e resultado dos testes.
+- Condição de desbloqueio: critério de saída da Fase 9 verificado antes da Fase 10.
+- Verificação executada: Fase 8 concluída com 67 testes `OK` e banco em schema `3`.
+- Status: concluído
+
+### Handoff BE-F9-001 - 2026-10-31
+
+- Origem: Backend (`BE-007`)
+- Destino: Frontend (`FE-006`), Testes (`QA-007`) e Administração
+- Tipo: CONTRATO
+- Alteração: adicionadas as rotas `GET/POST /grupos`, `POST /grupos/<id>/rename`, `POST /grupos/<id>/archive` e `POST /grupos/<id>/delete`; filtro `group` (`id` ou `none`); campo `grupo_id` nos formulários; `TaskRepository.list` aceita `grupo_id`; `GroupRepository.list_with_usage` entrega a contagem de tarefas; contexto inclui `available_groups` e `group` por tarefa.
+- Arquivos ou áreas afetadas: `app/routes.py`, `app/tasks.py`, `docs/CONTRATO-APLICACAO.md`, `docs/CONTRATO-DOMINIO.md`.
+- Comportamento novo: grupos podem ser gerenciados por HTTP; tarefas podem ser criadas/editadas com grupo; listagem filtra por grupo ou cards soltos; `grupo_id` inexistente retorna `400` no formulário.
+- Ação obrigatória do destino: Frontend consome o contexto e seletores; Testes cobrem métodos, status, validação e filtro.
+- Retorno necessário de: `FE-006` e `QA-007`.
+- Retorno solicitado: confirmação de consumo do contexto e resultado da matriz HTTP.
+- Condição de desbloqueio: nenhuma divergência de contrato aberta.
+- Verificação executada: `python3 -m unittest tests.test_routes tests.test_groups -v` sem falhas; suíte completa em sequência.
+- Status: concluído
+
+### Handoff FE-F9-001 - 2026-10-31
+
+- Origem: Frontend (`FE-006`)
+- Destino: Testes (`QA-007`) e Administração
+- Tipo: UI
+- Alteração: criada a tela `/grupos` com criação, renomeação, arquivamento e exclusão; link `Grupos` na navegação; campo `grupo_id` no formulário de tarefa; filtro de grupo no painel; badge Projeto/Área nos cards; estilos e comportamento responsivo seguindo a identidade ICE.
+- Arquivos ou áreas afetadas: `app/templates/base.html`, `app/templates/index.html`, `app/templates/task_form.html`, `app/templates/groups.html`, `app/static/styles.css`, `tests/test_frontend.py`.
+- Seletores: `data-group-id`, `data-group-kind`, `data-group-status`, `name="group"`, `groups-title`.
+- Ação obrigatória do destino: Testes validam seletores, estados vazio/arquivado, formulário e responsividade.
+- Retorno necessário de: `QA-007`.
+- Retorno solicitado: resultado da validação de interface e fluxos.
+- Condição de desbloqueio: nenhuma regressão visual ou de contrato.
+- Verificação executada: `python3 -m unittest tests.test_frontend -v` com os testes novos aprovados.
+- Status: concluído
+
+### Handoff QA-F9-001 - 2026-10-31
+
+- Origem: Testes (`QA-007`)
+- Destino: Administração
+- Tipo: UI/CONTRATO
+- Alteração: Fase 9 validada; nenhuma falha encontrada.
+- Cenários executados: `/grupos` lista/cria/renomeia/arquiva/exclui; formulário de tarefa exibe e persiste `grupo_id`; cards exibem badge Projeto/Área; filtro por grupo e por `none`; exclusão de grupo solta o card preservando tags; grupo inexistente no filtro retorna `400`; grupo inexistente na edição retorna `400`; rotas de grupo inexistente retornam `404`.
+- Verificação executada: `python3 -m unittest discover -s tests` com `74` testes `OK`; verificação HTTP real em servidor local com `/`, `/grupos`, `/tasks/new`, `/?group=<id>`, `/?group=none` e `styles.css` em `200`.
+- Arquivos ou áreas afetadas: `tests/test_routes.py`, `tests/test_frontend.py`, `tests/test_groups.py`.
+- Retorno necessário de: Administração.
+- Retorno solicitado: encerramento da Fase 9 e autorização para abrir a Fase 10.
+- Condição de desbloqueio: aceite da Administração.
+- Bloqueios: nenhum.
+- Status: concluído
+
+### Handoff ADM-F9-CLOSE-001 - 2026-10-31
+
+- Registro: Fase 9 concluída com rotas, tela `/grupos`, campo de grupo no formulário, filtro no painel e badges nos cards. Suíte com `74` testes `OK`; verificação HTTP local aprovada.
+- Próximo passo: abrir a Fase 10 (validação E2E e publicação no servidor) quando o usuário autorizar.
+- Status: concluído

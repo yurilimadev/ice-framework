@@ -151,6 +151,39 @@ Resolver os handoffs `QA-002-F01` e `QA-002-F02` antes de qualquer atividade da 
 - Documentar o procedimento de parada, cópia e restauração.
 - Validar a instância restaurada com a sessão de testes.
 
+### Backend-06 - Grupos Projeto/Área (Fase 8)
+
+- Implementar a migração `003_grupos.sql` para o schema `3`, sem alterar regras de score, deadline, status ou tags.
+- Criar `grupos` com `id`, `name` (1 a 30), `kind` (`projeto`/`area`), `status` (`active`/`archived`) e `created_at`.
+- Adicionar `tasks.grupo_id` nulo com `ON DELETE SET NULL` e manter card solto válido.
+- Implementar criação, renomeação, arquivamento e exclusão de grupos; excluir grupo solta os cards sem excluir tarefas ou tags.
+- Permitir vincular e desvincular tarefa de grupo.
+- Atualizar `../CONTRATO-DOMINIO.md` com campos, operações e regras do schema `3`.
+- Adicionar testes de domínio e migração, incluindo banco novo e upgrade do schema `2` para `3`.
+
+**Retorno necessário:**
+
+- **Para:** `QA-006`.
+- **Retorno solicitado:** migração, operações, arquivos alterados e resultado da suíte focada.
+- **Para:** Administração.
+- **Retorno solicitado:** confirmação do schema `3`, evidência de upgrade `2 -> 3` e qualquer bloqueio restante.
+- **Condição de conclusão:** critério de saída da Fase 8 verificado antes de abrir a Fase 9.
+
+### Backend-07 - Rotas e contrato de grupos (Fase 9)
+
+- Implementar `GET/POST /grupos`, renomear, arquivar e excluir.
+- Aceitar `grupo_id` nos formulários de tarefa e `group` nos filtros da listagem.
+- Entregar `available_groups` e `group` por tarefa no contexto dos templates.
+- Manter `grupo_id` ausente na edição preservando o vínculo atual.
+- Retornar `400` para grupo inexistente no formulário e `404` para grupo inexistente nas rotas.
+- Atualizar `../CONTRATO-APLICACAO.md` e `../CONTRATO-DOMINIO.md`.
+
+**Retorno necessário:**
+
+- **Para:** Frontend e Testes.
+- **Retorno solicitado:** consumo do contexto, seletores e resultado da matriz HTTP.
+- **Condição de conclusão:** nenhuma divergência de contrato aberta.
+
 ## Handoffs obrigatórios
 
 - Mudou regra de score, deadline, status, filtro ou ordenação: informar frontend e testes.

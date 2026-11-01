@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Gerenciar Grupos - ICE Framework{% endblock %}
+{% block body_class %} class="panel-mode"{% endblock %}
+{% block content %}
+<section class="groups-page" aria-labelledby="groups-title">
+  <header class="tags-header">
+    <div>
+      <a class="back-link" href="{{ url_for('tasks.index') }}"><span aria-hidden="true">&#8592;</span> Voltar para tarefas</a>
+      <p class="eyebrow">ORGANIZAR</p>
+      <h1 id="groups-title">Gerenciar Grupos</h1>
+      <p class="tags-intro">Crie projetos e áreas para agrupar seus cards sem mudar o score ou as tags.</p>
+    </div>
+    <span class="tags-count" aria-label="Total de grupos">{{ groups|length }} grupo{% if groups|length != 1 %}s{% endif %}</span>
+  </header>
+
+  {% if messages %}
+    <div class="flash-stack" aria-live="polite">
+      {% for category, message in messages %}
+        <div class="message{% if category == 'error' %} message-error{% endif %}" data-message role="status" aria-atomic="true">
+          <span aria-hidden="true">{% if category == 'error' %}!{% else %}&#10003;{% endif %}</span>
+          <span class="message-text">{{ message }}</span>
+          <button class="message-dismiss" type="button" data-dismiss-message aria-label="Fechar aviso">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form class="group-create-form" method="post" action="{{ url_for('tasks.create_group') }}">
+    <div class="field-group">
+      <label for="group-name">Novo grupo</label>
+      <input id="group-name" name="name" maxlength="30" placeholder="Ex: Estudos" required>
+    </div>
+    <div class="field-group">
+      <label for="group-kind">Tipo</label>
+      <select id="group-kind" name="kind">
+        <option value="projeto">Projeto</option>
+        <option value="area">Área</option>
+      </select>
+    </div>
+    <button class="button button-primary" type="submit">Criar grupo</button>
+  </form>
+
+  {% if groups %}
+    <div class="tags-card groups-card">
+      <table class="tags-table groups-table">
+        <thead>
+          <tr>
+            <th scope="col">Grupo</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Tarefas</th>
+            <th scope="col">Status</th>
+            <th scope="col">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for group in groups %}
+            <tr data-group-id="{{ group.id }}" data-group-kind="{{ group.kind }}" data-group-status="{{ group.status }}">
+              <td class="tag-name-cell">
+                <span class="group-badge" data-group-kind="{{ group.kind }}">
+                  <span class="group-kind">{% if group.kind == "projeto" %}Projeto{% else %}Área{% endif %}</span>
+                  {{ group.name }}
+                </span>
+              </td>
+              <td>{% if group.kind == "projeto" %}Projeto{% else %}Área{% endif %}</td>
+              <td><span class="tag-usage{% if group.task_count == 0 %} tag-unused{% endif %}">{{ group.task_count }}</span></td>
+              <td><span class="group-status group-status-{{ group.status }}">{% if group.status == "active" %}Ativo{% else %}Arquivado{% endif %}</span></td>
+              <td class="tag-actions">
+                <form method="post" action="{{ url_for('tasks.rename_group', group_id=group.id) }}" class="tag-inline-form">
+                  <input type="text" name="name" value="{{ group.name }}" maxlength="30" aria-label="Novo nome do grupo {{ group.name }}" required>
+                  <button class="button button-secondary" type="submit">Renomear</button>
+                </form>
+                {% if group.status == "active" %}
+                  <form method="post" action="{{ url_for('tasks.archive_group', group_id=group.id) }}">
+                    <button class="text-action" type="submit">Arquivar</button>
+                  </form>
+                {% endif %}
+                <form method="post"
+                      action="{{ url_for('tasks.delete_group', group_id=group.id) }}"
+                      onsubmit="return window.confirm('{% if group.task_count %}Excluir este grupo vai soltar {{ group.task_count }} tarefa(s). Continuar?{% else %}Excluir este grupo?{% endif %}');">
+                  <button class="text-action text-action-danger" type="submit">Excluir</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state" data-empty>
+      <span class="empty-mark" aria-hidden="true">+</span>
+      <h3>Nenhum grupo ainda.</h3>
+      <p>Crie um projeto ou uma área para agrupar os cards do seu painel.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

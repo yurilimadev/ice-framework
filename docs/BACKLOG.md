@@ -27,7 +27,7 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 
 ## 6. Agrupamento de tasks (grupos Projeto / Area - "PARA-lite")
 
-**Status:** desenhado (2026-10-10), aguardando ciclo posterior as fases 5-7. Decisoes do usuario: (1) escopo = apenas agrupamento de tasks, sem PARA completo (sem Recursos, sem agregacao de score); (2) cards vivem dentro de grupos, card solto continua existindo (grupo_id funciona); (3) entra como Ciclo 2 apos as fases 5-7.
+**Status:** em execucao no Ciclo 2 (2026-10-31); Fases 8 e 9 concluidas (schema `3`, `/grupos`, filtro e badges), Fase 10 pendente de ativacao. Decisoes do usuario: (1) escopo = apenas agrupamento de tasks, sem PARA completo (sem Recursos, sem agregacao de score); (2) cards vivem dentro de grupos, card solto continua existindo (grupo_id funciona); (3) entra como Ciclo 2 apos as fases 5-7.
 
 **Desenho registrado:**
 - Schema 3: tabela `grupos` (id, name 1-30, kind 'projeto'|'area', status 'active'|'archived', created_at); `tasks.grupo_id` nulo referenciando grupos; excluir grupo solta os cards (ON DELETE SET NULL).

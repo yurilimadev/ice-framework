@@ -61,6 +61,17 @@
       </div>
     </div>
 
+    <div class="field-group{% if errors.grupo_id %} has-error{% endif %}">
+      <label for="grupo_id">Grupo <span class="optional">opcional</span></label>
+      <select id="grupo_id" name="grupo_id"{% if errors.grupo_id %} aria-invalid="true" aria-describedby="error-grupo_id"{% endif %}>
+        <option value="">Sem grupo</option>
+        {% for group in groups %}
+          <option value="{{ group.id }}"{% if form_values.grupo_id == group.id|string %} selected{% endif %}>{{ group.name }} ({% if group.kind == "projeto" %}Projeto{% else %}Área{% endif %}{% if group.status == "archived" %}, arquivado{% endif %})</option>
+        {% endfor %}
+      </select>
+      <span class="field-help">Opcional. O card continua valido sem grupo.</span>
+    </div>
+
     <div class="form-actions">
       <a class="button button-ghost" href="{{ url_for('tasks.index') }}">Cancelar</a>
       <button class="button button-primary" type="submit">{% if task %}Salvar alteracoes{% else %}Adicionar tarefa{% endif %} <span aria-hidden="true">&#8594;</span></button>

@@ -22,6 +22,10 @@ class TagNotFoundError(LookupError):
     pass
 
 
+class GroupNotFoundError(LookupError):
+    pass
+
+
 def validate_tag_name(name: str) -> str:
     if not isinstance(name, str):
         raise ValidationError("A tag deve ser texto.", "tags")
@@ -36,6 +40,44 @@ def validate_tag_name(name: str) -> str:
 class TaskStatus(str, Enum):
     OPEN = "open"
     COMPLETED = "completed"
+
+
+class GroupKind(str, Enum):
+    PROJECT = "projeto"
+    AREA = "area"
+
+
+class GroupStatus(str, Enum):
+    ACTIVE = "active"
+    ARCHIVED = "archived"
+
+
+def validate_group_name(name: str) -> str:
+    if not isinstance(name, str):
+        raise ValidationError("O nome do grupo deve ser texto.", "name")
+    normalized = name.strip()
+    if not normalized:
+        raise ValidationError("O nome do grupo e obrigatorio.", "name")
+    if len(normalized) > 30:
+        raise ValidationError("O nome do grupo deve ter no maximo 30 caracteres.", "name")
+    return normalized
+
+
+def validate_group_kind(kind: GroupKind | str) -> GroupKind:
+    try:
+        return GroupKind(kind)
+    except (TypeError, ValueError):
+        raise ValidationError(
+            "O tipo do grupo deve ser 'projeto' ou 'area'.", "kind"
+        ) from None
+
+
+def validate_group_id(group_id: int | None) -> int | None:
+    if group_id is None:
+        return None
+    if isinstance(group_id, bool) or not isinstance(group_id, int) or group_id < 1:
+        raise ValidationError("O grupo da tarefa e invalido.", "grupo_id")
+    return group_id
 
 
 def validate_title(title: str) -> str:
@@ -120,6 +162,7 @@ class Task:
     status: TaskStatus
     created_at: datetime
     tags: tuple[str, ...] = ()
+    grupo_id: int | None = None
 
     def __post_init__(self):
         if not isinstance(self.id, int) or isinstance(self.id, bool) or self.id < 1:
@@ -131,6 +174,7 @@ class Task:
         object.__setattr__(self, "deadline", parse_deadline(self.deadline))
         object.__setattr__(self, "status", TaskStatus(self.status))
         object.__setattr__(self, "tags", normalize_tags(self.tags))
+        object.__setattr__(self, "grupo_id", validate_group_id(self.grupo_id))
 
     @property
     def score(self) -> int:
@@ -142,6 +186,25 @@ class Task:
             and self.deadline is not None
             and self.deadline < today
         )
+
+
+@dataclass(frozen=True)
+class Group:
+    id: int
+    name: str
+    kind: GroupKind
+    status: GroupStatus
+    created_at: datetime
+
+    def __post_init__(self):
+        if not isinstance(self.id, int) or isinstance(self.id, bool) or self.id < 1:
+            raise ValidationError("O id do grupo e invalido.", "id")
+        object.__setattr__(self, "name", validate_group_name(self.name))
+        object.__setattr__(self, "kind", validate_group_kind(self.kind))
+        try:
+            object.__setattr__(self, "status", GroupStatus(self.status))
+        except (TypeError, ValueError):
+            raise ValidationError("Status do grupo invalido.", "status") from None
 
 
 _UNSET = object()
@@ -160,15 +223,17 @@ class TaskRepository:
         ease: int,
         deadline: date | str | None = None,
         tags: Iterable[str] | str | None = None,
+        grupo_id: int | None = None,
     ) -> Task:
         fields = self._validated_fields(title, impact, confidence, ease, deadline, tags)
+        grupo_id = self._require_group(grupo_id)
         created_at = datetime.now(timezone.utc).replace(microsecond=0)
         with self.connection:
             cursor = self.connection.execute(
                 """
                 INSERT INTO tasks
-                    (title, impact, confidence, ease, deadline, status, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                    (title, impact, confidence, ease, deadline, status, created_at, grupo_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     fields["title"],
@@ -178,6 +243,7 @@ class TaskRepository:
                     _serialize_deadline(fields["deadline"]),
                     TaskStatus.OPEN.value,
                     created_at.isoformat(),
+                    grupo_id,
                 ),
             )
             task_id = cursor.lastrowid
@@ -198,9 +264,13 @@ class TaskRepository:
         overdue: bool | None = None,
         tags: Iterable[str] | str | None = None,
         order_by: str = "score",
+        grupo_id: int | None | object = _UNSET,
     ) -> list[Task]:
         status_filter = None if status is None else TaskStatus(status)
         tag_filter = {tag.casefold() for tag in normalize_tags(tags)}
+        group_filter = (
+            _UNSET if grupo_id is _UNSET else validate_group_id(grupo_id)
+        )
         today = today_in_timezone(self.timezone_name)
         tasks = [
             task
@@ -208,6 +278,7 @@ class TaskRepository:
             if (status_filter is None or task.status is status_filter)
             and (overdue is None or task.is_overdue(today) is overdue)
             and tag_filter.issubset({tag.casefold() for tag in task.tags})
+            and (group_filter is _UNSET or task.grupo_id == group_filter)
         ]
 
         if order_by == "score":
@@ -228,6 +299,7 @@ class TaskRepository:
         ease: int | object = _UNSET,
         deadline: date | str | None | object = _UNSET,
         tags: Iterable[str] | str | None | object = _UNSET,
+        grupo_id: int | None | object = _UNSET,
     ) -> Task:
         current = self.get(task_id)
         values = {
@@ -239,12 +311,16 @@ class TaskRepository:
             "tags": current.tags if tags is _UNSET else tags,
         }
         fields = self._validated_fields(**values)
+        target_grupo_id = (
+            current.grupo_id if grupo_id is _UNSET else self._require_group(grupo_id)
+        )
 
         with self.connection:
             self.connection.execute(
                 """
                 UPDATE tasks
-                SET title = ?, impact = ?, confidence = ?, ease = ?, deadline = ?
+                SET title = ?, impact = ?, confidence = ?, ease = ?, deadline = ?,
+                    grupo_id = ?
                 WHERE id = ?
                 """,
                 (
@@ -253,6 +329,7 @@ class TaskRepository:
                     fields["confidence"],
                     fields["ease"],
                     _serialize_deadline(fields["deadline"]),
+                    target_grupo_id,
                     task_id,
                 ),
             )
@@ -278,6 +355,18 @@ class TaskRepository:
 
     def reopen(self, task_id: int) -> Task:
         return self.set_status(task_id, TaskStatus.OPEN)
+
+    def set_group(self, task_id: int, group_id: int | None) -> Task:
+        self.get(task_id)
+        group_id = self._require_group(group_id)
+        with self.connection:
+            self.connection.execute(
+                "UPDATE tasks SET grupo_id = ? WHERE id = ?", (group_id, task_id)
+            )
+        return self.get(task_id)
+
+    def clear_group(self, task_id: int) -> Task:
+        return self.set_group(task_id, None)
 
     def delete(self, task_id: int) -> None:
         self.get(task_id)
@@ -388,6 +477,7 @@ class TaskRepository:
             status=TaskStatus(row["status"]),
             created_at=datetime.fromisoformat(row["created_at"]),
             tags=tuple(tag_row["name"] for tag_row in tag_rows),
+            grupo_id=row["grupo_id"],
         )
 
     def _replace_tags(self, task_id: int, tags: Iterable[str]) -> None:
@@ -403,6 +493,17 @@ class TaskRepository:
                 "INSERT INTO task_tags (task_id, tag_id) VALUES (?, ?)",
                 (task_id, tag_id),
             )
+
+    def _require_group(self, group_id: int | None) -> int | None:
+        group_id = validate_group_id(group_id)
+        if group_id is None:
+            return None
+        row = self.connection.execute(
+            "SELECT id FROM grupos WHERE id = ?", (group_id,)
+        ).fetchone()
+        if row is None:
+            raise GroupNotFoundError(f"Grupo nao encontrado: {group_id}")
+        return group_id
 
     def _find_tag_id(self, tag: str) -> int | None:
         tag_key = tag.casefold()
@@ -448,6 +549,104 @@ class TaskRepository:
     @staticmethod
     def _created_at_sort_key(task: Task):
         return (-task.created_at.timestamp(), -task.score, task.id)
+
+
+class GroupRepository:
+    def __init__(self, connection):
+        self.connection = connection
+
+    def create(self, name: str, kind: GroupKind | str) -> Group:
+        normalized_name = validate_group_name(name)
+        normalized_kind = validate_group_kind(kind)
+        created_at = datetime.now(timezone.utc).replace(microsecond=0)
+        with self.connection:
+            cursor = self.connection.execute(
+                """
+                INSERT INTO grupos (name, kind, status, created_at)
+                VALUES (?, ?, ?, ?)
+                """,
+                (
+                    normalized_name,
+                    normalized_kind.value,
+                    GroupStatus.ACTIVE.value,
+                    created_at.isoformat(),
+                ),
+            )
+        return self.get(cursor.lastrowid)
+
+    def get(self, group_id: int) -> Group:
+        row = self.connection.execute(
+            "SELECT * FROM grupos WHERE id = ?", (group_id,)
+        ).fetchone()
+        if row is None:
+            raise GroupNotFoundError(f"Grupo nao encontrado: {group_id}")
+        return self._group_from_row(row)
+
+    def list(self, status: GroupStatus | str | None = None) -> list[Group]:
+        status_filter = None if status is None else GroupStatus(status)
+        rows = self.connection.execute(
+            "SELECT * FROM grupos ORDER BY created_at, id"
+        ).fetchall()
+        groups = [self._group_from_row(row) for row in rows]
+        if status_filter is None:
+            return groups
+        return [group for group in groups if group.status is status_filter]
+
+    def rename(self, group_id: int, name: str) -> Group:
+        self.get(group_id)
+        normalized_name = validate_group_name(name)
+        with self.connection:
+            self.connection.execute(
+                "UPDATE grupos SET name = ? WHERE id = ?", (normalized_name, group_id)
+            )
+        return self.get(group_id)
+
+    def archive(self, group_id: int) -> Group:
+        self.get(group_id)
+        with self.connection:
+            self.connection.execute(
+                "UPDATE grupos SET status = ? WHERE id = ?",
+                (GroupStatus.ARCHIVED.value, group_id),
+            )
+        return self.get(group_id)
+
+    def delete(self, group_id: int) -> None:
+        self.get(group_id)
+        with self.connection:
+            self.connection.execute("DELETE FROM grupos WHERE id = ?", (group_id,))
+
+    def list_with_usage(self) -> list[dict]:
+        rows = self.connection.execute(
+            """
+            SELECT grupos.id, grupos.name, grupos.kind, grupos.status,
+                   grupos.created_at, COUNT(tasks.id) AS task_count
+            FROM grupos
+            LEFT JOIN tasks ON tasks.grupo_id = grupos.id
+            GROUP BY grupos.id, grupos.name, grupos.kind, grupos.status,
+                     grupos.created_at
+            ORDER BY grupos.created_at, grupos.id
+            """
+        ).fetchall()
+        return [
+            {
+                "id": row["id"],
+                "name": row["name"],
+                "kind": row["kind"],
+                "status": row["status"],
+                "task_count": row["task_count"],
+            }
+            for row in rows
+        ]
+
+    @staticmethod
+    def _group_from_row(row) -> Group:
+        return Group(
+            id=row["id"],
+            name=row["name"],
+            kind=GroupKind(row["kind"]),
+            status=GroupStatus(row["status"]),
+            created_at=datetime.fromisoformat(row["created_at"]),
+        )
 
 
 def _serialize_deadline(deadline: date | None) -> str | None:

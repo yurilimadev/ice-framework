@@ -74,6 +74,15 @@ Construir uma interface web limpa, leve e responsiva para o fluxo diário de pri
 - **Retorno solicitado:** evidências da inspeção visual local e falhas de layout, acessibilidade ou responsividade.
 - **Condição para continuar:** interface principal implementada e fluxos de criação, edição, conclusão, reabertura, exclusão e filtragem disponíveis para QA.
 
+## Fase 9 - Grupos na interface (concluída)
+
+- Tela `/grupos` criada com criação, renomeação, arquivamento e exclusão, no padrão de `/tags`.
+- Campo `grupo_id` incluído nos formulários de criação e edição de tarefa.
+- Filtro de grupo no painel, integrado ao filtro dinâmico e ao fallback sem JavaScript.
+- Badge Projeto/Área exibido no card e seletores `data-group-id`/`data-group-kind` preservados.
+- Estado arquivado, contagem de tarefas, estados vazios e confirmação de exclusão tratados.
+- Preservados identidade visual, acessibilidade, responsividade e seletores das fases anteriores.
+
 ## Atividades
 
 ### Frontend-01 - Estrutura visual

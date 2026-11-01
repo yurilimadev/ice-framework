@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 from app import create_app
 from app.db import get_db
-from app.tasks import TaskRepository, today_in_timezone
+from app.tasks import GroupRepository, TaskRepository, today_in_timezone
 
 
 class ApplicationRoutesTestCase(unittest.TestCase):
@@ -26,7 +26,7 @@ class ApplicationRoutesTestCase(unittest.TestCase):
     def tearDown(self):
         self.directory.cleanup()
 
-    def create_task(self, title="Task", tags=None):
+    def create_task(self, title="Task", tags=None, grupo_id=None):
         with self.app.app_context():
             return TaskRepository(get_db()).create(
                 title,
@@ -34,7 +34,12 @@ class ApplicationRoutesTestCase(unittest.TestCase):
                 6,
                 7,
                 tags=tags,
+                grupo_id=grupo_id,
             )
+
+    def create_group(self, name="Projeto", kind="projeto"):
+        with self.app.app_context():
+            return GroupRepository(get_db()).create(name, kind)
 
     def test_read_routes_render_html_and_context_data(self):
         task = self.create_task("Backend real", ["Backend"])
@@ -321,6 +326,148 @@ class ApplicationRoutesTestCase(unittest.TestCase):
         delete_response = self.client.post(f"/tasks/{task.id}/delete")
         self.assertEqual(delete_response.status_code, 303)
         self.assertEqual(self.client.get(f"/tasks/{task.id}/edit").status_code, 404)
+
+    def test_group_pages_create_rename_archive_and_delete(self):
+        group = self.create_group("Estudos", "projeto")
+
+        page = self.client.get("/grupos")
+        self.assertEqual(page.status_code, 200)
+        body = page.get_data(as_text=True)
+        self.assertIn("Estudos", body)
+        self.assertIn(f'data-group-id="{group.id}"', body)
+        self.assertIn('data-group-kind="projeto"', body)
+        self.assertIn('name="grupo_id"', self.client.get("/tasks/new").get_data(as_text=True))
+
+        created = self.client.post(
+            "/grupos", data={"name": "Saude", "kind": "area"}
+        )
+        self.assertEqual(created.status_code, 303)
+        body = self.client.get("/grupos").get_data(as_text=True)
+        self.assertIn("Saude", body)
+        self.assertIn("Grupo criado.", body)
+
+        with self.app.app_context():
+            area = next(
+                item
+                for item in GroupRepository(get_db()).list()
+                if item.name == "Saude"
+            )
+
+        renamed = self.client.post(
+            f"/grupos/{area.id}/rename", data={"name": "Bem-estar"}
+        )
+        self.assertEqual(renamed.status_code, 303)
+        self.assertIn("Bem-estar", self.client.get("/grupos").get_data(as_text=True))
+
+        archived = self.client.post(f"/grupos/{area.id}/archive")
+        self.assertEqual(archived.status_code, 303)
+        self.assertIn("Arquivado", self.client.get("/grupos").get_data(as_text=True))
+
+        deleted = self.client.post(f"/grupos/{group.id}/delete")
+        self.assertEqual(deleted.status_code, 303)
+        self.assertNotIn(
+            f'data-group-id="{group.id}"',
+            self.client.get("/grupos").get_data(as_text=True),
+        )
+
+    def test_task_form_card_and_filter_expose_group_link(self):
+        group = self.create_group("Estudos", "projeto")
+        other = self.create_group("Saude", "area")
+
+        form_body = self.client.get("/tasks/new").get_data(as_text=True)
+        self.assertIn('name="grupo_id"', form_body)
+        self.assertIn("Estudos", form_body)
+        self.assertIn("Saude", form_body)
+
+        create_response = self.client.post(
+            "/tasks",
+            data={
+                "title": "Tarefa agrupada",
+                "impact": "5",
+                "confidence": "6",
+                "ease": "7",
+                "deadline": "",
+                "tags": "Backend",
+                "grupo_id": str(group.id),
+            },
+        )
+        self.assertEqual(create_response.status_code, 303)
+
+        body = self.client.get("/").get_data(as_text=True)
+        self.assertIn('data-group-id="%s"' % group.id, body)
+        self.assertIn('data-group-kind="projeto"', body)
+        self.assertIn("Estudos", body)
+
+        self.create_task("Tarefa sem grupo")
+
+        filtered = self.client.get(f"/?group={group.id}").get_data(as_text=True)
+        self.assertIn("Tarefa agrupada", filtered)
+        self.assertNotIn("Tarefa sem grupo", filtered)
+
+        loose = self.client.get("/?group=none").get_data(as_text=True)
+        self.assertIn("Tarefa sem grupo", loose)
+        self.assertNotIn("Tarefa agrupada", loose)
+
+        with self.app.app_context():
+            task = TaskRepository(get_db()).list()[0]
+
+        update_response = self.client.post(
+            f"/tasks/{task.id}",
+            data={
+                "title": "Tarefa reagrupada",
+                "impact": "5",
+                "confidence": "6",
+                "ease": "7",
+                "deadline": "",
+                "tags": "Backend",
+                "grupo_id": str(other.id),
+            },
+        )
+        self.assertEqual(update_response.status_code, 303)
+        body = self.client.get("/?status=all").get_data(as_text=True)
+        self.assertIn('data-group-id="%s"' % other.id, body)
+        self.assertNotIn('data-group-id="%s"' % group.id, body)
+
+    def test_deleting_group_route_detaches_task_and_preserves_tags(self):
+        group = self.create_group("Temporario", "area")
+        task = self.create_task("Card do grupo", ["Work"], grupo_id=group.id)
+
+        response = self.client.post(f"/grupos/{group.id}/delete")
+
+        self.assertEqual(response.status_code, 303)
+        with self.app.app_context():
+            detached = TaskRepository(get_db()).get(task.id)
+        self.assertIsNone(detached.grupo_id)
+        self.assertEqual(detached.tags, ("Work",))
+
+    def test_nonexistent_group_in_form_returns_400(self):
+        response = self.client.post(
+            "/tasks",
+            data={
+                "title": "Grupo inexistente",
+                "impact": "5",
+                "confidence": "6",
+                "ease": "7",
+                "deadline": "",
+                "tags": "",
+                "grupo_id": "999",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b'data-error-field="grupo_id"', response.data)
+
+    def test_invalid_group_filter_returns_400(self):
+        for value in ("abc", "0", "-1"):
+            with self.subTest(value=value):
+                response = self.client.get(f"/?group={value}")
+                self.assertEqual(response.status_code, 400)
+                self.assertIn(b'data-error-field="group"', response.data)
+
+    def test_missing_group_returns_404(self):
+        self.assertEqual(self.client.post("/grupos/999/rename").status_code, 404)
+        self.assertEqual(self.client.post("/grupos/999/archive").status_code, 404)
+        self.assertEqual(self.client.post("/grupos/999/delete").status_code, 404)
 
     def test_missing_task_returns_404(self):
         self.assertEqual(self.client.get("/tasks/999/edit").status_code, 404)

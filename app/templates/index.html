@@ -59,6 +59,17 @@
         <span>Somente atrasadas</span>
       </label>
 
+      <div class="field-group">
+        <label for="group">Grupo</label>
+        <select id="group" name="group">
+          <option value=""{% if not filters.group %} selected{% endif %}>Todos os grupos</option>
+          <option value="none"{% if filters.group == "none" %} selected{% endif %}>Sem grupo</option>
+          {% for group in available_groups %}
+            <option value="{{ group.id }}"{% if filters.group == group.id|string %} selected{% endif %}>{{ group.name }} ({% if group.kind == "projeto" %}Projeto{% else %}Área{% endif %})</option>
+          {% endfor %}
+        </select>
+      </div>
+
       <fieldset class="tag-fieldset">
         <legend>Tags</legend>
         {% if available_tags %}
@@ -114,9 +125,17 @@
         {% for task in tasks %}
           <article class="task-card{% if task.overdue %} is-overdue{% endif %}{% if task.status == 'completed' %} is-completed{% endif %}" data-task-id="{{ task.id }}" data-task-status="{{ task.status }}"{% if task.overdue %} data-overdue{% endif %}>
             <div class="task-card-topline">
-              <span class="status-label{% if task.overdue %} status-overdue{% elif task.status == 'completed' %} status-completed{% endif %}">
-                {% if task.overdue %}<span aria-hidden="true">!</span> Atrasada{% elif task.status == 'completed' %}<span aria-hidden="true">&#10003;</span> Concluida{% else %}<span aria-hidden="true">&#9675;</span> Aberta{% endif %}
-              </span>
+              <div class="task-badges">
+                <span class="status-label{% if task.overdue %} status-overdue{% elif task.status == 'completed' %} status-completed{% endif %}">
+                  {% if task.overdue %}<span aria-hidden="true">!</span> Atrasada{% elif task.status == 'completed' %}<span aria-hidden="true">&#10003;</span> Concluida{% else %}<span aria-hidden="true">&#9675;</span> Aberta{% endif %}
+                </span>
+                {% if task.group %}
+                  <span class="group-badge" data-group-id="{{ task.group.id }}" data-group-kind="{{ task.group.kind }}">
+                    <span class="group-kind">{% if task.group.kind == "projeto" %}Projeto{% else %}Área{% endif %}</span>
+                    {{ task.group.name }}
+                  </span>
+                {% endif %}
+              </div>
               <span class="task-index">#{{ "%02d"|format(loop.index) }}</span>
             </div>
             <div class="task-card-main">
