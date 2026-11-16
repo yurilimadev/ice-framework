@@ -143,7 +143,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 | QA-011 | E2E e publicação do Ciclo 3 | 13 | em validação | Drills local e Termux aprovados; aguardando aceite do usuário |
 | ADM-PEIXE-001 | Ativação do módulo Peixe-piloto | 14 | concluída | F14-F16 executadas; publicação pendente |
 | BE-010 | Domínio Peixe-piloto e migração 005 | 14 | concluída | Schema `5`, repositório e testes de domínio entregues |
-| QA-012 | Testes do domínio Peixe-piloto | 14 | em validação | 14 testes novos; suíte total com 89 testes OK |
+| QA-012 | Testes do domínio Peixe-piloto | 14 | concluída | 14 testes novos; F14 aceita |
 | BE-011 | Rotas e contexto Peixe-piloto | 15 | concluída | Blueprint `/peixe`, ações de lead e contexto entregues |
 | FE-008 | Interface Peixe-piloto | 15 | concluída | Dashboard, pipeline, detalhe, semana e agenda |
 | QA-013 | Testes de rotas e interface Peixe | 15 | concluída | 10 testes novos; interface aprovada para a F16 |

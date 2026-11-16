@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 — Fases 11 e 12 concluídas e Fase 13 executada, aguardando aceite; Peixe-piloto — Fases 14, 15 e 16 executadas localmente; publicação no Termux pendente
+**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 — Fases 11 e 12 concluídas e Fase 13 executada, aguardando aceite; Peixe-piloto — Fases 14 e 15 concluídas; Fase 16 validada localmente, publicação no Termux pendente
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -370,7 +370,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 14 - Peixe-piloto: domínio, migração 005 e testes
 
-**Status:** executada em 2026-10-31 — aguardando aceite do usuário.
+**Status:** concluída em 2026-10-31 (aceite do usuário).
 
 **Objetivo:** criar o domínio do módulo Peixe-piloto no mesmo SQLite, sem alterar `tasks` ou `grupos`.
 
@@ -389,7 +389,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 15 - Peixe-piloto: interface `/peixe` e gamificação
 
-**Status:** executada em 2026-10-31 — aguardando aceite do usuário.
+**Status:** concluída em 2026-10-31 (aceite do usuário).
 
 **Objetivo:** expor o cockpit diário em `/peixe`, com pipeline, missão, XP, streak, quest e ações de lead.
 

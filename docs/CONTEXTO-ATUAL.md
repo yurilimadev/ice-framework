@@ -111,5 +111,5 @@ Quando o SSH voltar: rodar `git pull --ff-only` em `~/ice-framework`, executar `
 
 ## Último versionamento
 
-- Último commit publicado: `505c658` (Fase 13: E2E e publicação do Ciclo 3).
-- Alterações locais pendentes: ajuste de grupos recolhíveis e Fases 14-16 do Peixe-piloto (schema `5`, domínio, rotas, templates, e-mails, scripts, testes e documentação); nada commitado.
+- Último commit publicado: `bae471f` (Peixe-piloto F14-F16, grupos recolhíveis e schema `5`).
+- Alterações locais pendentes: nenhuma; a publicação no Termux segue bloqueada pelo SSH.
