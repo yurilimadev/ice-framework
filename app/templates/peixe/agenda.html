@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "peixe/_macros.html" import channel_label, status_label %}
+{% block title %}Agenda - Peixe-piloto{% endblock %}
+{% block content %}
+<section class="peixe-page" aria-labelledby="agenda-title">
+  <header class="peixe-hero">
+    <div>
+      <a class="back-link" href="{{ url_for('peixe.dashboard') }}"><span aria-hidden="true">&#8592;</span> Voltar ao Peixe</a>
+      <p class="eyebrow">AGENDA</p>
+      <h1 id="agenda-title">Proximos 7 dias</h1>
+      <p class="peixe-hero-copy">Follow-ups e proximas acoes do oceano.</p>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="flash-stack" aria-live="polite">
+      {% for category, message in messages %}
+        <div class="message{% if category == 'error' %} message-error{% endif %}" data-message role="status" aria-atomic="true">
+          <span aria-hidden="true">{% if category == 'error' %}!{% else %}&#10003;{% endif %}</span>
+          <span class="message-text">{{ message }}</span>
+          <button class="message-dismiss" type="button" data-dismiss-message aria-label="Fechar aviso">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="peixe-agenda">
+    {% for day, leads in days.items() %}
+      <section class="peixe-card peixe-day{% if day == today %} is-today{% endif %}" data-agenda-date="{{ day.isoformat() }}">
+        <div class="peixe-card-head">
+          <h2>{{ day.strftime("%d/%m/%Y") }}{% if day == today %} · hoje{% endif %}</h2>
+          <span class="result-count">{{ leads|length }}</span>
+        </div>
+        {% if leads %}
+          <ul class="peixe-list">
+            {% for lead in leads %}
+              <li>
+                <a href="{{ url_for('peixe.lead_detail', lead_id=lead.id) }}">{{ lead.company }}</a>
+                <span>{{ status_label(lead.status.value) }} · {{ channel_label(lead.channel.value) }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted-text">Nada agendado.</p>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

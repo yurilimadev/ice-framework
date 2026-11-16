@@ -100,3 +100,7 @@ O `GroupRepository` fornece:
 
 Entradas inválidas geram `ValidationError` com campo e mensagem controlados. O
 adaptador HTTP é responsável por transformar essa exceção em erro de formulário.
+
+## Módulo Peixe-piloto
+
+O módulo Peixe-piloto usa as mesmas regras gerais de validação e persistência, mas tem tabelas e contrato próprios: ver `CONTRATO-DOMINIO-PEIXE.md`. Ele não altera `tasks`, `tags`, `task_tags` ou `grupos`.

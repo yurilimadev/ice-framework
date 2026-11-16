@@ -74,11 +74,20 @@
           await response.text(),
           "text/html",
         );
+        const openGroups = new Set(
+          [...document.querySelectorAll("[data-group-block][open]")].map(
+            (block) => block.dataset.sectionGroupId,
+          ),
+        );
         ["filter-feedback", "task-area", "view-count"].forEach((name) => {
           const local = region(name);
           const remote = region(name, doc);
           if (local && remote) local.replaceWith(remote);
         });
+        document.querySelectorAll("[data-group-block]").forEach((block) => {
+          if (openGroups.has(block.dataset.sectionGroupId)) block.open = true;
+        });
+        document.dispatchEvent(new Event("groups-updated"));
         window.history.replaceState(null, "", url);
         finish(() => {
           region("task-area")?.scrollTo(0, 0);
@@ -101,6 +110,73 @@
   };
 
   initDynamicFilters();
+})();
+
+(() => {
+  const BLOCK = "[data-group-block]";
+
+  const sync = () => {
+    const button = document.querySelector("[data-toggle-groups]");
+    if (!button) return;
+    const blocks = [...document.querySelectorAll(BLOCK)];
+    const expanded = blocks.length > 0 && blocks.every((block) => block.open);
+    button.textContent = expanded ? "Recolher grupos" : "Expandir grupos";
+    button.setAttribute("aria-expanded", expanded ? "true" : "false");
+  };
+
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-toggle-groups]");
+    if (!button) return;
+    const blocks = [...document.querySelectorAll(BLOCK)];
+    const shouldOpen = !blocks.every((block) => block.open);
+    blocks.forEach((block) => {
+      block.open = shouldOpen;
+    });
+    sync();
+  });
+
+  document.addEventListener(
+    "toggle",
+    (event) => {
+      if (event.target.matches?.(BLOCK)) sync();
+    },
+    true,
+  );
+
+  document.addEventListener("groups-updated", sync);
+  sync();
+})();
+
+(() => {
+  const fallbackCopy = (text) => {
+    const field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.append(field);
+    field.select();
+    document.execCommand("copy");
+    field.remove();
+  };
+
+  document.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-copy-target]");
+    if (!button) return;
+    const target = document.getElementById(button.dataset.copyTarget);
+    if (!target) return;
+    const text = target.textContent || "";
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (_error) {
+      fallbackCopy(text);
+    }
+    const original = button.textContent;
+    button.textContent = "Copiado";
+    window.setTimeout(() => {
+      button.textContent = original;
+    }, 1600);
+  });
 })();
 
 (() => {

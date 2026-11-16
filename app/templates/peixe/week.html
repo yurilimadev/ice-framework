@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "peixe/_macros.html" import xp_bar, streak_flame, quest_ring, status_label %}
+{% block title %}Semana - Peixe-piloto{% endblock %}
+{% block content %}
+<section class="peixe-page" aria-labelledby="week-title">
+  <header class="peixe-hero">
+    <div>
+      <a class="back-link" href="{{ url_for('peixe.dashboard') }}"><span aria-hidden="true">&#8592;</span> Voltar ao Peixe</a>
+      <p class="eyebrow">FECHAMENTO</p>
+      <h1 id="week-title">Sua semana</h1>
+      <p class="peixe-hero-copy">Numeros, aprendizado e os proximos nomes do oceano.</p>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="flash-stack" aria-live="polite">
+      {% for category, message in messages %}
+        <div class="message{% if category == 'error' %} message-error{% endif %}" data-message role="status" aria-atomic="true">
+          <span aria-hidden="true">{% if category == 'error' %}!{% else %}&#10003;{% endif %}</span>
+          <span class="message-text">{{ message }}</span>
+          <button class="message-dismiss" type="button" data-dismiss-message aria-label="Fechar aviso">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="peixe-stats">
+    {{ xp_bar(xp, level) }}
+    {{ streak_flame(streak) }}
+    {{ quest_ring(quest) }}
+  </div>
+
+  <div class="peixe-metrics">
+    <div class="peixe-metric"><strong>{{ progress.messages }}</strong><span>mensagens</span></div>
+    <div class="peixe-metric"><strong>{{ progress.replies }}</strong><span>respostas</span></div>
+    <div class="peixe-metric"><strong>{{ progress.conversations }}</strong><span>conversas</span></div>
+    <div class="peixe-metric"><strong>{{ extra.proposals }}</strong><span>propostas</span></div>
+    <div class="peixe-metric"><strong>{{ extra.pilots }}</strong><span>pilotos</span></div>
+  </div>
+
+  <div class="peixe-columns">
+    <form class="peixe-card peixe-week-form" method="post" action="{{ url_for('peixe.save_week') }}">
+      <div class="peixe-card-head"><h2>Aprendizado e bloqueio</h2></div>
+      <div class="field-group">
+        <label for="learning">O que essa semana ensinou?</label>
+        <textarea id="learning" name="learning" rows="3" maxlength="500">{{ learning }}</textarea>
+      </div>
+      <div class="field-group">
+        <label for="blocker">O que travou o avanco?</label>
+        <textarea id="blocker" name="blocker" rows="3" maxlength="500">{{ blocker }}</textarea>
+      </div>
+      <button class="button button-primary" type="submit">Salvar fechamento</button>
+    </form>
+
+    <section class="peixe-card" aria-labelledby="next-leads-title">
+      <div class="peixe-card-head">
+        <h2 id="next-leads-title">Proximos 5 nomes</h2>
+        <a class="text-action" href="{{ url_for('peixe.leads') }}">Ver pipeline</a>
+      </div>
+      {% if next_leads %}
+        <ol class="peixe-priorities">
+          {% for lead in next_leads %}
+            <li>
+              <a href="{{ url_for('peixe.lead_detail', lead_id=lead.id) }}">{{ lead.company }}</a>
+              <span>{{ status_label(lead.status.value) }}{% if lead.next_action_at %} · {{ lead.next_action_at.strftime("%d/%m") }}{% endif %}</span>
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p class="muted-text">Nenhum lead cadastrado.</p>
+      {% endif %}
+    </section>
+  </div>
+</section>
+{% endblock %}

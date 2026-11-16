@@ -5,6 +5,7 @@ from flask import Flask, jsonify, render_template
 
 from .config import load_config, validate_timezone
 from .db import get_db, get_schema_version, init_app as init_db_app, init_db
+from .peixe_routes import peixe_bp
 from .routes import tasks_bp
 
 
@@ -18,6 +19,7 @@ def create_app(test_config=None):
     validate_timezone(app.config["APP_TIMEZONE"])
     init_db_app(app)
     app.register_blueprint(tasks_bp)
+    app.register_blueprint(peixe_bp)
 
     with app.app_context():
         init_db(app)
@@ -45,6 +47,22 @@ def create_app(test_config=None):
         from .digest import send_digest
 
         click.echo(send_digest(app, recipient=to_address))
+
+    @app.cli.command("send-peixe-daily")
+    @click.option("--to", "to_address", default=None, help="Email de destino.")
+    def send_peixe_daily_command(to_address):
+        """Envia o resumo diario do Peixe-piloto."""
+        from .peixe_digest import send_peixe_daily
+
+        click.echo(send_peixe_daily(app, recipient=to_address))
+
+    @app.cli.command("send-peixe-weekly")
+    @click.option("--to", "to_address", default=None, help="Email de destino.")
+    def send_peixe_weekly_command(to_address):
+        """Envia o fechamento semanal do Peixe-piloto."""
+        from .peixe_digest import send_peixe_weekly
+
+        click.echo(send_peixe_weekly(app, recipient=to_address))
 
     @app.cli.command("publish")
     def publish_command():

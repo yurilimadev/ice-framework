@@ -57,3 +57,14 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 - Ordem prevista do Ciclo 3: Fase 11 (schema `4` + dominio) -> Fase 12 (painel em secoes e gestao) -> Fase 13 (E2E + publicacao).
 
 **Bloqueio:** nao ha bloqueio tecnico; Ciclo 3 aguarda aceite explicito do usuario.
+
+
+## 8. Peixe-piloto
+
+**Status:** em execucao (2026-10-31); Fases 14 (schema `5` + dominio/testes), 15 (interface `/peixe`) e 16 (e-mails/scripts) executadas localmente. Publicacao online e agendamento pendentes pelo SSH do Termux.
+
+**Escopo:** modulo de prospeccao com leads, interacoes, missao diaria, XP, niveis, streak, quest e badges, no mesmo banco SQLite. Oceanos iniciais: odontologia em Natal. Briefing completo em `peixe-piloto/COMANDOS.md`; contrato do dominio em `CONTRATO-DOMINIO-PEIXE.md`.
+
+**Ciclos previstos:** F14 (dominio + migracao 005) -> F15 (interface `/peixe`) -> F16 (email, agendamento e E2E).
+
+**Bloqueio:** publicacao/agendamento dependem de `ssh ice-termux`; abrir o Termux e reativar o `sshd`.

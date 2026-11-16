@@ -212,6 +212,35 @@ Resolver os handoffs `QA-002-F01` e `QA-002-F02` antes de qualquer atividade da 
 - **Retorno solicitado:** consumo do contexto e resultado da validação.
 - **Condição de conclusão:** critério de saída da Fase 12 verificado.
 
+### Backend-10 - Peixe-piloto: domínio e schema 5 (Fase 14)
+
+- Criar `005_peixe.sql` com `leads`, `interactions` e `settings`.
+- Implementar `Lead`, `Interaction` e `PeixeRepository` em `app/peixe.py`.
+- Implementar XP, níveis, streak, progresso semanal, missão, follow-ups e badges.
+- Aplicar transições de status e a regra de mensagem (status `enviado`, follow-up +3 dias).
+- Manter `tasks`, `tags` e `grupos` intactos.
+- Cobrir migração e regras com testes.
+
+**Retorno necessário:**
+
+- **Para:** Testes e Administração.
+- **Retorno solicitado:** evidência da migração e resultado da suíte.
+- **Condição de conclusão:** aceite da F14 antes da F15.
+
+### Backend-11 - Rotas Peixe-piloto (Fase 15)
+
+- Registrar o blueprint `/peixe` no app.
+- Implementar dashboard, pipeline, formulário, detalhe, ações de lead, semana e agenda.
+- Gerar mensagem no servidor e links por canal.
+- Manter Post/Redirect/Get, flash, `400` e `404`.
+- Expor `get_setting`/`set_setting` para metas, dor e fechamento semanal.
+
+**Retorno necessário:**
+
+- **Para:** Frontend, Testes e Administração.
+- **Retorno solicitado:** rotas/contexto e resultado da matriz.
+- **Condição de conclusão:** aceite da F15 antes da F16.
+
 ## Handoffs obrigatórios
 
 - Mudou regra de score, deadline, status, filtro ou ordenação: informar frontend e testes.

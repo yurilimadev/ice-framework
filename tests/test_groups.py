@@ -184,7 +184,7 @@ class GroupRepositoryTestCase(unittest.TestCase):
                 }
             )
             with upgraded_app.app_context():
-                self.assertEqual(get_schema_version(), 4)
+                self.assertEqual(get_schema_version(), 5)
                 task = TaskRepository(get_db()).get(1)
                 self.assertEqual(task.title, "Tarefa antiga")
                 self.assertIsNone(task.grupo_id)
@@ -193,7 +193,7 @@ class GroupRepositoryTestCase(unittest.TestCase):
                 linked = TaskRepository(get_db()).set_group(task.id, group.id)
                 self.assertEqual(linked.grupo_id, group.id)
 
-    def test_upgrade_from_schema_3_to_4_preserves_groups_and_links(self):
+    def test_upgrade_with_schema_3_preserves_groups_and_links(self):
         migrations = Path(__file__).resolve().parents[1] / "migrations"
         with tempfile.TemporaryDirectory() as upgrade_directory:
             upgrade_path = Path(upgrade_directory) / "app.sqlite3"
@@ -236,7 +236,7 @@ class GroupRepositoryTestCase(unittest.TestCase):
                 }
             )
             with upgraded_app.app_context():
-                self.assertEqual(get_schema_version(), 4)
+                self.assertEqual(get_schema_version(), 5)
                 groups = GroupRepository(get_db())
                 tasks = TaskRepository(get_db())
                 old_group = groups.get(7)

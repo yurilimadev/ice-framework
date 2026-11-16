@@ -97,6 +97,9 @@ class FrontendInterfaceTestCase(unittest.TestCase):
             f'data-group-id="{group.id}"',
             'data-group-kind="projeto"',
             'class="group-badge"',
+            "data-group-block",
+            "data-toggle-groups",
+            "Expandir grupos",
             "Estudos",
             "Sem grupo",
         ):
@@ -254,6 +257,8 @@ class DynamicPanelTestCase(unittest.TestCase):
             ".task-area.is-refreshing",
             ".task-area.is-slow",
             ".sync-error",
+            "details.group-block[open]",
+            ".group-toggle-mark",
         ):
             with self.subTest(css=snippet):
                 self.assertIn(snippet, css)
@@ -265,6 +270,9 @@ class DynamicPanelTestCase(unittest.TestCase):
             "is-refreshing",
             "is-slow",
             "sync-error",
+            "data-toggle-groups",
+            "data-group-block",
+            "groups-updated",
         ):
             with self.subTest(js=snippet):
                 self.assertIn(snippet, script)

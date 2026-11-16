@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% from "peixe/_macros.html" import channel_label, status_label %}
+{% block title %}{{ lead.company }} - Peixe-piloto{% endblock %}
+{% block content %}
+<section class="peixe-page" aria-labelledby="lead-title" data-lead-id="{{ lead.id }}" data-lead-status="{{ lead.status.value }}">
+  <header class="peixe-hero">
+    <div>
+      <a class="back-link" href="{{ url_for('peixe.leads') }}"><span aria-hidden="true">&#8592;</span> Voltar ao pipeline</a>
+      <p class="eyebrow">LEAD</p>
+      <h1 id="lead-title">{{ lead.company }}</h1>
+      <p class="peixe-hero-copy">
+        {% if lead.contact %}{{ lead.contact }} · {% endif %}
+        {{ channel_label(lead.channel.value) }} · {{ lead.city }} · {{ lead.sector }}
+      </p>
+      <p class="peixe-meta">
+        <span class="peixe-status peixe-status-{{ lead.status.value }}">{{ status_label(lead.status.value) }}</span>
+        {% if lead.next_action_at %}Proxima acao: {{ lead.next_action_at.strftime("%d/%m/%Y") }}{% else %}Sem proxima acao{% endif %}
+      </p>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="flash-stack" aria-live="polite">
+      {% for category, message in messages %}
+        <div class="message{% if category == 'error' %} message-error{% endif %}" data-message role="status" aria-atomic="true">
+          <span aria-hidden="true">{% if category == 'error' %}!{% else %}&#10003;{% endif %}</span>
+          <span class="message-text">{{ message }}</span>
+          <button class="message-dismiss" type="button" data-dismiss-message aria-label="Fechar aviso">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="peixe-columns">
+    <section class="peixe-card" aria-labelledby="message-title">
+      <div class="peixe-card-head">
+        <h2 id="message-title">Mensagem sugerida</h2>
+        <span class="result-count">{{ contact.pain }}</span>
+      </div>
+      <p class="peixe-observation">{{ lead.observation }}</p>
+      <pre class="peixe-message" id="lead-message">{{ contact.message }}</pre>
+      <div class="peixe-actions">
+        <button class="button button-secondary" type="button" data-copy-target="lead-message">Copiar mensagem</button>
+        {% if contact.link %}
+          <a class="button button-secondary" href="{{ contact.link.url }}" target="_blank" rel="noopener">{{ contact.link.label }}</a>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="peixe-card" aria-labelledby="actions-title">
+      <div class="peixe-card-head"><h2 id="actions-title">Registrar movimento</h2></div>
+      <div class="peixe-action-grid">
+        <form method="post" action="{{ url_for('peixe.send_message', lead_id=lead.id) }}">
+          <button class="button button-primary" type="submit">Mensagem enviada</button>
+        </form>
+        <form method="post" action="{{ url_for('peixe.register_reply', lead_id=lead.id) }}">
+          <button class="button button-secondary" type="submit">Respondeu</button>
+        </form>
+        <form method="post" action="{{ url_for('peixe.register_conversation', lead_id=lead.id) }}">
+          <button class="button button-secondary" type="submit">Conversa</button>
+        </form>
+        <form method="post" action="{{ url_for('peixe.register_proposal', lead_id=lead.id) }}">
+          <button class="button button-secondary" type="submit">Proposta</button>
+        </form>
+        <form method="post" action="{{ url_for('peixe.register_pilot', lead_id=lead.id) }}">
+          <button class="button button-secondary" type="submit">Piloto</button>
+        </form>
+        <form method="post" action="{{ url_for('peixe.pause_lead', lead_id=lead.id) }}">
+          <button class="button button-ghost" type="submit">Pausar</button>
+        </form>
+      </div>
+      <form class="peixe-note-form" method="post" action="{{ url_for('peixe.add_note', lead_id=lead.id) }}">
+        <label for="notes">Nota rapida</label>
+        <textarea id="notes" name="notes" rows="2" maxlength="500" placeholder="O que voce aprendeu nesse contato?"></textarea>
+        <button class="button button-secondary" type="submit">Salvar nota</button>
+      </form>
+    </section>
+  </div>
+
+  <section class="peixe-card" aria-labelledby="timeline-title">
+    <div class="peixe-card-head">
+      <h2 id="timeline-title">Timeline</h2>
+      <span class="result-count">{{ interactions|length }}</span>
+    </div>
+    {% if interactions %}
+      <ol class="peixe-timeline">
+        {% for interaction in interactions %}
+          <li data-interaction-kind="{{ interaction.kind.value }}">
+            <span class="peixe-timeline-kind">{{ interaction.kind.value }}</span>
+            <span>{{ interaction.created_at.strftime("%d/%m/%Y %H:%M") }}</span>
+            {% if interaction.notes %}<p>{{ interaction.notes }}</p>{% endif %}
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="muted-text">Nenhuma interacao registrada ainda.</p>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}

@@ -90,6 +90,16 @@ Construir uma interface web limpa, leve e responsiva para o fluxo diário de pri
 - Tipo `recurso` disponível na tela de grupos e no formulário de tarefa.
 - Badge de Recurso e estilos de seção aplicados na identidade ICE.
 - Filtro de grupo removido do painel; mantidos status, atraso, tags e ordenação.
+- Blocos de grupo recolhíveis (`<details>`) com botão global `Expandir grupos`/`Recolher grupos`; estado preservado no filtro dinâmico.
+
+## Fase 15 - Interface Peixe-piloto
+
+- Dashboard com missão, mensagem, link de canal, XP, nível, streak, quest, follow-ups e top 3 do ICE.
+- Pipeline com filtro por status e contagens; formulário de lead; detalhe com timeline e ações.
+- Semana com números, aprendizado/bloqueio e próximos 5 nomes; agenda de 7 dias.
+- Sub-identidade coral/âmbar sobre a base ICE, responsiva a partir de 320px.
+- Botão copiar mensagem com `navigator.clipboard` e fallback.
+- Link `Peixe` na navegação principal.
 
 ## Atividades
 

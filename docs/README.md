@@ -7,9 +7,11 @@ Este é o ponto de entrada para qualquer nova sessão. Leia primeiro este arquiv
 - Ciclo 1 completo: Fases 0 a 7 concluídas (2026-10-31).
 - Ciclo 2 completo: Fases 8 a 10 concluídas em 2026-10-31 (aceite do usuário).
 - Ciclo 3 ativo: Fases 11 (schema `4` + Recursos) e 12 (painel em seções) concluídas; Fase 13 executada aguardando aceite.
-- Interface atual inclui Projetos, Áreas, Recursos, Arquivos e Sem grupo em `/` e a gestão em `/grupos`.
-- Código e bancos local/online em schema `4`; servidor espelhando 5 tarefas e 0 grupos.
-- Suíte automatizada atual: 75 testes aprovados.
+- Peixe-piloto: Fases 14 (schema `5`/domínio), 15 (interface `/peixe`) e 16 (e-mails/scripts) executadas localmente.
+- Interface atual inclui Projetos, Áreas, Recursos, Arquivos e Sem grupo em `/`, com blocos de grupo recolhíveis, e a gestão em `/grupos`.
+- `/peixe` disponível localmente em schema `5`; e-mails diário/semanal validados com SMTP real.
+- Publicação online e agendamento no Termux pendentes: SSH `ice-termux:8022` indisponível; online segue em schema `4`.
+- Suíte automatizada atual: 105 testes aprovados.
 
 O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.
 
@@ -28,12 +30,16 @@ O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.
 
 - `Discovery.md`: decisões de produto, regras de negócio e critérios de aceite.
 - `IDENTIDADE-VISUAL.md`: direção visual e limites da interface.
+- `peixe-piloto/COMANDOS.md`: briefing das fases F14-F16 do módulo Peixe-piloto.
+- `peixe-piloto/TUTORIAL.md`: tutorial de uso do módulo Peixe-piloto.
 - `VALIDACAO-VISUAL-F4.md`: roteiro da inspeção visual da Fase 4 (concluída e aprovada em 2026-10-03).
+- `VALIDACAO-E2E-PEIXE.md`: evidência da Fase 16 do Peixe-piloto (local aprovado; publicação pendente).
 
 ### Fases e contratos
 
 - `Fases-de-Desenvolvimento.md`: objetivos, critérios de saída e histórico das fases.
 - `CONTRATO-DOMINIO.md`: campos, regras e operações do domínio.
+- `CONTRATO-DOMINIO-PEIXE.md`: campos, regras e operações do módulo Peixe-piloto.
 - `CONTRATO-APLICACAO.md`: rotas, formulários, respostas e contexto dos templates.
 
 ### Backlog

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "peixe/_macros.html" import channel_label, status_label %}
+{% block title %}Pipeline - Peixe-piloto{% endblock %}
+{% block content %}
+<section class="peixe-page" aria-labelledby="leads-title">
+  <header class="peixe-hero">
+    <div>
+      <a class="back-link" href="{{ url_for('peixe.dashboard') }}"><span aria-hidden="true">&#8592;</span> Voltar ao Peixe</a>
+      <p class="eyebrow">PIPELINE</p>
+      <h1 id="leads-title">Seus leads</h1>
+      <p class="peixe-hero-copy">Acompanhe cada conversa do primeiro oi ao piloto.</p>
+    </div>
+    <a class="button button-primary" href="{{ url_for('peixe.new_lead') }}">Novo lead</a>
+  </header>
+
+  {% if messages %}
+    <div class="flash-stack" aria-live="polite">
+      {% for category, message in messages %}
+        <div class="message{% if category == 'error' %} message-error{% endif %}" data-message role="status" aria-atomic="true">
+          <span aria-hidden="true">{% if category == 'error' %}!{% else %}&#10003;{% endif %}</span>
+          <span class="message-text">{{ message }}</span>
+          <button class="message-dismiss" type="button" data-dismiss-message aria-label="Fechar aviso">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <nav class="peixe-filters" aria-label="Filtrar leads por status">
+    <a class="peixe-filter{% if not status %} is-active{% endif %}" href="{{ url_for('peixe.leads') }}">Todos <span>{{ counts.values()|sum }}</span></a>
+    {% for item in statuses %}
+      <a class="peixe-filter{% if status == item.value %} is-active{% endif %}" href="{{ url_for('peixe.leads', status=item.value) }}">{{ status_label(item.value) }} <span>{{ counts[item.value] }}</span></a>
+    {% endfor %}
+  </nav>
+
+  {% if leads %}
+    <div class="peixe-table-wrap">
+      <table class="peixe-table">
+        <thead>
+          <tr>
+            <th scope="col">Empresa</th>
+            <th scope="col">Canal</th>
+            <th scope="col">Status</th>
+            <th scope="col">Proxima acao</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in leads %}
+            <tr data-lead-id="{{ lead.id }}" data-lead-status="{{ lead.status.value }}">
+              <td>
+                <strong>{{ lead.company }}</strong>
+                {% if lead.contact %}<span class="peixe-meta">{{ lead.contact }}</span>{% endif %}
+              </td>
+              <td>{{ channel_label(lead.channel.value) }}</td>
+              <td><span class="peixe-status peixe-status-{{ lead.status.value }}">{{ status_label(lead.status.value) }}</span></td>
+              <td>{% if lead.next_action_at %}{{ lead.next_action_at.strftime("%d/%m/%Y") }}{% else %}<span class="muted-text">Sem data</span>{% endif %}</td>
+              <td class="peixe-table-action"><a class="text-action" href="{{ url_for('peixe.lead_detail', lead_id=lead.id) }}">Abrir</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state" data-empty>
+      <span class="empty-mark" aria-hidden="true">+</span>
+      <h2>Nenhum lead neste filtro.</h2>
+      <p>Cadastre um lead para começar a prospectar.</p>
+      <a class="button button-primary" href="{{ url_for('peixe.new_lead') }}">Cadastrar lead</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

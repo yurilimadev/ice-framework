@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% from "peixe/_macros.html" import xp_bar, streak_flame, quest_ring, channel_label, status_label %}
+{% block title %}Peixe-piloto - ICE Framework{% endblock %}
+{% block content %}
+<section class="peixe-page" aria-labelledby="peixe-title">
+  <header class="peixe-hero">
+    <div>
+      <p class="eyebrow">PEIXE-PILOTO</p>
+      <h1 id="peixe-title">Seu oceano de hoje</h1>
+      <p class="peixe-hero-copy">{{ ocean }} em {{ city }}. Uma mensagem de cada vez.</p>
+    </div>
+    <a class="button button-secondary" href="{{ url_for('peixe.leads') }}">Ver pipeline</a>
+  </header>
+
+  {% if messages %}
+    <div class="flash-stack" aria-live="polite">
+      {% for category, message in messages %}
+        <div class="message{% if category == 'error' %} message-error{% endif %}" data-message role="status" aria-atomic="true">
+          <span aria-hidden="true">{% if category == 'error' %}!{% else %}&#10003;{% endif %}</span>
+          <span class="message-text">{{ message }}</span>
+          <button class="message-dismiss" type="button" data-dismiss-message aria-label="Fechar aviso">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="peixe-stats">
+    {{ xp_bar(xp, level) }}
+    {{ streak_flame(streak) }}
+    {{ quest_ring(quest) }}
+  </div>
+
+  {% if mission %}
+    <article class="peixe-mission">
+      <div class="peixe-mission-head">
+        <div>
+          <p class="eyebrow">MISSAO DO DIA</p>
+          <h2>{{ mission.company }}</h2>
+          <p class="peixe-meta">
+            {% if mission.contact %}{{ mission.contact }} · {% endif %}
+            {{ channel_label(mission.channel.value) }} · {{ status_label(mission.status.value) }}
+          </p>
+        </div>
+        <a class="text-action" href="{{ url_for('peixe.lead_detail', lead_id=mission.id) }}">Abrir lead</a>
+      </div>
+      <p class="peixe-observation">{{ mission.observation }}</p>
+      <pre class="peixe-message" id="mission-message">{{ contact.message }}</pre>
+      <div class="peixe-actions">
+        <button class="button button-secondary" type="button" data-copy-target="mission-message">Copiar mensagem</button>
+        {% if contact.link %}
+          <a class="button button-secondary" href="{{ contact.link.url }}" target="_blank" rel="noopener">{{ contact.link.label }}</a>
+        {% endif %}
+        <a class="button button-secondary" href="{{ url_for('peixe.lead_detail', lead_id=mission.id) }}">Registrar conversa</a>
+        <form method="post" action="{{ url_for('peixe.send_message', lead_id=mission.id) }}">
+          <button class="button button-primary" type="submit">Registrar envio</button>
+        </form>
+      </div>
+    </article>
+  {% else %}
+    <div class="empty-state peixe-empty" data-empty>
+      <span class="empty-mark" aria-hidden="true">+</span>
+      <h2>Nenhuma missao pendente.</h2>
+      <p>Cadastre um lead ou ajuste os follow-ups para voltar a navegar.</p>
+      <a class="button button-primary" href="{{ url_for('peixe.new_lead') }}">Cadastrar lead</a>
+    </div>
+  {% endif %}
+
+  <div class="peixe-columns">
+    <section class="peixe-card" aria-labelledby="followups-title">
+      <div class="peixe-card-head">
+        <h2 id="followups-title">Follow-ups vencidos</h2>
+        <span class="result-count">{{ followups|length }}</span>
+      </div>
+      {% if followups %}
+        <ul class="peixe-list">
+          {% for lead in followups %}
+            <li>
+              <a href="{{ url_for('peixe.lead_detail', lead_id=lead.id) }}">{{ lead.company }}</a>
+              <span>{{ lead.next_action_at.strftime("%d/%m") }} · {{ channel_label(lead.channel.value) }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted-text">Nenhum follow-up vencido.</p>
+      {% endif %}
+    </section>
+
+    <section class="peixe-card" aria-labelledby="ice-title">
+      <div class="peixe-card-head">
+        <h2 id="ice-title">Top 3 do ICE</h2>
+        <a class="text-action" href="{{ url_for('tasks.index') }}">Abrir painel</a>
+      </div>
+      {% if top_tasks %}
+        <ol class="peixe-priorities">
+          {% for task in top_tasks %}
+            <li>
+              <span>{{ task.title }}</span>
+              <strong>{{ task.score }}</strong>
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p class="muted-text">Nenhuma tarefa aberta no ICE.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="peixe-quicklinks">
+    <a class="button button-secondary" href="{{ url_for('peixe.week') }}">Fechamento da semana</a>
+    <a class="button button-secondary" href="{{ url_for('peixe.agenda') }}">Agenda de 7 dias</a>
+    <a class="button button-secondary" href="{{ url_for('peixe.new_lead') }}">Novo lead</a>
+    {% if peixe_digest_ready %}
+      <form method="post" action="{{ url_for('peixe.send_daily_email') }}" data-busy-form data-busy-label="Enviando...">
+        <button class="button button-ghost" type="submit" data-busy-button><span data-busy-text>Enviar resumo diario</span></button>
+      </form>
+      <form method="post" action="{{ url_for('peixe.send_weekly_email') }}" data-busy-form data-busy-label="Enviando...">
+        <button class="button button-ghost" type="submit" data-busy-button><span data-busy-text>Enviar fechamento</span></button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

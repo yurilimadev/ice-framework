@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 ativo — Fases 11 e 12 concluídas e Fase 13 executada, aguardando aceite do usuário
+**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 — Fases 11 e 12 concluídas e Fase 13 executada, aguardando aceite; Peixe-piloto — Fases 14, 15 e 16 executadas localmente; publicação no Termux pendente
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -366,7 +366,67 @@ existente permanecem no schema `2`, sem nova migração.
 
 **Critério de saída:** fluxos dos quatro conceitos aprovados nas duas instâncias; backup/restauração e publicação preservam os dados.
 
-**Verificação registrada:** `docs/VALIDACAO-E2E-F13.md` — drill local (seções, filtros, reinício e backup/restauração em schema `4`) e drill no Termux (código em `33190be`, publicação, cinco seções, grupos `projeto`/`area`/`recurso`/arquivado e backup/restauração) aprovados; dados de validação removidos e servidor republicado com `5` tarefas e `0` grupos. Aceite do usuário pendente.
+**Verificação registrada:** `docs/VALIDACAO-E2E-F13.md` — drill local (seções, filtros, reinício e backup/restauração em schema `4`) e drill no Termux (código em `33190be`, publicação, cinco seções, grupos `projeto`/`area`/`recurso`/arquivado e backup/restauração) aprovados; dados de validação removidos e servidor republicado com `5` tarefas e `0` grupos. Blocos de grupo recolhíveis adicionados após o aceite visual inicial (handoff `FE-F13-001`). Aceite do usuário pendente.
+
+## Fase 14 - Peixe-piloto: domínio, migração 005 e testes
+
+**Status:** executada em 2026-10-31 — aguardando aceite do usuário.
+
+**Objetivo:** criar o domínio do módulo Peixe-piloto no mesmo SQLite, sem alterar `tasks` ou `grupos`.
+
+**Atividades:**
+
+- Criar `005_peixe.sql` com `leads`, `interactions` e `settings` (schema `5`).
+- Implementar `Lead`, `Interaction`, `PeixeRepository`, XP, níveis, streak, progresso semanal e badges em `app/peixe.py`.
+- Implementar transições de status, missão diária, follow-ups e contagens de pipeline.
+- Cobrir migração nova e upgrade `4 -> 5`, XP, níveis, streak, semana, transições, unicidade, missão e follow-ups em testes.
+
+**Sessões envolvidas:** backend (`BE-010`) e testes (`QA-012`).
+
+**Critério de saída:** banco novo e banco `4` migram para `5` sem perda; regras cobertas por teste e suíte verde; nenhum comportamento de `tasks`/`grupos` alterado.
+
+**Verificação registrada:** `005_peixe.sql` aplicada em banco novo e em cópia do banco local (`4 -> 5`, tarefas preservadas, `PRAGMA foreign_key_check` limpo); `PeixeRepository` com 14 testes de domínio cobrindo migração, XP, níveis, streak, semana, transições, unicidade, missão, follow-ups, badges e cascata. Suíte completa com `89` testes `OK`. Contrato em `docs/CONTRATO-DOMINIO-PEIXE.md`.
+
+## Fase 15 - Peixe-piloto: interface `/peixe` e gamificação
+
+**Status:** executada em 2026-10-31 — aguardando aceite do usuário.
+
+**Objetivo:** expor o cockpit diário em `/peixe`, com pipeline, missão, XP, streak, quest e ações de lead.
+
+**Atividades:**
+
+- Criar `app/peixe_routes.py` e registrar o blueprint.
+- Implementar dashboard, pipeline, formulário, detalhe, semana e agenda.
+- Criar templates em `app/templates/peixe/` e sub-identidade visual.
+- Gerar mensagem e links por canal; implementar copiar mensagem.
+- Adicionar link `Peixe` na navegação.
+- Cobrir rotas e fluxos com testes.
+
+**Sessões envolvidas:** backend (rotas), frontend e testes.
+
+**Critério de saída:** fluxo completo com backend real, inspeção visual desktop/mobile e nenhuma regressão em `/`, `/grupos` ou `/tags`.
+
+**Verificação registrada:** `/peixe`, `/peixe/leads`, `/peixe/leads/new`, detalhe, `/peixe/semana` e `/peixe/agenda` responderam `200` em servidor local; dashboard exibiu missão, mensagem, link de canal, XP, streak e quest; ações de envio/resposta/conversa/proposta/piloto atualizaram status, interação e XP; semana salvou aprendizado/bloqueio; 10 testes de rotas novos. Suíte completa com `99` testes `OK`. Inspeção visual renderizada pelo usuário pendente.
+
+## Fase 16 - Peixe-piloto: e-mail, agendamento e E2E
+
+**Status:** executada localmente em 2026-10-31 — publicação e agendamento bloqueados pelo Termux.
+
+**Objetivo:** enviar resumo diário/semanal, agendar no Termux e validar o módulo ponta a ponta.
+
+**Atividades:**
+
+- Criar `app/peixe_digest.py` com versões texto/HTML diária e semanal.
+- Adicionar CLIs `send-peixe-daily` e `send-peixe-weekly`.
+- Configurar `PEIXE_TO` com fallback para `DIGEST_TO` e botões manuais.
+- Criar scripts de agendamento no Termux e documentar a alternativa systemd.
+- Validar e-mail real, restart, backup/restauração em schema `5` e publicação.
+
+**Sessões envolvidas:** backend, testes e administração.
+
+**Critério de saída:** e-mails recebidos, dados preservados após restart/publicação, suíte verde e nenhuma credencial commitada.
+
+**Verificação registrada:** `docs/VALIDACAO-E2E-PEIXE.md` — e-mails diário e semanal enviados com sucesso pelo SMTP configurado, backup/restauração em schema `5` com lead preservado, suíte com `105` testes `OK`. Publicação no Termux e agendamento ficaram bloqueados porque a porta SSH 8022 recusou conexão; o app online segue em schema `4` até a recuperação do acesso.
 
 ## Regra de avanço
 

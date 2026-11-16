@@ -100,6 +100,8 @@ Regras das seções:
 - Sem grupo reúne cards sem vínculo.
 - Grupos sem cards não aparecem no painel; continuam disponíveis em `/grupos`.
 - O filtro de grupo foi removido do painel; os demais filtros continuam válidos.
+- Cada bloco de grupo é recolhível e começa fechado, exibindo nome, tipo e contagem de cards.
+- O botão `Expandir grupos` / `Recolher grupos` abre ou fecha todos os blocos; o estado é preservado durante a troca dinâmica de filtros.
 
 O template de criação/edição deve receber:
 
@@ -114,7 +116,8 @@ O template de `/grupos` recebe `groups` com `id`, `name`, `kind`, `status` e `ta
 
 - Cards: `data-task-id`, `data-task-status`, `data-overdue`.
 - Seções do painel: `data-group-section` com `projetos`, `areas`, `recursos`, `arquivos` ou `sem-grupo`.
-- Bloco de grupo: `data-section-group-id` e `data-section-group-status`.
+- Bloco de grupo: `data-group-block`, `data-section-group-id` e `data-section-group-status`.
+- Controle global: `data-toggle-groups` com `aria-expanded` sincronizado.
 - Grupo no card: `data-group-id`, `data-group-kind` (`projeto`/`area`/`recurso`).
 - Tela de grupos: `data-group-id`, `data-group-kind`, `data-group-status` na linha; `groups-title` no heading.
 - Formulário de tarefa: `name="grupo_id"` com valor vazio ou id de grupo.
@@ -125,3 +128,57 @@ O template de `/grupos` recebe `groups` com `id`, `name`, `kind`, `status` e `ta
 - Frontend implementa templates, estilos, controles e confirmação visual.
 - Testes valida métodos, status HTTP, redirecionamentos, mensagens, filtros e contexto.
 - Qualquer alteração neste documento exige handoff `CONTRATO` para Backend, Frontend e Testes.
+
+## Módulo Peixe-piloto
+
+O módulo usa o mesmo Flask/SQLite, com tela própria em `/peixe`. Ele não altera as rotas, campos ou comportamentos de tarefas e grupos.
+
+### Rotas
+
+| Método | Rota | Responsabilidade | Resposta de sucesso |
+|---|---|---|---|
+| `GET` | `/peixe` | Dashboard do dia | HTML `200` |
+| `GET` | `/peixe/leads` | Pipeline com filtro `status` | HTML `200` |
+| `GET` | `/peixe/leads/new` | Formulário de lead | HTML `200` |
+| `POST` | `/peixe/leads` | Criar lead | Redirect `303` para o detalhe |
+| `GET` | `/peixe/leads/<int:lead_id>` | Detalhe, mensagem sugerida e timeline | HTML `200` |
+| `POST` | `/peixe/leads/<int:lead_id>/send` | Registrar mensagem enviada | Redirect `303` |
+| `POST` | `/peixe/leads/<int:lead_id>/reply` | Registrar resposta | Redirect `303` |
+| `POST` | `/peixe/leads/<int:lead_id>/conversation` | Registrar conversa | Redirect `303` |
+| `POST` | `/peixe/leads/<int:lead_id>/proposal` | Registrar proposta | Redirect `303` |
+| `POST` | `/peixe/leads/<int:lead_id>/pilot` | Registrar piloto | Redirect `303` |
+| `POST` | `/peixe/leads/<int:lead_id>/pause` | Pausar lead | Redirect `303` |
+| `POST` | `/peixe/leads/<int:lead_id>/note` | Adicionar nota | Redirect `303` |
+| `GET` | `/peixe/semana` | Fechamento semanal | HTML `200` |
+| `POST` | `/peixe/semana` | Salvar aprendizado e bloqueio | Redirect `303` |
+| `GET` | `/peixe/agenda` | Próximos 7 dias | HTML `200` |
+
+Lead inexistente responde `404`; validação inválida do formulário responde `400` com `errors` por campo.
+
+### Formulário de lead
+
+Campos: `company` (obrigatório, 1-120), `contact` (opcional), `sector` (1-60), `city` (1-60), `channel` (`whatsapp`, `linkedin`, `email`, `instagram`, `presencial`), `handle` (1-200) e `observation` (1-200).
+
+### Contexto
+
+- Dashboard: `mission`, `contact` (dor, mensagem e link), `xp`, `level`, `streak`, `badges`, `quest`, `followups`, `top_tasks`, `counts`, `ocean` e `city`.
+- Pipeline: `leads`, `counts`, `status` e `statuses`.
+- Detalhe: `lead`, `contact` e `interactions`.
+- Semana: `progress`, `extra` (propostas/pilotos), `quest`, `xp`, `level`, `streak`, `next_leads`, `learning` e `blocker`.
+- Agenda: `days` (mapa data -> leads) e `today`.
+
+### Mensagem e links
+
+A mensagem é gerada no servidor com contato, observação, dor e setor. A dor vem de `settings.current_pain` ou do padrão de odontologia ("falta de paciente e agenda"). Links por canal:
+
+- WhatsApp: `https://wa.me/55<numero>?text=<mensagem>`.
+- Email: `mailto:<handle>?subject=...&body=<mensagem>`.
+- LinkedIn/Instagram: abre o perfil; a mensagem é copiada pelo botão.
+- Presencial: sem link externo.
+
+### Seletores
+
+- Lead: `data-lead-id`, `data-lead-status`.
+- Interação: `data-interaction-kind`.
+- Agenda: `data-agenda-date`.
+- Cópia de mensagem: `data-copy-target`.

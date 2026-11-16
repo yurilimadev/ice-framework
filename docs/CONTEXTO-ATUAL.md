@@ -8,9 +8,14 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 - **Fases 11 e 12 do Ciclo 3**: concluídas em 2026-10-31.
 - **Fase 13**: executada em 2026-10-31 — aguardando aceite do usuário para encerrar o Ciclo 3.
+- **Peixe-piloto — Fases 14, 15 e 16**: executadas localmente em 2026-10-31; publicação no Termux pendente por SSH indisponível.
 - Entregue na Fase 11: `kind='recurso'`, migração `3 -> 4` preservando grupos e vínculos; `Arquivos` segue como `status='archived'`.
 - Entregue na Fase 12: painel em seções Projetos, Áreas, Recursos, Arquivos e Sem grupo; tipo Recurso na gestão e no formulário.
 - Entregue/validado na Fase 13: E2E local e no Termux, backup/restauração e publicação em schema `4`; servidor espelhando 5 tarefas e 0 grupos.
+- Entregue na F14: schema `5` com `leads`, `interactions` e `settings`; domínio Peixe-piloto com XP, níveis, streak, quest, missão diária, follow-ups e badges.
+- Entregue na F15: interface `/peixe` (dashboard, pipeline, detalhe, semana e agenda), ações de lead, mensagem gerada, links por canal e sub-identidade coral/âmbar.
+- Entregue na F16: e-mails diário/semanal texto+HTML, CLIs `send-peixe-daily`/`send-peixe-weekly`, botões manuais, scripts de agendamento e configuração `PEIXE_TO`.
+- App local em schema `5`, com `/peixe` e e-mails reais validados; online segue em schema `4` até a publicação.
 - Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
 - Entregue na Fase 8: schema `3` com `grupos` e `tasks.grupo_id`; CRUD/arquivamento de grupo; vínculo e desvínculo de cards; exclusão preserva tarefas e tags.
 - Entregue na Fase 9: tela `/grupos`, campo `grupo_id` no formulário, filtro `group` no painel e badge Projeto/Área nos cards.
@@ -35,6 +40,13 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 | `FE-007` | concluída | Painel em seções e tipo Recurso aplicados |
 | `QA-010` | concluída | Seções validadas; Fase 12 encerrada |
 | `QA-011` | em validação | Drills F13 aprovados; aguardando aceite do usuário |
+| `ADM-PEIXE-001` | em validação | F14 entregue; aguardando aceite antes da F15 |
+| `BE-010` | concluída | Schema `5` e domínio Peixe-piloto entregues |
+| `QA-012` | em validação | 14 testes novos; suíte total com 89 testes OK |
+| `BE-011` | concluída | Rotas e contexto `/peixe` entregues |
+| `FE-008` | concluída | Interface Peixe-piloto aplicada |
+| `QA-013` | concluída | Interface Peixe aprovada para a F16 |
+| `QA-014` | em validação | E-mails e backup locais OK; publicação bloqueada pelo SSH |
 | `BE-003` | concluída | Suporte somente para regressões ou mudanças de contrato |
 | `FE-001` | concluída | Interface aprovada na inspeção visual de 2026-10-03 |
 | `QA-004` | concluída | Inspeção visual aprovada; 53 testes OK |
@@ -67,18 +79,23 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Fase 11 concluída: migração `004_grupos_recurso.sql` (schema `4`), `GroupKind.RESOURCE` e preservação de grupos/vínculos; suíte com regressões de upgrade `3 -> 4`.
 - Fase 12 concluída: painel em seções Projetos/Áreas/Recursos/Arquivos/Sem grupo, tipo Recurso em `/grupos` e no formulário, filtro de grupo removido; verificação HTTP local com as cinco seções.
 - Fase 13 executada: E2E local e no Termux, backup/restauração e publicação em schema `4`; dados de validação removidos; evidência em `docs/VALIDACAO-E2E-F13.md`.
-- Suíte automatizada atual: `75` testes, resultado `OK`.
+- Ajuste de interface pós-validação: blocos de grupo recolhíveis (`<details>`), fechados por padrão, com botão `Expandir grupos`/`Recolher grupos`.
+- Fase 14 executada: migração `005_peixe.sql` (schema `5`), `PeixeRepository` e 14 testes de domínio; upgrade `4 -> 5` validado em cópia do banco real.
+- Fase 15 executada: dashboard, pipeline, detalhe, semana e agenda em `/peixe`; mensagem/links por canal, ações de lead, cópia e sub-identidade visual; 10 testes de rotas.
+- Fase 16 executada localmente: e-mails diário e semanal reais enviados, CLIs e scripts criados, backup/restauração em schema `5` com lead preservado; 6 testes de digest.
+- Suíte automatizada atual: `105` testes, resultado `OK`.
 
 ## Bloqueio atual
 
-Nenhum bloqueio de projeto. Nota de infra (2026-10-31): o Android descarregou e saiu do ar; recolocado pelo usuário — serviços voltaram sozinhos ao abrir o Termux, wake-lock reaplicado, `https://ice.yurilimadev.com` saudável de novo. Recomendo reserva de DHCP no roteador e a reabertura do Termux após qualquer reinício.
+Bloqueio de infra na publicação do Peixe: `https://ice.yurilimadev.com` está no ar em schema `4`, mas o SSH `ice-termux:8022` recusa conexão (o host responde a ping). Sem SSH não é possível atualizar o código, publicar o banco nem agendar os scripts. Ação: abrir o Termux no Android e reativar o `sshd`.
 
 ## Próxima decisão
 
-Ouvir o usuário sobre o aceite da Fase 13; se aprovado, marcar a Fase 13 e o Ciclo 3 como concluídos. Depois, definir o próximo ciclo/backlog. Handoffs da Fase 13: `QA-F13-001`, `INFRA-F13-001` e `ADM-F13-HOLD-001`.
+Quando o SSH voltar: rodar `git pull --ff-only` em `~/ice-framework`, executar `python3 -m flask --app wsgi publish`, confirmar schema `5` e `/peixe` no online e agendar `scripts/peixe-daily.sh`/`peixe-weekly.sh` com `termux-job-scheduler`. Handoffs da F16: `BE-F16-001`, `QA-F16-001` e `INFRA-F16-001`. O aceite da Fase 13/Ciclo 3 também continua pendente.
 
 ## Backlog
 
+- `BACKLOG.md` item 8: Peixe-piloto; F14-F16 executadas localmente, publicação/agendamento pendentes pelo SSH.
 - `BACKLOG.md` item 7: Recursos e painel em seções (Ciclo 3); Fases 11 e 12 concluídas, Fase 13 executada e aguardando aceite.
 - `BACKLOG.md` item 6: grupos Projeto/Área concluídos no Ciclo 2 (Fases 8 a 10).
 - Demais demandas registradas: filtro de tags, agendamento de notificações por email, cron de publicação.
@@ -94,5 +111,5 @@ Ouvir o usuário sobre o aceite da Fase 13; se aprovado, marcar a Fase 13 e o Ci
 
 ## Último versionamento
 
-- Último commit publicado: `33190be` (Ciclo 3: Recursos e painel em seções com schema `4`).
-- Alterações locais pendentes: documentação da Fase 13 (`VALIDACAO-E2E-F13.md` e snapshots); nenhuma alteração de código pendente.
+- Último commit publicado: `505c658` (Fase 13: E2E e publicação do Ciclo 3).
+- Alterações locais pendentes: ajuste de grupos recolhíveis e Fases 14-16 do Peixe-piloto (schema `5`, domínio, rotas, templates, e-mails, scripts, testes e documentação); nada commitado.

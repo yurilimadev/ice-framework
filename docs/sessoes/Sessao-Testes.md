@@ -350,6 +350,43 @@ cenários visuais permanece com o `QA-004`.
 - **Retorno solicitado:** cenários, falhas e decisão sobre a Fase 13.
 - **Condição de conclusão:** seções e formulários aprovados sem regressão.
 
+### Testes-14 - Domínio Peixe-piloto (Fase 14)
+
+- Validar banco novo em schema `5`.
+- Validar upgrade `4 -> 5` preservando `tasks`, `tags` e `grupos`.
+- Confirmar `PRAGMA foreign_key_check` limpo.
+- Validar XP por tipo, limites de nível, streak, progresso semanal e badges.
+- Validar transições de status, unicidade `(channel, handle)`, missão diária e follow-ups.
+- Validar a regra de mensagem e a cascata de exclusão de interações.
+- Executar a suíte completa.
+
+**Retorno necessário:**
+
+- **De:** `BE-010`.
+- **Retorno solicitado:** migração e domínio implementados.
+- **Para:** Administração.
+- **Retorno solicitado:** cenários, falhas e decisão sobre a F15.
+- **Condição de conclusão:** regras cobertas e suíte verde.
+
+### Testes-15 - Rotas e interface Peixe-piloto (Fase 15)
+
+- Validar `/peixe` com missão e prioridades do ICE.
+- Validar criação de lead, formulário inválido, pipeline e filtro por status.
+- Validar envio, resposta, conversa, proposta, piloto, nota e pausa.
+- Confirmar `404` para lead inexistente e atualização de XP/status/timeline.
+- Validar semana, salvamento de aprendizado/bloqueio e agenda de 7 dias.
+- Confirmar mensagem gerada, link de canal e botão de cópia.
+- Verificar ausência de regressão em `/`, `/grupos` e `/tags`.
+- Executar a suíte completa e verificação HTTP local.
+
+**Retorno necessário:**
+
+- **De:** `BE-011` e `FE-008`.
+- **Retorno solicitado:** rotas, contexto e telas implementados.
+- **Para:** Administração.
+- **Retorno solicitado:** cenários, falhas e decisão sobre a F16.
+- **Condição de conclusão:** fluxos aprovados e inspeção visual registrada.
+
 ## Classificação de falhas
 
 - `BACKEND`: regra, validação, persistência, rota ou resposta incorreta.

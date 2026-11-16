@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Novo lead - Peixe-piloto{% endblock %}
+{% block content %}
+<section class="peixe-page peixe-form-page" aria-labelledby="lead-form-title">
+  <div class="peixe-form-intro">
+    <a class="back-link" href="{{ url_for('peixe.leads') }}"><span aria-hidden="true">&#8592;</span> Voltar ao pipeline</a>
+    <p class="eyebrow">NOVO LEAD</p>
+    <h1 id="lead-form-title">Quem entra no oceano?</h1>
+    <p>Registre o essencial. A mensagem nasce na proxima tela, pronta para copiar.</p>
+  </div>
+
+  <form class="peixe-form" method="post" action="{{ url_for('peixe.create_lead') }}">
+    {% if errors %}
+      <div class="error-panel" role="alert" aria-labelledby="lead-error-title">
+        <strong id="lead-error-title">Confira os campos destacados</strong>
+        {% for field, message in errors.items() %}
+          <p class="error" id="error-{{ field }}" data-error-field="{{ field }}">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="form-two-col">
+      <div class="field-group{% if errors.company %} has-error{% endif %}">
+        <label for="company">Empresa</label>
+        <input id="company" name="company" maxlength="120" value="{{ form_values.company }}" placeholder="Ex: Clinica Sorriso" required{% if errors.company %} aria-invalid="true" aria-describedby="error-company"{% endif %}>
+      </div>
+      <div class="field-group{% if errors.contact %} has-error{% endif %}">
+        <label for="contact">Contato <span class="optional">opcional</span></label>
+        <input id="contact" name="contact" maxlength="120" value="{{ form_values.contact }}" placeholder="Ex: Dra. Ana"{% if errors.contact %} aria-invalid="true" aria-describedby="error-contact"{% endif %}>
+      </div>
+    </div>
+
+    <div class="form-two-col">
+      <div class="field-group{% if errors.sector %} has-error{% endif %}">
+        <label for="sector">Setor</label>
+        <input id="sector" name="sector" maxlength="60" value="{{ form_values.sector }}" placeholder="odontologia" required{% if errors.sector %} aria-invalid="true" aria-describedby="error-sector"{% endif %}>
+      </div>
+      <div class="field-group{% if errors.city %} has-error{% endif %}">
+        <label for="city">Cidade</label>
+        <input id="city" name="city" maxlength="60" value="{{ form_values.city }}" placeholder="Natal" required{% if errors.city %} aria-invalid="true" aria-describedby="error-city"{% endif %}>
+      </div>
+    </div>
+
+    <div class="form-two-col">
+      <div class="field-group{% if errors.channel %} has-error{% endif %}">
+        <label for="channel">Canal</label>
+        <select id="channel" name="channel"{% if errors.channel %} aria-invalid="true" aria-describedby="error-channel"{% endif %}>
+          {% for value, label in (("whatsapp", "WhatsApp"), ("linkedin", "LinkedIn"), ("email", "Email"), ("instagram", "Instagram"), ("presencial", "Presencial")) %}
+            <option value="{{ value }}"{% if form_values.channel == value %} selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field-group{% if errors.handle %} has-error{% endif %}">
+        <label for="handle">Contato no canal</label>
+        <input id="handle" name="handle" maxlength="200" value="{{ form_values.handle }}" placeholder="Telefone, @perfil ou email" required{% if errors.handle %} aria-invalid="true" aria-describedby="error-handle"{% endif %}>
+        <span class="field-help">WhatsApp: numero com DDD. LinkedIn/Instagram: perfil. Email: endereco completo.</span>
+      </div>
+    </div>
+
+    <div class="field-group{% if errors.observation %} has-error{% endif %}">
+      <label for="observation">Observacao</label>
+      <input id="observation" name="observation" maxlength="200" value="{{ form_values.observation }}" placeholder="O que chamou sua atencao nesse lead?" required{% if errors.observation %} aria-invalid="true" aria-describedby="error-observation"{% endif %}>
+      <span class="field-help">Essa frase entra na mensagem gerada.</span>
+    </div>
+
+    <div class="form-actions">
+      <a class="button button-ghost" href="{{ url_for('peixe.leads') }}">Cancelar</a>
+      <button class="button button-primary" type="submit">Salvar lead</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

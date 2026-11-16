@@ -1,0 +1,46 @@
+{% macro level_badge(level) -%}
+<span class="peixe-level">{{ level }}</span>
+{%- endmacro %}
+
+{% macro xp_bar(xp, level) -%}
+<div class="peixe-xp" aria-label="{{ xp }} pontos de experiencia, nivel {{ level }}">
+  <div class="peixe-xp-head">
+    {{ level_badge(level) }}
+    <strong>{{ xp }} XP</strong>
+  </div>
+  <div class="peixe-xp-track"><span style="width: {{ xp % 100 }}%"></span></div>
+</div>
+{%- endmacro %}
+
+{% macro streak_flame(streak) -%}
+<div class="peixe-streak" aria-label="Streak de {{ streak }} dia(s)">
+  <span class="peixe-streak-mark" aria-hidden="true">&#9650;</span>
+  <strong>{{ streak }}</strong>
+  <span>dia{% if streak != 1 %}s{% endif %} seguido{% if streak != 1 %}s{% endif %}</span>
+</div>
+{%- endmacro %}
+
+{% macro quest_ring(quest) -%}
+<div class="peixe-quest" aria-label="Quest semanal {{ quest.percent }}% concluida">
+  <div class="peixe-ring" style="--progress: {{ quest.percent }}%">
+    <span>{{ quest.percent }}%</span>
+  </div>
+  <div class="peixe-quest-copy">
+    <strong>Quest semanal</strong>
+    <ul>
+      {% for item in quest["items"] %}
+        <li class="{% if item.done %}is-done{% endif %}">{{ item.label }} {{ item.current }}/{{ item.target }}</li>
+      {% endfor %}
+    </ul>
+    {% if quest.doce %}<span class="peixe-doce">Doce liberado</span>{% endif %}
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro channel_label(channel) -%}
+{% if channel == "whatsapp" %}WhatsApp{% elif channel == "linkedin" %}LinkedIn{% elif channel == "email" %}Email{% elif channel == "instagram" %}Instagram{% elif channel == "presencial" %}Presencial{% else %}Sistema{% endif %}
+{%- endmacro %}
+
+{% macro status_label(status) -%}
+{% if status == "novo" %}Novo{% elif status == "a_enviar" %}A enviar{% elif status == "enviado" %}Enviado{% elif status == "respondeu" %}Respondeu{% elif status == "conversa" %}Conversa{% elif status == "proposta" %}Proposta{% elif status == "piloto" %}Piloto{% elif status == "ganho" %}Ganho{% elif status == "perdido" %}Perdido{% else %}Pausado{% endif %}
+{%- endmacro %}

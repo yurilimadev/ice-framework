@@ -141,6 +141,13 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 | FE-007 | Interface de Recursos e seções | 12 | concluída | Painel em seções, tipo Recurso e estilos aplicados |
 | QA-010 | Testes do painel em seções | 12 | concluída | Seções, formulários e regressões validados; 75 testes OK |
 | QA-011 | E2E e publicação do Ciclo 3 | 13 | em validação | Drills local e Termux aprovados; aguardando aceite do usuário |
+| ADM-PEIXE-001 | Ativação do módulo Peixe-piloto | 14 | concluída | F14-F16 executadas; publicação pendente |
+| BE-010 | Domínio Peixe-piloto e migração 005 | 14 | concluída | Schema `5`, repositório e testes de domínio entregues |
+| QA-012 | Testes do domínio Peixe-piloto | 14 | em validação | 14 testes novos; suíte total com 89 testes OK |
+| BE-011 | Rotas e contexto Peixe-piloto | 15 | concluída | Blueprint `/peixe`, ações de lead e contexto entregues |
+| FE-008 | Interface Peixe-piloto | 15 | concluída | Dashboard, pipeline, detalhe, semana e agenda |
+| QA-013 | Testes de rotas e interface Peixe | 15 | concluída | 10 testes novos; interface aprovada para a F16 |
+| QA-014 | E2E, e-mail e publicação do Peixe | 16 | em validação | E-mails e backup locais OK; publicação bloqueada pelo SSH do Termux |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -1086,3 +1093,167 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Registro: Fase 13 executada e critério de saída atendido; documentação de validação registrada. Fase e Ciclo 3 permanecem **aguardando aceite explícito do usuário**.
 - Próximo passo: se aceito, marcar Fase 13/Ciclo 3 como concluídos e atualizar os snapshots.
 - Status: em validação
+
+### Handoff FE-F13-001 - 2026-10-31
+
+- Origem: Frontend (pedido do usuário)
+- Destino: Testes e Administração
+- Tipo: UI
+- Alteração: blocos de grupo passaram a ser recolhíveis (`<details>`), fechados por padrão, com contagem de cards; botão `Expandir grupos`/`Recolher grupos` abre ou fecha todos e preserva o estado na troca dinâmica de filtros.
+- Arquivos ou áreas afetadas: `app/templates/index.html`, `app/static/styles.css`, `app/static/app.js`, `docs/CONTRATO-APLICACAO.md`, `tests/test_routes.py`, `tests/test_frontend.py`.
+- Seletores: `data-group-block`, `data-toggle-groups`, `group-toggle-mark`.
+- Verificação executada: suíte com `75` testes `OK`; HTML conferido com bloco `details` fechado e controle global presente.
+- Retorno necessário de: usuário.
+- Retorno solicitado: validação visual do recolhimento dos grupos.
+- Condição de desbloqueio: aceite visual.
+- Status: em validação
+
+### Handoff ADM-PEIXE-001 - 2026-10-31
+
+- Origem: Administração (autorização do usuário para seguir `docs/peixe-piloto/COMANDOS.md`)
+- Destino: Backend (`BE-010`) e Testes (`QA-012`)
+- Tipo: SCHEMA/REGRA
+- Alteração: Ciclo Peixe-piloto ativado; F14 aberta para criar schema `5`, domínio de leads/interações e gamificação. F15 e F16 permanecem bloqueadas até o aceite da F14.
+- Arquivos ou áreas afetadas: `migrations/005_peixe.sql`, `app/peixe.py`, `tests/test_peixe_domain.py`, `docs/CONTRATO-DOMINIO-PEIXE.md`, `docs/Fases-de-Desenvolvimento.md`.
+- Ação obrigatória do destino: Backend implementa o domínio e a migração; Testes validam banco novo, upgrade `4 -> 5` e as regras de gamificação.
+- Retorno necessário de: `BE-010` e `QA-012`.
+- Retorno solicitado: evidência da migração, regras implementadas e resultado da suíte.
+- Condição de desbloqueio: aceite da F14 pelo usuário antes de abrir a F15.
+- Verificação executada: briefing lido; `tasks` e `grupos` devem permanecer intactos.
+- Bloqueios: F15 e F16 bloqueadas.
+- Status: em validação
+
+### Handoff BE-F14-001 - 2026-10-31
+
+- Origem: Backend (`BE-010`)
+- Destino: Testes (`QA-012`) e Administração
+- Tipo: SCHEMA/REGRA
+- Alteração: criada `005_peixe.sql` (schema `5`) com `leads`, `interactions` e `settings`; implementado `app/peixe.py` com `Lead`, `Interaction`, `PeixeRepository`, `xp_for`, `level_for`, transições de status, missão diária, follow-ups, streak, progresso semanal e badges.
+- Arquivos ou áreas afetadas: `migrations/005_peixe.sql`, `app/peixe.py`, `tests/test_peixe_domain.py`, `tests/test_foundation.py`, `README.md`, `docs/CONTRATO-DOMINIO-PEIXE.md`.
+- Comportamento anterior: schema `4`, sem tabelas ou domínio Peixe.
+- Comportamento novo: leads e interações persistem no mesmo SQLite; registrar mensagem muda status para `enviado`, define follow-up em 3 dias e atualiza `updated_at`; XP/níveis/streak/badges são derivados.
+- Ação obrigatória do destino: Testes validam migração e regras; Administração registra o aceite antes da F15.
+- Retorno necessário de: `QA-012`.
+- Retorno solicitado: cenários, falhas e decisão sobre o critério de saída.
+- Condição de desbloqueio: nenhuma regressão aberta.
+- Verificação executada: suíte completa com `89` testes `OK`; upgrade em cópia do banco local preservou as tarefas e `PRAGMA foreign_key_check` ficou vazio.
+- Bloqueios: F15 e F16 aguardam aceite.
+- Status: concluído
+
+### Handoff QA-F14-001 - 2026-10-31
+
+- Origem: Testes (`QA-012`)
+- Destino: Administração
+- Tipo: Relatório de validação
+- Registro: `tests/test_peixe_domain.py` cobre banco novo em schema `5`, upgrade `4 -> 5` com tarefas/tags/grupos, XP por tipo, limites de nível, streak contínuo e quebrado, progresso semanal, transições válidas/inválidas, unicidade, missão diária com follow-up vencido, follow-ups, badges e cascata de exclusão.
+- Verificação executada: `python3 -m unittest discover -s tests` com `89` testes `OK`; cópia do banco local migrou de `4` para `5` preservando 6 tarefas.
+- Retorno necessário de: usuário.
+- Retorno solicitado: aceite da F14 para abrir a F15.
+- Condição de desbloqueio: aceite explícito.
+- Bloqueios: nenhum.
+- Status: em validação
+
+### Handoff ADM-F14-HOLD-001 - 2026-10-31
+
+- Registro: F14 executada e critério de saída atendido; schema `5`, domínio e testes entregues. F15 (interface `/peixe`) e F16 (e-mail/agendamento) permanecem bloqueadas.
+- Próximo passo: aceite do usuário para abrir a F15.
+- Status: em validação
+
+### Handoff ADM-F15-001 - 2026-10-31
+
+- Origem: Administração (aceite da F14 e pedido "Termine")
+- Destino: Backend (`BE-011`), Frontend (`FE-008`) e Testes (`QA-013`)
+- Tipo: CONTRATO/UI
+- Alteração: Fase 15 aberta para criar a interface `/peixe`, o pipeline de leads e a gamificação visual.
+- Arquivos ou áreas afetadas: `app/peixe_routes.py`, `app/__init__.py`, `app/templates/peixe/`, `app/static/styles.css`, `app/static/app.js`, `tests/test_peixe_routes.py`, `docs/CONTRATO-APLICACAO.md`, `docs/IDENTIDADE-VISUAL.md`.
+- Ação obrigatória do destino: implementar rotas/templates, validar fluxos e registrar evidência visual.
+- Retorno necessário de: `BE-011`, `FE-008` e `QA-013`.
+- Condição de desbloqueio: aceite da F15 antes da F16.
+- Status: concluído
+
+### Handoff BE-F15-001 - 2026-10-31
+
+- Origem: Backend (`BE-011`)
+- Destino: Frontend (`FE-008`), Testes (`QA-013`) e Administração
+- Tipo: CONTRATO
+- Alteração: criado `peixe_routes.py` com dashboard, pipeline, formulário, detalhe, ações de lead, semana e agenda; blueprint registrado em `app/__init__.py`; adicionados `get_setting`/`set_setting` ao repositório.
+- Arquivos ou áreas afetadas: `app/peixe_routes.py`, `app/peixe.py`, `app/__init__.py`, `docs/CONTRATO-APLICACAO.md`.
+- Comportamento novo: `/peixe` e rotas de lead disponíveis; mensagem gerada no servidor; links por canal; ações Post/Redirect/Get com flash; semana salva aprendizado/bloqueio.
+- Ação obrigatória do destino: Frontend aplica a interface; Testes validam rotas e fluxos.
+- Retorno necessário de: `FE-008` e `QA-013`.
+- Verificação executada: `python3 -m unittest tests.test_peixe_routes -v` com 10 testes `OK`.
+- Status: concluído
+
+### Handoff FE-F15-001 - 2026-10-31
+
+- Origem: Frontend (`FE-008`)
+- Destino: Testes (`QA-013`) e Administração
+- Tipo: UI
+- Alteração: criados dashboard, pipeline, formulário, detalhe, semana e agenda em `app/templates/peixe/`; sub-identidade coral/âmbar; barra de XP, streak, anel de quest, badge de nível, timeline e botão copiar mensagem.
+- Arquivos ou áreas afetadas: `app/templates/peixe/`, `app/templates/base.html`, `app/static/styles.css`, `app/static/app.js`, `docs/IDENTIDADE-VISUAL.md`.
+- Seletores: `data-lead-id`, `data-lead-status`, `data-interaction-kind`, `data-agenda-date`, `data-copy-target`.
+- Ação obrigatória do destino: validar fluxos, links, cópia e responsividade.
+- Retorno necessário de: `QA-013`.
+- Verificação executada: páginas locais responderam `200`; CSS e JS contêm os componentes esperados.
+- Status: concluído
+
+### Handoff QA-F15-001 - 2026-10-31
+
+- Origem: Testes (`QA-013`)
+- Destino: Administração (aceite do usuário)
+- Tipo: Relatório de validação
+- Registro: 10 testes de rotas cobrem dashboard/missão, criação, validação, envio, follow-up, resposta, conversa, proposta, piloto, nota, pausa, 404, semana, agenda, mensagem e filtro de pipeline. Verificação HTTP local em `/peixe`, `/peixe/leads`, `/peixe/leads/new`, detalhe, semana e agenda.
+- Verificação executada: `python3 -m unittest discover -s tests` com `99` testes `OK`.
+- Retorno necessário de: usuário.
+- Retorno solicitado: aceite visual da F15 para abrir a F16.
+- Bloqueios: inspeção visual renderizada ainda não registrada.
+- Status: em validação
+
+### Handoff ADM-F15-HOLD-001 - 2026-10-31
+
+- Registro: F15 executada; interface `/peixe` disponível localmente e suíte com 99 testes. F16 (e-mail, agendamento e publicação) permanece bloqueada pelo aceite da F15.
+- Próximo passo: aceite visual do usuário.
+- Status: em validação
+
+### Handoff ADM-F16-001 - 2026-10-31
+
+- Origem: Administração (pedido do usuário para completar as fases)
+- Destino: Backend, Testes e Administração
+- Tipo: INFRA/E2E
+- Alteração: Fase 16 aberta para e-mail diário/semanal, CLI, agendamento no Termux e publicação.
+- Arquivos ou áreas afetadas: `app/peixe_digest.py`, `app/__init__.py`, `app/config.py`, `.env.example`, `scripts/`, `docs/VALIDACAO-E2E-PEIXE.md`.
+- Ação obrigatória do destino: validar e-mails, backup/restauração e publicar.
+- Retorno necessário de: `QA-014`.
+- Condição de desbloqueio: SSH do Termux disponível para publicar e agendar.
+- Status: em validação
+
+### Handoff BE-F16-001 - 2026-10-31
+
+- Origem: Backend
+- Destino: Testes e Administração
+- Tipo: CONTRATO/INFRA
+- Alteração: criado `peixe_digest.py` com resumos diário/semanal texto+HTML; CLIs `send-peixe-daily` e `send-peixe-weekly`; `PEIXE_TO` com fallback `DIGEST_TO`; `PEIXE_BASE_URL`; botões manuais no dashboard; scripts `peixe-daily.sh` e `peixe-weekly.sh`.
+- Verificação executada: e-mails reais enviados com sucesso; suíte com `105` testes `OK`; backup/restauração em schema `5` com lead preservado.
+- Retorno necessário de: usuário/Administração.
+- Retorno solicitado: abrir o Termux/SSH para concluir publicação e agendamento.
+- Bloqueios: SSH em `ice-termux:8022` recusou conexão; online permanece em schema `4`.
+- Status: em validação
+
+### Handoff QA-F16-001 - 2026-10-31
+
+- Origem: Testes (`QA-014`)
+- Destino: Administração
+- Tipo: Relatório de validação
+- Registro: `docs/VALIDACAO-E2E-PEIXE.md` — e-mails diário e semanal enviados, backup/restauração schema `5` OK, 105 testes verdes. Publicação/agendamento bloqueados por SSH indisponível.
+- Retorno necessário de: Administração/usuário.
+- Retorno solicitado: restabelecer o Termux e concluir `git pull`, `publish` e `termux-job-scheduler`.
+- Status: em validação
+
+### Handoff INFRA-F16-001 - 2026-10-31
+
+- Origem: Backend/Administração
+- Destino: Administração
+- Tipo: INFRA
+- Registro: `https://ice.yurilimadev.com/health` respondendo `200` em schema `4`; `ssh ice-termux` recusando conexão na porta `8022`; host responde a ping. Sem SSH não é possível atualizar código, publicar banco nem agendar os scripts.
+- Ação necessária: abrir o Termux no Android e reativar o `sshd`.
+- Status: bloqueado

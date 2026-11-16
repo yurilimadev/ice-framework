@@ -18,12 +18,13 @@ O **score** é o produto das três dimensões — `I × C × F`, de 1 a 1000 —
 - **Filtro dinâmico** — clicar em qualquer filtro (status, atrasadas, tags, ordenação) atualiza a lista na hora, sem recarregar a página; a URL acompanha o filtro, então dá para salvar/compartilhar uma vista já filtrada. O botão "Aplicar filtros" existe apenas como fallback para navegadores sem JavaScript.
 - **Modo painel (desktop)** — cabeçalho e filtros ficam fixos e a lista rola dentro do próprio painel; em telas pequenas a página rola normalmente.
 - **Tags** — cada tarefa pode ter várias tags; a tela "Gerenciar Tags" permite renomear, excluir (desvinculando das tarefas, com confirmação) e mesclar tags.
-- **Grupos** — cards podem ser organizados em Projetos, Áreas e Recursos pela tela "Gerenciar Grupos"; o painel exibe seções por grupo, os arquivados vão para Arquivos, e os cards soltos ficam em "Sem grupo".
+- **Grupos** — cards podem ser organizados em Projetos, Áreas e Recursos pela tela "Gerenciar Grupos"; o painel exibe seções por grupo com blocos recolhíveis, os arquivados vão para Arquivos, e os cards soltos ficam em "Sem grupo".
+- **Peixe-piloto** — cockpit de prospecção em `/peixe`: lead do dia, mensagem pronta por canal, pipeline, XP, nível, streak, quest semanal, agenda e fechamento da semana.
 - **Ciclo de vida** — criar, editar, concluir, reabrir e excluir tarefas, com avisos efêmeros (4 segundos) de sucesso/erro e confirmação antes de exclusões.
 - **Resumo por email** — envia um email com as tarefas abertas (por score), contagem de atrasadas e prazos, com destaque para as atrasadas. Disparável por botão na barra superior ou por comando no terminal (ver abaixo).
 - **Saúde** — `GET /health` responde `status`, `database` e `schema_version` em JSON.
 
-O backend é **Flask** com **SQLite** (migrações versionadas por `PRAGMA user_version`, schema atual `4`), renderização server-side e um pouco de JavaScript vanilla — sem frameworks no front, sem dependências além do Flask e do `python-dotenv`.
+O backend é **Flask** com **SQLite** (migrações versionadas por `PRAGMA user_version`, schema atual `5`), renderização server-side e um pouco de JavaScript vanilla — sem frameworks no front, sem dependências além do Flask e do `python-dotenv`.
 
 ## Como executar
 
@@ -39,7 +40,7 @@ O app sobe em `http://127.0.0.1:5000`. Verificação:
 
 ```bash
 curl http://127.0.0.1:5000/health
-# {"status":"ok","database":"ok","schema_version":4}
+# {"status":"ok","database":"ok","schema_version":5}
 ```
 
 ### Docker Compose
@@ -77,6 +78,18 @@ python3 -m flask --app wsgi send-digest --to outro@email.com
 ```
 
 O botão só aparece quando o SMTP está configurado. Sem credenciais, o app funciona normalmente — só o envio de email fica indisponível.
+
+### Resumos do Peixe-piloto
+
+O Peixe usa o mesmo SMTP. O destino é `PEIXE_TO`, com fallback para `DIGEST_TO`; `PEIXE_BASE_URL` define o link nos e-mails.
+
+```bash
+python3 -m flask --app wsgi send-peixe-daily
+python3 -m flask --app wsgi send-peixe-weekly
+python3 -m flask --app wsgi send-peixe-daily --to outro@email.com
+```
+
+Os botões **Enviar resumo diario** e **Enviar fechamento** aparecem em `/peixe` quando o SMTP e o destino estão configurados. Os scripts `scripts/peixe-daily.sh` e `scripts/peixe-weekly.sh` preparam o agendamento no Termux.
 
 ### Backup e restauração
 
@@ -138,7 +151,7 @@ A instância online roda num Android com Termux, acessível pelo subdomínio pro
 python3 -m unittest discover -s tests -v
 ```
 
-A suíte cobre domínio (score, validações, tags), rotas HTTP (contrato, filtros, 404, 400, 303), interface (seletores, acessibilidade, contraste WCAG AA) e o resumo por email (HTML, texto puro, erros de SMTP).
+A suíte cobre domínio (score, validações, tags), rotas HTTP (contrato, filtros, 404, 400, 303), interface (seletores, acessibilidade, contraste WCAG AA), resumo por email (HTML, texto puro, erros de SMTP) e o módulo Peixe-piloto (schema `5`, XP/streak/quest, rotas e e-mails).
 
 ## Estrutura
 

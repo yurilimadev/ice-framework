@@ -159,7 +159,12 @@
         <p class="eyebrow">PRIORIDADES</p>
         <h2 id="task-list-title">Sua lista</h2>
       </div>
-      {% if tasks %}<span class="result-count">{{ tasks|length }} resultado{% if tasks|length != 1 %}s{% endif %}</span>{% endif %}
+      <div class="section-heading-actions">
+        {% if tasks %}<span class="result-count">{{ tasks|length }} resultado{% if tasks|length != 1 %}s{% endif %}</span>{% endif %}
+        {% if sections|selectattr("groups")|list %}
+          <button class="text-action" type="button" data-toggle-groups aria-expanded="false">Expandir grupos</button>
+        {% endif %}
+      </div>
     </div>
 
     {% if not tasks %}
@@ -179,18 +184,21 @@
             </header>
 
             {% for block in section.groups %}
-              <div class="group-block" data-section-group-id="{{ block.group.id }}" data-section-group-status="{{ block.group.status }}">
-                <div class="group-block-heading">
+              <details class="group-block" data-group-block data-section-group-id="{{ block.group.id }}" data-section-group-status="{{ block.group.status }}">
+                <summary class="group-block-heading">
                   <span class="group-badge" data-group-id="{{ block.group.id }}" data-group-kind="{{ block.group.kind }}">
                     <span class="group-kind">{{ kind_label(block.group.kind) }}</span>
                     {{ block.group.name }}
                   </span>
-                  <span class="group-block-count">{{ block.tasks|length }} card{% if block.tasks|length != 1 %}s{% endif %}</span>
-                </div>
+                  <span class="group-block-meta">
+                    <span class="group-block-count">{{ block.tasks|length }} card{% if block.tasks|length != 1 %}s{% endif %}</span>
+                    <span class="group-toggle-mark" aria-hidden="true">&#9656;</span>
+                  </span>
+                </summary>
                 <div class="task-list">
                   {% for task in block.tasks %}{{ task_card(task) }}{% endfor %}
                 </div>
-              </div>
+              </details>
             {% endfor %}
 
             {% if section.tasks %}

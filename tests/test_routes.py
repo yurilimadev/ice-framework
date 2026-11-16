@@ -409,6 +409,10 @@ class ApplicationRoutesTestCase(unittest.TestCase):
             self.assertIn(title, body)
         for group in (project, area, resource, archived):
             self.assertIn(f'data-section-group-id="{group.id}"', body)
+        self.assertIn('<details class="group-block"', body)
+        self.assertIn("data-group-block", body)
+        self.assertIn("data-toggle-groups", body)
+        self.assertIn("Expandir grupos", body)
         for title in (
             "Card projeto",
             "Card area",

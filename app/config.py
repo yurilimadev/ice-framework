@@ -22,6 +22,8 @@ def load_config():
         "SMTP_PASSWORD": os.getenv("SMTP_PASSWORD"),
         "SMTP_FROM": os.getenv("SMTP_FROM"),
         "DIGEST_TO": os.getenv("DIGEST_TO"),
+        "PEIXE_TO": os.getenv("PEIXE_TO"),
+        "PEIXE_BASE_URL": os.getenv("PEIXE_BASE_URL"),
         "DEPLOY_HOST": os.getenv("DEPLOY_HOST"),
         "DEPLOY_PORT": os.getenv("DEPLOY_PORT", "8022"),
         "DEPLOY_KEY_PATH": os.getenv("DEPLOY_KEY_PATH"),

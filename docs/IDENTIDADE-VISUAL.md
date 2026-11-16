@@ -44,3 +44,13 @@ Os valores exatos de cor devem ser definidos pelo Frontend a partir da referênc
 - O Backend não deve incorporar CSS, layout ou decisões visuais.
 - Alterações que afetem seletores ou significado de estados exigem retorno para Testes.
 - Logo, família tipográfica e valores exatos da paleta devem ser confirmados pelo Frontend antes do encerramento da Fase 4.
+
+## Sub-identidade Peixe-piloto
+
+- O módulo usa a mesma base ICE (petróleo, ciano e superfícies brancas), com acentos próprios.
+- Coral é usado em missão, streak e destaques de movimento; âmbar marca XP, nível e quest.
+- A barra de XP usa fundo petróleo com preenchimento âmbar/ciano.
+- O anel da quest usa coral sobre trilho claro.
+- Cards de lead e timeline mantêm a tipografia e os respos da identidade principal.
+- Contraste WCAG AA, foco visível, labels e uso em 320px continuam obrigatórios.
+- A sub-identidade não altera rotas, campos ou regras do contrato de aplicação.
