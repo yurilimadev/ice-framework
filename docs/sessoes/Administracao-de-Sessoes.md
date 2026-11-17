@@ -147,7 +147,7 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 | BE-011 | Rotas e contexto Peixe-piloto | 15 | concluída | Blueprint `/peixe`, ações de lead e contexto entregues |
 | FE-008 | Interface Peixe-piloto | 15 | concluída | Dashboard, pipeline, detalhe, semana e agenda |
 | QA-013 | Testes de rotas e interface Peixe | 15 | concluída | 10 testes novos; interface aprovada para a F16 |
-| QA-014 | E2E, e-mail e publicação do Peixe | 16 | em validação | E-mails e backup locais OK; publicação bloqueada pelo SSH do Termux |
+| QA-014 | E2E, e-mail e publicação do Peixe | 16 | concluída | E-mails, publicação e cronie validados; Peixe no ar em schema `5` |
 
 ### Handoff BE-F1-001 - 2026-09-21
 
@@ -1254,6 +1254,20 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Origem: Backend/Administração
 - Destino: Administração
 - Tipo: INFRA
-- Registro: `https://ice.yurilimadev.com/health` respondendo `200` em schema `4`; `ssh ice-termux` recusando conexão na porta `8022`; host responde a ping. Sem SSH não é possível atualizar código, publicar banco nem agendar os scripts.
-- Ação necessária: abrir o Termux no Android e reativar o `sshd`.
-- Status: bloqueado
+- Registro: `https://ice.yurilimadev.com/health` respondendo `200` em schema `5`; `/peixe` online `200`; código no servidor em `7a76ff6`; banco republicado e lead de validação removido.
+- Agendamento: `termux-job-scheduler` indisponível no repositório; instalado `cronie`, `crond` ativo e crontab diário/semanal configurado.
+- Ação necessária: nenhuma.
+- Status: concluído
+
+### Handoff ADM-F16-CLOSE-001 - 2026-10-31
+
+- Registro: Fase 16 concluída. E-mails diário/semanal reais enviados (local e servidor), backup/restauração em schema `5`, publicação no Termux, `/peixe` online `200` e agendamento via `cronie`/`crond`.
+- Desvio registrado: `termux-job-scheduler` não existe no repositório Termux atual; usado `cronie`, conforme alternativa prevista no briefing.
+- Verificação executada: `105` testes `OK`; `/health` online schema `5`; lead de validação espelhado e removido; crontab ativo com diário 08:00 e semanal sexta 17:00.
+- Status: concluído
+
+### Handoff ADM-PEIXE-CLOSE-001 - 2026-10-31
+
+- Registro: módulo Peixe-piloto concluído nas Fases 14, 15 e 16. Domínio, interface, gamificação, e-mails e agendamento entregues e publicados.
+- Próximo passo: tutorial de uso (`docs/peixe-piloto/TUTORIAL.md` já existe e pode ser refinado) e definição de melhorias futuras fora da v1.
+- Status: concluído

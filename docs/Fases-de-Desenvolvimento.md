@@ -1,6 +1,6 @@
 # Fases de Desenvolvimento
 
-**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 — Fases 11 e 12 concluídas e Fase 13 executada, aguardando aceite; Peixe-piloto — Fases 14 e 15 concluídas; Fase 16 validada localmente, publicação no Termux pendente
+**Status:** Ciclo 1 completo — Fases 0 a 7 concluídas em 2026-10-31; Ciclo 2 completo — Fases 8 a 10 concluídas em 2026-10-31; Ciclo 3 — Fases 11 e 12 concluídas e Fase 13 executada, aguardando aceite; Peixe-piloto — Fases 14, 15 e 16 concluídas; módulo publicado e agendado no Termux
 
 Este documento organiza a construção do MVP e define os critérios para avançar entre fases.
 
@@ -410,7 +410,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 ## Fase 16 - Peixe-piloto: e-mail, agendamento e E2E
 
-**Status:** executada localmente em 2026-10-31 — publicação e agendamento bloqueados pelo Termux.
+**Status:** concluída em 2026-10-31.
 
 **Objetivo:** enviar resumo diário/semanal, agendar no Termux e validar o módulo ponta a ponta.
 
@@ -426,7 +426,7 @@ existente permanecem no schema `2`, sem nova migração.
 
 **Critério de saída:** e-mails recebidos, dados preservados após restart/publicação, suíte verde e nenhuma credencial commitada.
 
-**Verificação registrada:** `docs/VALIDACAO-E2E-PEIXE.md` — e-mails diário e semanal enviados com sucesso pelo SMTP configurado, backup/restauração em schema `5` com lead preservado, suíte com `105` testes `OK`. Publicação no Termux e agendamento ficaram bloqueados porque a porta SSH 8022 recusou conexão; o app online segue em schema `4` até a recuperação do acesso.
+**Verificação registrada:** `docs/VALIDACAO-E2E-PEIXE.md` — e-mails diário e semanal enviados pelo SMTP configurado (local e servidor), backup/restauração em schema `5`, publicação no Termux com `/health` schema `5` e `/peixe` `200`, lead de validação espelhado e removido, suíte com `105` testes `OK`. Agendamento via `cronie`/`crond` (o pacote `termux-job-scheduler` não existe no repositório Termux atual): diário às 08:00 e semanal sexta às 17:00.
 
 ## Regra de avanço
 

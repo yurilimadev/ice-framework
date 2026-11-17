@@ -31,7 +31,7 @@ http://127.0.0.1:5000/peixe
 
 Se a tela antiga aparecer, recarregue com `Ctrl+Shift+R`. O link **Peixe** também está na barra superior.
 
-> Estado atual: a interface e os e-mails diário/semanal estão disponíveis no app local. A publicação no servidor online e o agendamento no Termux dependem do SSH do Termux.
+> Estado atual: a interface e os e-mails diário/semanal estão disponíveis localmente e em `https://ice.yurilimadev.com/peixe`. O envio automático está agendado no Termux via `cronie` (diário 08:00, semanal sexta 17:00).
 
 ## 3. Primeiro uso: cadastrar um lead
 
@@ -248,4 +248,9 @@ python3 -m flask --app wsgi send-peixe-weekly
 
 Os botões **Enviar resumo diario** e **Enviar fechamento** aparecem em `/peixe` quando o SMTP e o destino estão configurados. O destino é `PEIXE_TO`, com fallback para `DIGEST_TO`.
 
-O agendamento no Termux usa `scripts/peixe-daily.sh` e `scripts/peixe-weekly.sh`. A publicação online e o agendamento ficaram pendentes até o SSH do Termux voltar.
+O agendamento no Termux usa `scripts/peixe-daily.sh` e `scripts/peixe-weekly.sh`, ativos via `cronie`/`crond`:
+
+- diário às 08:00;
+- semanal às sextas às 17:00.
+
+O módulo também está publicado em `https://ice.yurilimadev.com/peixe`.

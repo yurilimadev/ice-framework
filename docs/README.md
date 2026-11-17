@@ -7,10 +7,9 @@ Este é o ponto de entrada para qualquer nova sessão. Leia primeiro este arquiv
 - Ciclo 1 completo: Fases 0 a 7 concluídas (2026-10-31).
 - Ciclo 2 completo: Fases 8 a 10 concluídas em 2026-10-31 (aceite do usuário).
 - Ciclo 3 ativo: Fases 11 (schema `4` + Recursos) e 12 (painel em seções) concluídas; Fase 13 executada aguardando aceite.
-- Peixe-piloto: Fases 14 (schema `5`/domínio) e 15 (interface `/peixe`) concluídas; Fase 16 (e-mails/scripts) validada localmente.
+- Peixe-piloto: Fases 14 (schema `5`/domínio), 15 (interface `/peixe`) e 16 (e-mails/scripts) concluídas.
 - Interface atual inclui Projetos, Áreas, Recursos, Arquivos e Sem grupo em `/`, com blocos de grupo recolhíveis, e a gestão em `/grupos`.
-- `/peixe` disponível localmente em schema `5`; e-mails diário/semanal validados com SMTP real.
-- Publicação online e agendamento no Termux pendentes: SSH `ice-termux:8022` indisponível; online segue em schema `4`.
+- `/peixe` disponível local e online em schema `5`; e-mails diário/semanal e agendamento via `cronie` validados.
 - Suíte automatizada atual: 105 testes aprovados.
 
 O status operacional detalhado fica em `CONTEXTO-ATUAL.md`.

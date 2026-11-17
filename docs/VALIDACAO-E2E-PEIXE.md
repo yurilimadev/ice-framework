@@ -1,43 +1,44 @@
 # Validacao E2E do Peixe-piloto (Fase 16)
 
-**Status:** executada localmente em 2026-10-31 — publicacao no Termux pendente
+**Status:** concluida em 2026-10-31 (aceite do usuario)
 
 Criterio de saida: e-mails diario e semanal recebidos, dados preservados apos restart/publicacao, suite verde e nenhuma credencial commitada.
 
 ## Validacao local (aprovada)
 
 - Banco local migrado de schema `4` para `5`.
-- Lead de validacao `Validacao F16` criado com status `a_enviar`.
-- E-mail diario enviado com sucesso:
-  - `python3 -m flask --app wsgi send-peixe-daily`
-  - saida: `Resumo diario do Peixe enviado para ...`
-- E-mail semanal enviado com sucesso:
-  - `python3 -m flask --app wsgi send-peixe-weekly`
-  - saida: `Fechamento semanal do Peixe enviado para ...`
-- Conteudo dos e-mails: missao/follow-ups no diario; mensagens, respostas, conversas, propostas, pilotos, quest e doce no semanal; links para `/peixe` e `/peixe/semana`.
+- Lead de validacao criado com status `a_enviar`.
+- E-mail diario enviado com sucesso pelo SMTP configurado.
+- E-mail semanal enviado com sucesso pelo SMTP configurado.
+- Conteudo: missao/follow-ups no diario; mensagens, respostas, conversas, propostas, pilotos, quest e doce no semanal; links para `/peixe` e `/peixe/semana`.
 - Backup e restauracao com schema `5`: `PRAGMA integrity_check = ok`, lead preservado e `PRAGMA foreign_key_check` vazio.
 - Paginas locais verificadas: `/peixe`, `/peixe/leads`, `/peixe/leads/new`, detalhe, `/peixe/semana` e `/peixe/agenda`.
 - Suite completa: `105` testes `OK`.
 - Credenciais permanecem apenas no `.env` local, fora do git.
 
-## Publicacao no Termux (bloqueada)
+## Publicacao no Termux (aprovada)
 
-- O app online respondeu `https://ice.yurilimadev.com/health` com schema `4`.
-- A conexao SSH para `ice-termux:8022` foi recusada (`Connection refused`), embora o host responda a ping.
-- Por isso, nesta sessao nao foi possivel:
-  - rodar `git pull` no servidor;
-  - executar `python3 -m flask --app wsgi publish`;
-  - instalar/agendar `termux-job-scheduler`;
-  - validar `/peixe` no online.
+- Codigo atualizado no servidor ate `7a76ff6` via `git pull --ff-only`.
+- `python3 -m flask --app wsgi publish` enviou o banco em schema `5` e reiniciou o servico.
+- Verificacoes:
+  - `/health` local e `https://ice.yurilimadev.com/health` com `schema_version = 5`;
+  - `/peixe` local e externo respondendo `200`;
+  - lead `Validacao F16 Online` espelhado e visivel na missao;
+  - e-mail diario disparado pelo Python/`.env` do proprio servidor com sucesso;
+  - lead de validacao removido localmente e banco republicado; estado final com `0` leads e sem residuo.
+- Backup/restauracao nao foi repetido no servidor nesta rodada, mas o schema `5` ja havia sido validado em copia local e o banco remoto respondeu `integrity_check` na publicacao anterior.
 
-## Proximo passo
+## Agendamento (aprovado com cronie)
 
-1. Abrir o Termux no Android e garantir que o `sshd` esteja ativo.
-2. Rodar `git pull --ff-only` em `~/ice-framework`.
-3. Executar `python3 -m flask --app wsgi publish` no PC local.
-4. Confirmar `/health` com schema `5` e `/peixe` no online.
-5. Instalar/agendar os scripts `scripts/peixe-daily.sh` e `scripts/peixe-weekly.sh` com `termux-job-scheduler`.
+O pacote `termux-job-scheduler` nao existe no repositorio Termux atual (`Unable to locate package`). Alternativa registrada no proprio briefing: `crond`.
+
+- Instalado `cronie`.
+- `crond` ativo via `termux-services`.
+- Crontab:
+  - `0 8 * * * ~/ice-framework/scripts/peixe-daily.sh`
+  - `0 17 * * 5 ~/ice-framework/scripts/peixe-weekly.sh`
+- Sintaxe dos scripts validada com `bash -n`; CLI `send-peixe-daily --help` carregou no venv do servidor.
 
 ## Conclusao
 
-A F16 esta validada localmente (e-mails reais, backup/restauracao e suite). A publicacao online e o agendamento permanecem pendentes por indisponibilidade do SSH do Termux.
+A F16 foi concluida: e-mails reais, backup/restauracao em schema `5`, publicacao no Termux, `/peixe` online e agendamento via `cronie`. Nenhuma credencial foi commitada.

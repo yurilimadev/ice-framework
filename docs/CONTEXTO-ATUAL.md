@@ -8,14 +8,14 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 
 - **Fases 11 e 12 do Ciclo 3**: concluídas em 2026-10-31.
 - **Fase 13**: executada em 2026-10-31 — aguardando aceite do usuário para encerrar o Ciclo 3.
-- **Peixe-piloto — Fases 14, 15 e 16**: executadas localmente em 2026-10-31; publicação no Termux pendente por SSH indisponível.
+- **Peixe-piloto — Fases 14, 15 e 16**: concluídas em 2026-10-31; módulo publicado no Termux e agendado.
 - Entregue na Fase 11: `kind='recurso'`, migração `3 -> 4` preservando grupos e vínculos; `Arquivos` segue como `status='archived'`.
 - Entregue na Fase 12: painel em seções Projetos, Áreas, Recursos, Arquivos e Sem grupo; tipo Recurso na gestão e no formulário.
 - Entregue/validado na Fase 13: E2E local e no Termux, backup/restauração e publicação em schema `4`; servidor espelhando 5 tarefas e 0 grupos.
 - Entregue na F14: schema `5` com `leads`, `interactions` e `settings`; domínio Peixe-piloto com XP, níveis, streak, quest, missão diária, follow-ups e badges.
 - Entregue na F15: interface `/peixe` (dashboard, pipeline, detalhe, semana e agenda), ações de lead, mensagem gerada, links por canal e sub-identidade coral/âmbar.
 - Entregue na F16: e-mails diário/semanal texto+HTML, CLIs `send-peixe-daily`/`send-peixe-weekly`, botões manuais, scripts de agendamento e configuração `PEIXE_TO`.
-- App local em schema `5`, com `/peixe` e e-mails reais validados; online segue em schema `4` até a publicação.
+- App local e online em schema `5`; `/peixe` ativo em `https://ice.yurilimadev.com/peixe`; agendamento via `cronie`/`crond` (diário 08:00, semanal sexta 17:00).
 - Ciclo 1 fechado (2026-10-31): Fases 0 a 7 concluídas com aceites do usuário.
 - Entregue na Fase 8: schema `3` com `grupos` e `tasks.grupo_id`; CRUD/arquivamento de grupo; vínculo e desvínculo de cards; exclusão preserva tarefas e tags.
 - Entregue na Fase 9: tela `/grupos`, campo `grupo_id` no formulário, filtro `group` no painel e badge Projeto/Área nos cards.
@@ -46,7 +46,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 | `BE-011` | concluída | Rotas e contexto `/peixe` entregues |
 | `FE-008` | concluída | Interface Peixe-piloto aplicada |
 | `QA-013` | concluída | Interface Peixe aprovada para a F16 |
-| `QA-014` | em validação | E-mails e backup locais OK; publicação bloqueada pelo SSH |
+| `QA-014` | concluída | E-mails, publicação e cronie validados; Peixe no ar |
 | `BE-003` | concluída | Suporte somente para regressões ou mudanças de contrato |
 | `FE-001` | concluída | Interface aprovada na inspeção visual de 2026-10-03 |
 | `QA-004` | concluída | Inspeção visual aprovada; 53 testes OK |
@@ -82,20 +82,20 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Ajuste de interface pós-validação: blocos de grupo recolhíveis (`<details>`), fechados por padrão, com botão `Expandir grupos`/`Recolher grupos`.
 - Fase 14 executada: migração `005_peixe.sql` (schema `5`), `PeixeRepository` e 14 testes de domínio; upgrade `4 -> 5` validado em cópia do banco real.
 - Fase 15 executada: dashboard, pipeline, detalhe, semana e agenda em `/peixe`; mensagem/links por canal, ações de lead, cópia e sub-identidade visual; 10 testes de rotas.
-- Fase 16 executada localmente: e-mails diário e semanal reais enviados, CLIs e scripts criados, backup/restauração em schema `5` com lead preservado; 6 testes de digest.
+- Fase 16 concluída: e-mails diário/semanal reais (local e servidor), publicação no Termux em schema `5`, `/peixe` online `200` e agendamento via `cronie` (diário 08:00, semanal sexta 17:00).
 - Suíte automatizada atual: `105` testes, resultado `OK`.
 
 ## Bloqueio atual
 
-Bloqueio de infra na publicação do Peixe: `https://ice.yurilimadev.com` está no ar em schema `4`, mas o SSH `ice-termux:8022` recusa conexão (o host responde a ping). Sem SSH não é possível atualizar o código, publicar o banco nem agendar os scripts. Ação: abrir o Termux no Android e reativar o `sshd`.
+Nenhum bloqueio de projeto. Observação: `termux-job-scheduler` não existe no repositório Termux atual; o agendamento usa `cronie`/`crond` (diário às 08:00, semanal sexta às 17:00).
 
 ## Próxima decisão
 
-Quando o SSH voltar: rodar `git pull --ff-only` em `~/ice-framework`, executar `python3 -m flask --app wsgi publish`, confirmar schema `5` e `/peixe` no online e agendar `scripts/peixe-daily.sh`/`peixe-weekly.sh` com `termux-job-scheduler`. Handoffs da F16: `BE-F16-001`, `QA-F16-001` e `INFRA-F16-001`. O aceite da Fase 13/Ciclo 3 também continua pendente.
+Refinar o tutorial do Peixe (`docs/peixe-piloto/TUTORIAL.md`) e definir melhorias futuras fora da v1. O aceite da Fase 13/Ciclo 3 também continua pendente. Handoffs de encerramento: `ADM-F16-CLOSE-001` e `ADM-PEIXE-CLOSE-001`.
 
 ## Backlog
 
-- `BACKLOG.md` item 8: Peixe-piloto; F14-F16 executadas localmente, publicação/agendamento pendentes pelo SSH.
+- `BACKLOG.md` item 8: Peixe-piloto concluído (F14-F16) e publicado; agendamento via `cronie`.
 - `BACKLOG.md` item 7: Recursos e painel em seções (Ciclo 3); Fases 11 e 12 concluídas, Fase 13 executada e aguardando aceite.
 - `BACKLOG.md` item 6: grupos Projeto/Área concluídos no Ciclo 2 (Fases 8 a 10).
 - Demais demandas registradas: filtro de tags, agendamento de notificações por email, cron de publicação.
@@ -111,5 +111,5 @@ Quando o SSH voltar: rodar `git pull --ff-only` em `~/ice-framework`, executar `
 
 ## Último versionamento
 
-- Último commit publicado: `bae471f` (Peixe-piloto F14-F16, grupos recolhíveis e schema `5`).
-- Alterações locais pendentes: nenhuma; a publicação no Termux segue bloqueada pelo SSH.
+- Último commit de código publicado: `7a76ff6` (Peixe F14-F16, grupos recolhíveis e schema `5`).
+- Alterações locais pendentes: documentação de encerramento da F16; código e banco já publicados.
