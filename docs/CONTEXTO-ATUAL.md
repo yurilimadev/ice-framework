@@ -94,7 +94,7 @@ Nenhum bloqueio de projeto. Observação: `termux-job-scheduler` não existe no 
 
 ## Próxima decisão
 
-Usar a edição para corrigir os 5 leads de odontologia em Natal (telefones e observações) e iniciar as primeiras abordagens. Publicar o código no Termux (`git pull` + restart do serviço) quando fizer sentido ter a edição online; a publicação de banco (`publish`) continua sendo uma etapa separada. Refinar o tutorial do Peixe (`docs/peixe-piloto/TUTORIAL.md`) e definir melhorias futuras fora da v1. O aceite da Fase 13/Ciclo 3 também continua pendente. Handoffs de encerramento: `ADM-F16-CLOSE-001` e `ADM-PEIXE-CLOSE-001`.
+Usar a edição para corrigir os 5 leads de odontologia em Natal (telefones e observações) e iniciar as primeiras abordagens. A edição de lead já está publicada no Termux (`dc44b39`); a publicação de banco (`publish`) continua sendo uma etapa separada. Refinar o tutorial do Peixe (`docs/peixe-piloto/TUTORIAL.md`) e definir melhorias futuras fora da v1. O aceite da Fase 13/Ciclo 3 também continua pendente. Handoffs de encerramento: `ADM-F16-CLOSE-001` e `ADM-PEIXE-CLOSE-001`.
 
 ## Backlog
 
@@ -114,5 +114,5 @@ Usar a edição para corrigir os 5 leads de odontologia em Natal (telefones e ob
 
 ## Último versionamento
 
-- Último commit de código publicado: `7a76ff6` (Peixe F14-F16, grupos recolhíveis e schema `5`).
-- Alterações locais pendentes: edição de lead (código, testes e docs) ainda não commitada nem publicada no Termux.
+- Último commit de código publicado: `dc44b39` (edição de lead e normalização do link de WhatsApp), em `main` e implantado no Termux em 2026-11-21.
+- Alterações locais pendentes: nenhuma.
