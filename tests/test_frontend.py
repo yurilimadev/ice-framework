@@ -322,9 +322,9 @@ class DigestButtonTestCase(unittest.TestCase):
         self.assertIn("Enviar resumo", body_tags)
         self.assertIn('class="panel-mode"', body_tags)
 
-    def test_botao_publicar_somente_com_deploy_configurado(self):
+    def test_botao_baixar_do_servidor_somente_com_deploy_configurado(self):
         body = self.client.get("/").get_data(as_text=True)
-        self.assertNotIn("Publicar", body)
+        self.assertNotIn("Baixar do servidor", body)
 
         self.app.config.update(
             {
@@ -334,8 +334,9 @@ class DigestButtonTestCase(unittest.TestCase):
             }
         )
         body = self.client.get("/").get_data(as_text=True)
-        self.assertIn("Publicar", body)
-        self.assertIn("/publish", body)
+        self.assertIn("Baixar do servidor", body)
+        self.assertIn("/pull", body)
+        self.assertNotIn("Publicar", body)
 
         body_tags = self.client.get("/tags").get_data(as_text=True)
-        self.assertIn("Publicar", body_tags)
+        self.assertIn("Baixar do servidor", body_tags)

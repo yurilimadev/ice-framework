@@ -13,6 +13,7 @@ DEFAULT_SECRET_KEY = secrets.token_hex(32)
 def load_config():
     return {
         "APP_DATABASE_PATH": os.getenv("APP_DATABASE_PATH", str(DEFAULT_DATABASE_PATH)),
+        "APP_BACKUP_DIR": os.getenv("APP_BACKUP_DIR", str(PROJECT_ROOT / "backups")),
         "APP_TIMEZONE": os.getenv("APP_TIMEZONE", "America/Sao_Paulo"),
         "MIGRATIONS_PATH": os.getenv("MIGRATIONS_PATH", str(DEFAULT_MIGRATIONS_PATH)),
         "SECRET_KEY": os.getenv("SECRET_KEY", DEFAULT_SECRET_KEY),

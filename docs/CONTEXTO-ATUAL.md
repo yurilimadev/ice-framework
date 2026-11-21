@@ -10,6 +10,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - **Fase 13**: executada em 2026-10-31 — aguardando aceite do usuário para encerrar o Ciclo 3.
 - **Peixe-piloto — Fases 14, 15 e 16**: concluídas em 2026-10-31; módulo publicado no Termux e agendado.
 - **Melhoria pós-F16 (2026-11-20)**: edição de lead em `/peixe/leads/<id>/editar` (domínio, rota, formulário, links e testes); link de WhatsApp normaliza `0` inicial e `55` duplicado.
+- **Sincronização (2026-11-21)**: o servidor Termux passa a ser a fonte de verdade; `pull`/botão **Baixar do servidor** substituem o fluxo local→servidor; `publish --force` fica como exceção; backup diário no Termux.
 - Entregue na Fase 11: `kind='recurso'`, migração `3 -> 4` preservando grupos e vínculos; `Arquivos` segue como `status='archived'`.
 - Entregue na Fase 12: painel em seções Projetos, Áreas, Recursos, Arquivos e Sem grupo; tipo Recurso na gestão e no formulário.
 - Entregue/validado na Fase 13: E2E local e no Termux, backup/restauração e publicação em schema `4`; servidor espelhando 5 tarefas e 0 grupos.
@@ -71,7 +72,8 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Tela de tags no modo painel (desktop ≥801px): cabeçalho fixo e tabela rolando dentro do card; painel fixo agora limitado corretamente a desktop (mobile mantém rolagem normal).
 - Email do resumo redesenhado na identidade ICE com versão texto puro anexada (multipart/alternative).
 - Lançador local fora do repositório: comando `ice` (`~/.local/bin`) e ícone "ICE Framework" no GNOME (`app-framework.desktop`); sobe o servidor se necessário e abre `http://127.0.0.1:5000`.
-- Sincronização local -> servidor (2026-10-10): CLI `publish` + botão `Publicar` (rota `POST /publish`, contrato atualizado); snapshot consistente via backup API + scp + restart do serviço remoto; regra: local publica, servidor espelha; verificado ponta a ponta (tarefa-teste publicada e vista em `ice.yurilimadev.com`).
+- Sincronização local -> servidor (2026-10-10): CLI `publish` + botão `Publicar` (rota `POST /publish`); regra antiga: local publica, servidor espelha. **Superada em 2026-11-21.**
+- Servidor como fonte de verdade (2026-11-21): CLI `pull` + botão **Baixar do servidor** (`POST /pull`) baixam snapshot consistente, validam integridade, salvam backup local e substituem o banco; `publish` virou exceção com `--force`. Backup diário no Termux por `scripts/ice-backup.sh` (cronie 08:30, últimos 7). 114 testes.
 - Correção da Fase 5: `merge_tags` com tags compartilhadas na mesma tarefa (BE-F5-001) corrigido; suíte com regressão nova.
 - Ciclo 2 ativado em 2026-10-31 a pedido do usuário; Fases 8/9/10 transpostas para `Fases-de-Desenvolvimento.md` e `ADM-F8-001` aberto para Backend e Testes.
 - Fase 8 concluída: migração `003_grupos.sql` (schema `3`), `GroupRepository`, vínculo `tasks.grupo_id` e `tests/test_groups.py`; upgrade de cópia do banco local `2 -> 3` preservou 5 tarefas e 5 tags; excluir grupo solta cards sem excluir tags.
@@ -86,7 +88,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Fase 15 executada: dashboard, pipeline, detalhe, semana e agenda em `/peixe`; mensagem/links por canal, ações de lead, cópia e sub-identidade visual; 10 testes de rotas.
 - Fase 16 concluída: e-mails diário/semanal reais (local e servidor), publicação no Termux em schema `5`, `/peixe` online `200` e agendamento via `cronie` (diário 08:00, semanal sexta 17:00).
 - Melhoria de 2026-11-20: `PeixeRepository.update_lead` + rotas `GET/POST /peixe/leads/<id>/editar`, formulário reaproveitado em modo edição, link **Editar** no detalhe e no pipeline; `status`, `next_action_at` e `created_at` preservados; duplicidade ignorando o próprio lead. Link de WhatsApp passou a normalizar `0` inicial e `55` duplicado. 5 testes novos.
-- Suíte automatizada atual: `110` testes, resultado `OK`.
+- Suíte automatizada atual: `114` testes, resultado `OK`.
 
 ## Bloqueio atual
 
@@ -94,11 +96,12 @@ Nenhum bloqueio de projeto. Observação: `termux-job-scheduler` não existe no 
 
 ## Próxima decisão
 
-Usar a edição para corrigir os 5 leads de odontologia em Natal (telefones e observações) e iniciar as primeiras abordagens. A edição de lead já está publicada no Termux (`dc44b39`); a publicação de banco (`publish`) continua sendo uma etapa separada. Refinar o tutorial do Peixe (`docs/peixe-piloto/TUTORIAL.md`) e definir melhorias futuras fora da v1. O aceite da Fase 13/Ciclo 3 também continua pendente. Handoffs de encerramento: `ADM-F16-CLOSE-001` e `ADM-PEIXE-CLOSE-001`.
+Usar a edição para corrigir os 5 leads de odontologia em Natal (telefones e observações) e iniciar as primeiras abordagens **pelo site**, que agora é a fonte de verdade. O PC deve rodar `python3 -m flask --app wsgi pull` quando precisar de uma cópia atualizada; não usar `publish` sem `--force`. Refinar o tutorial do Peixe (`docs/peixe-piloto/TUTORIAL.md`) e definir melhorias futuras fora da v1. O aceite da Fase 13/Ciclo 3 também continua pendente. Handoffs de encerramento: `ADM-F16-CLOSE-001` e `ADM-PEIXE-CLOSE-001`.
 
 ## Backlog
 
 - `BACKLOG.md` item 8: Peixe-piloto concluído (F14-F16) e publicado; agendamento via `cronie`.
+- `BACKLOG.md` item 10: sincronização com o servidor como fonte de verdade (2026-11-21).
 - `BACKLOG.md` item 7: Recursos e painel em seções (Ciclo 3); Fases 11 e 12 concluídas, Fase 13 executada e aguardando aceite.
 - `BACKLOG.md` item 6: grupos Projeto/Área concluídos no Ciclo 2 (Fases 8 a 10).
 - Demais demandas registradas: filtro de tags, agendamento de notificações por email, cron de publicação.

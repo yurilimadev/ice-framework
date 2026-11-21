@@ -20,7 +20,7 @@ from flask import (
 
 from .db import get_db
 from .digest import send_digest
-from .publish import publish_database
+from .publish import pull_database
 from .tasks import (
     GroupNotFoundError,
     GroupRepository,
@@ -54,7 +54,7 @@ def _digest_availability():
         config.get(key)
         for key in ("DEPLOY_HOST", "DEPLOY_KEY_PATH", "DEPLOY_TARGET_PATH")
     )
-    return {"digest_ready": ready, "publish_ready": publish_ready}
+    return {"digest_ready": ready, "sync_ready": publish_ready}
 
 
 def _back_url():
@@ -555,12 +555,12 @@ def send_digest_email():
     return redirect(_back_url(), code=303)
 
 
-@tasks_bp.post("/publish")
-def publish():
+@tasks_bp.post("/pull")
+def pull():
     try:
-        message = publish_database(current_app)
+        message = pull_database(current_app)
     except (RuntimeError, sqlite3.Error, subprocess.SubprocessError, OSError) as error:
-        flash(f"Nao consegui publicar: {error}", "error")
+        flash(f"Nao consegui atualizar do servidor: {error}", "error")
         return redirect(_back_url(), code=303)
     flash(message, "success")
     return redirect(_back_url(), code=303)

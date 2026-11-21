@@ -114,7 +114,9 @@ print("backup:", alvo)
 BKP
 ```
 
-Restaurar: parar o app, colocar o arquivo de backup em `data/app.sqlite3` (ou apontar `APP_DATABASE_PATH` para ele) e subir de novo. No Termux: `sv down ice-framework` / `sv up ice-framework`. Verificação pós-restauração: `PRAGMA integrity_check` + `GET /health`.
+Restaurar: parar o app, colocar o arquivo de backup em `data/app.sqlite3` (ou apontar `APP_DATABASE_PATH` para ele) e subir de novo. No Termux: `SVDIR=$PREFIX/var/service sv down ice-framework` / `SVDIR=$PREFIX/var/service sv up ice-framework`. Verificação pós-restauração: `PRAGMA integrity_check` + `GET /health`.
+
+No Termux, `scripts/ice-backup.sh` roda diariamente às 08:30 via `cronie` e mantém os últimos 7 backups em `~/ice-framework/backups`. No PC, cada `pull` também cria um backup local antes de substituir o banco.
 
 No Android, mantenha o Termux com bateria "Sem restrições" e reabra o Termux após reinícios do aparelho (os serviços sobem sozinhos).
 
@@ -122,17 +124,27 @@ No Android, mantenha o Termux com bateria "Sem restrições" e reabra o Termux a
 
 Em máquinas com GNOME, o app pode ser aberto como um aplicativo: script `~/.local/bin/ice` sobe o servidor se necessário e abre o navegador; o ícone "ICE Framework" aparece na grade de aplicativos. Instalação manual, específica de cada máquina — não faz parte do repositório.
 
-### Publicação do banco no servidor
+### Sincronização: servidor como fonte de verdade
 
-O PC local é a fonte de verdade; o servidor online (abaixo) é um espelho:
+O banco do Termux é a fonte de verdade. Edite e prospecte de qualquer lugar em `https://ice.yurilimadev.com/peixe`; o banco local é uma cópia para desenvolvimento e backup.
+
+Para trazer o estado atual do servidor para o PC:
 
 ```bash
-python3 -m flask --app wsgi publish
+python3 -m flask --app wsgi pull
 ```
 
-Gera um snapshot consistente do SQLite (backup API), envia por `scp` e reinicia o serviço remoto. Também dispara pelo botão **Publicar** da barra superior do app local (visível apenas com as variáveis `DEPLOY_*` no `.env`). Tarefas criadas diretamente no servidor são sobrescritas na próxima publicação.
+O comando gera um snapshot consistente no servidor (backup API), valida a integridade, salva um backup do banco local em `backups/` e substitui o arquivo local. Também há o botão **Baixar do servidor** na barra superior do app local (visível apenas com as variáveis `DEPLOY_*` no `.env`).
+
+O fluxo inverso (`publish`) existe apenas como exceção de recuperação e exige `--force`:
+
+```bash
+python3 -m flask --app wsgi publish --force
+```
 
 `DEPLOY_HOST` aceita um alias de `~/.ssh/config` (como `ice-termux`, já com `Port`/`User`/`IdentityFile`) — assim a mudança de IP na rede local se resolve editando uma linha do `~/.ssh/config`, sem tocar no app.
+
+No servidor, `scripts/ice-backup.sh` roda diariamente às 08:30 via `cronie` e mantém os últimos 7 backups em `~/ice-framework/backups`.
 
 ### Execução no servidor (Termux/Android com Cloudflare Tunnel)
 
@@ -141,7 +153,7 @@ A instância online roda num Android com Termux, acessível pelo subdomínio pro
 - **Domínio**: `https://ice.yurilimadev.com` (protegido por email-OTP no Zero Trust).
 - **Código**: `git clone https://github.com/yurilimadev/ice-framework.git ~/ice-framework` + venv com `requirements.txt` (inclui `gunicorn` e `tzdata` — o Termux não tem dados de fuso do sistema).
 - **Serviços** (`termux-services`): `ice-framework` (gunicorn em `127.0.0.1:8000`) e `ice-tunnel` (`cloudflared tunnel run --url http://127.0.0.1:8000 ice`). Ambos em `$PREFIX/var/service/`.
-- **Banco**: `~/ice-framework/data/app.sqlite3` — cópia do banco local, enviada via `scp` com o app parado; re-publicar = re-copiar o arquivo.
+- **Banco**: `~/ice-framework/data/app.sqlite3` — fonte de verdade da prospecção; o PC baixa cópias com `flask pull`. Backup diário em `~/ice-framework/backups` mantém os últimos 7 arquivos.
 - **Secrets**: `.env` criado no servidor (nunca via git/chat), com `SMTP_*` (necessário para o botão "Enviar resumo") e `SECRET_KEY` fixo gerado no próprio servidor.
 - **Depois de reiniciar o celular**: abrir o Termux (os serviços voltam automaticamente) e rodar `termux-wake-lock` para o Android não matar os processos com a tela apagada.
 

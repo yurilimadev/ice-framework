@@ -64,11 +64,23 @@ def create_app(test_config=None):
 
         click.echo(send_peixe_weekly(app, recipient=to_address))
 
+    @app.cli.command("pull")
+    def pull_command():
+        """Baixa o banco do servidor Termux (fonte de verdade)."""
+        from .publish import pull_database
+
+        click.echo(pull_database(app))
+
     @app.cli.command("publish")
-    def publish_command():
-        """Publica o banco local no servidor Termux (usa DEPLOY_*)."""
+    @click.option(
+        "--force",
+        is_flag=True,
+        help="Sobrescreve o banco do servidor com o local (excecao).",
+    )
+    def publish_command(force):
+        """Excecao: sobrescreve o banco do servidor com o local."""
         from .publish import publish_database
 
-        click.echo(publish_database(app))
+        click.echo(publish_database(app, force=force))
 
     return app

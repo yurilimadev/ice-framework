@@ -20,12 +20,12 @@
         <a class="nav-link" href="{{ url_for('peixe.dashboard') }}">Peixe</a>
         <a class="nav-link" href="{{ url_for('tasks.list_groups') }}">Grupos</a>
         <a class="nav-link" href="{{ url_for('tasks.list_tags') }}">Tags</a>
-        {% if digest_ready or publish_ready %}
-        {% if publish_ready %}
-        <form class="digest-form" method="post" action="{{ url_for('tasks.publish') }}" data-busy-form data-busy-label="Publicando...">
+        {% if digest_ready or sync_ready %}
+        {% if sync_ready %}
+        <form class="digest-form" method="post" action="{{ url_for('tasks.pull') }}" data-busy-form data-busy-label="Baixando..." onsubmit="return window.confirm('Substituir o banco local pelo do servidor? Um backup local e criado antes.');">
           <button class="nav-action nav-action-secondary" type="submit" data-busy-button>
             <span aria-hidden="true">&#8645;</span>
-            <span data-busy-text>Publicar</span>
+            <span data-busy-text>Baixar do servidor</span>
           </button>
         </form>
         {% endif %}

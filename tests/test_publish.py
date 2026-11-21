@@ -1,6 +1,7 @@
-"""Testes da publicação do banco local para o servidor Termux."""
+"""Testes da sincronizacao do banco com o servidor Termux."""
 
 import shutil
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -8,7 +9,8 @@ from unittest.mock import MagicMock, patch
 
 from app import create_app
 from app.db import get_db
-from app.publish import publish_database
+from app.peixe import PeixeRepository
+from app.publish import publish_database, pull_database
 from app.tasks import TaskRepository
 
 DEPLOY_OVERRIDES = {
@@ -27,6 +29,7 @@ class PublishDatabaseTestCase(unittest.TestCase):
             {
                 "TESTING": True,
                 "APP_DATABASE_PATH": str(Path(self.directory.name) / "app.sqlite3"),
+                "APP_BACKUP_DIR": str(Path(self.directory.name) / "backups"),
                 "APP_TIMEZONE": "America/Sao_Paulo",
                 **DEPLOY_OVERRIDES,
             }
@@ -38,13 +41,20 @@ class PublishDatabaseTestCase(unittest.TestCase):
     def tearDown(self):
         self.directory.cleanup()
 
+    def test_publicacao_sem_force_orienta_usar_pull(self):
+        with self.assertRaises(RuntimeError) as context:
+            publish_database(self.app)
+
+        self.assertIn("fonte de verdade", str(context.exception))
+        self.assertIn("pull", str(context.exception))
+
     def test_configuracao_incompleta_mostra_variaveis_que_faltam(self):
         self.app.config.update(
             {"DEPLOY_HOST": None, "DEPLOY_KEY_PATH": None, "DEPLOY_TARGET_PATH": None}
         )
 
         with self.assertRaises(RuntimeError) as context:
-            publish_database(self.app)
+            publish_database(self.app, force=True)
 
         self.assertIn("Publicacao incompleta", str(context.exception))
         for name in ("DEPLOY_HOST", "DEPLOY_KEY_PATH", "DEPLOY_TARGET_PATH"):
@@ -66,14 +76,12 @@ class PublishDatabaseTestCase(unittest.TestCase):
             return result
 
         with patch("app.publish.subprocess.run", side_effect=fake_run):
-            message = publish_database(self.app)
+            message = publish_database(self.app, force=True)
 
         self.assertIn("Publicado no servidor: 2 tarefa(s) aberta(s)", message)
         self.assertEqual(len(runs), 2)
         self.assertEqual(runs[0][0], "scp")
         self.assertEqual(runs[0][-1], "usuario@servidor:~/ice-framework/data/app.sqlite3")
-
-        import sqlite3
 
         connection = sqlite3.connect(published)
         titles = [
@@ -97,9 +105,135 @@ class PublishDatabaseTestCase(unittest.TestCase):
 
         with patch("app.publish.subprocess.run", side_effect=fake_run):
             with self.assertRaises(RuntimeError) as context:
-                publish_database(self.app)
+                publish_database(self.app, force=True)
 
         self.assertIn("Permission denied", str(context.exception))
+
+
+class PullDatabaseTestCase(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        base = Path(self.directory.name)
+        self.local_database = base / "local" / "app.sqlite3"
+        self.server_database = base / "server.sqlite3"
+        self.backup_dir = base / "backups"
+        self.app = create_app(
+            {
+                "TESTING": True,
+                "APP_DATABASE_PATH": str(self.local_database),
+                "APP_BACKUP_DIR": str(self.backup_dir),
+                "APP_TIMEZONE": "America/Sao_Paulo",
+                **DEPLOY_OVERRIDES,
+            }
+        )
+        with self.app.app_context():
+            TaskRepository(get_db()).create("Local antiga", 5, 6, 7)
+
+        server_app = create_app(
+            {
+                "TESTING": True,
+                "APP_DATABASE_PATH": str(self.server_database),
+                "APP_TIMEZONE": "America/Sao_Paulo",
+            }
+        )
+        with server_app.app_context():
+            TaskRepository(get_db()).create("Do servidor", 8, 7, 6)
+            PeixeRepository(get_db()).create_lead(
+                company="Clinica do servidor",
+                sector="odontologia",
+                city="Natal",
+                channel="whatsapp",
+                handle="84999999999",
+                observation="Boas avaliacoes no Google",
+            )
+
+    def tearDown(self):
+        self.directory.cleanup()
+
+    def _fake_run(self, command, capture_output, text, timeout):
+        result = MagicMock()
+        result.returncode = 0
+        result.stdout = ""
+        result.stderr = ""
+        if command[0] == "ssh" and "python3 -c" in command[-1]:
+            result.stdout = "/tmp/ice-pull-remoto.sqlite3\n"
+        elif command[0] == "scp":
+            shutil.copy(self.server_database, command[-1])
+        return result
+
+    def test_pull_substitui_banco_local_com_backup(self):
+        with patch("app.publish.subprocess.run", side_effect=self._fake_run):
+            message = pull_database(self.app)
+
+        self.assertIn("1 tarefa(s) aberta(s), 1 lead(s)", message)
+        self.assertIn("Backup local", message)
+
+        connection = sqlite3.connect(self.local_database)
+        try:
+            titles = [
+                row[0]
+                for row in connection.execute("SELECT title FROM tasks ORDER BY title")
+            ]
+            leads = [
+                row[0] for row in connection.execute("SELECT company FROM leads")
+            ]
+        finally:
+            connection.close()
+        self.assertEqual(titles, ["Do servidor"])
+        self.assertEqual(leads, ["Clinica do servidor"])
+
+        backups = list(self.backup_dir.glob("backup-*.sqlite3"))
+        self.assertEqual(len(backups), 1)
+        backup_connection = sqlite3.connect(backups[0])
+        try:
+            backup_titles = [
+                row[0]
+                for row in backup_connection.execute("SELECT title FROM tasks")
+            ]
+        finally:
+            backup_connection.close()
+        self.assertEqual(backup_titles, ["Local antiga"])
+
+    def test_pull_com_snapshot_invalido_preserva_banco_local(self):
+        def fake_run(command, capture_output, text, timeout):
+            result = MagicMock()
+            result.returncode = 0
+            result.stdout = ""
+            result.stderr = ""
+            if command[0] == "ssh" and "python3 -c" in command[-1]:
+                result.stdout = "/tmp/ice-pull-remoto.sqlite3\n"
+            elif command[0] == "scp":
+                Path(command[-1]).write_text("nao e um banco")
+            return result
+
+        with patch("app.publish.subprocess.run", side_effect=fake_run):
+            with self.assertRaises(sqlite3.DatabaseError):
+                pull_database(self.app)
+
+        connection = sqlite3.connect(self.local_database)
+        try:
+            titles = [
+                row[0]
+                for row in connection.execute("SELECT title FROM tasks")
+            ]
+        finally:
+            connection.close()
+        self.assertEqual(titles, ["Local antiga"])
+        self.assertEqual(list(self.backup_dir.glob("backup-*.sqlite3")), [])
+
+    def test_pull_remove_snapshot_remoto(self):
+        runs = []
+
+        def fake_run(command, capture_output, text, timeout):
+            runs.append(list(command))
+            return self._fake_run(command, capture_output, text, timeout)
+
+        with patch("app.publish.subprocess.run", side_effect=fake_run):
+            pull_database(self.app)
+
+        cleanup = [run for run in runs if run[0] == "ssh" and "rm -f" in run[-1]]
+        self.assertEqual(len(cleanup), 1)
+        self.assertIn("/tmp/ice-pull-remoto.sqlite3", cleanup[0][-1])
 
 
 if __name__ == "__main__":

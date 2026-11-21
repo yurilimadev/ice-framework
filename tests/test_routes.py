@@ -564,13 +564,14 @@ class DigestSendRouteTestCase(unittest.TestCase):
         self.assertIn("Nao consegui enviar o resumo", response.get_data(as_text=True))
 
 
-class PublishRouteTestCase(unittest.TestCase):
+class PullRouteTestCase(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.app = create_app(
             {
                 "TESTING": True,
                 "APP_DATABASE_PATH": str(Path(self.directory.name) / "app.sqlite3"),
+                "APP_BACKUP_DIR": str(Path(self.directory.name) / "backups"),
                 "APP_TIMEZONE": "America/Sao_Paulo",
                 "DEPLOY_HOST": "usuario@servidor",
                 "DEPLOY_PORT": "8022",
@@ -584,33 +585,30 @@ class PublishRouteTestCase(unittest.TestCase):
     def tearDown(self):
         self.directory.cleanup()
 
-    def _fake_run(self, *args, **kwargs):
-        result = MagicMock()
-        result.returncode = 0
-        result.stdout = ""
-        result.stderr = ""
-        return result
-
-    def test_publicar_sucesso_flash_e_redireciona_para_origem(self):
-        with self.app.app_context():
-            TaskRepository(get_db()).create("Publicada", 5, 6, 7)
-
-        with patch("app.publish.subprocess.run", side_effect=self._fake_run):
+    def test_baixar_sucesso_flash_e_redireciona_para_origem(self):
+        with patch(
+            "app.routes.pull_database",
+            return_value="Banco atualizado a partir do servidor: 6 tarefa(s) aberta(s), 5 lead(s).",
+        ):
             response = self.client.post(
-                "/publish",
+                "/pull",
                 headers={"Referer": "http://localhost/tags"},
                 follow_redirects=True,
             )
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Publicado no servidor", response.get_data(as_text=True))
+        self.assertIn(
+            "Banco atualizado a partir do servidor", response.get_data(as_text=True)
+        )
 
-    def test_publicar_sem_configuracao_flash_orientador(self):
+    def test_baixar_sem_configuracao_flash_orientador(self):
         self.app.config.update(
             {"DEPLOY_HOST": None, "DEPLOY_KEY_PATH": None, "DEPLOY_TARGET_PATH": None}
         )
 
-        response = self.client.post("/publish", follow_redirects=True)
+        response = self.client.post("/pull", follow_redirects=True)
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Nao consegui publicar", response.get_data(as_text=True))
+        self.assertIn(
+            "Nao consegui atualizar do servidor", response.get_data(as_text=True)
+        )

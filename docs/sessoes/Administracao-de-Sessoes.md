@@ -1271,3 +1271,10 @@ Copiar este modelo para o registro da sessão ou para a mensagem de transição:
 - Registro: módulo Peixe-piloto concluído nas Fases 14, 15 e 16. Domínio, interface, gamificação, e-mails e agendamento entregues e publicados.
 - Próximo passo: tutorial de uso (`docs/peixe-piloto/TUTORIAL.md` já existe e pode ser refinado) e definição de melhorias futuras fora da v1.
 - Status: concluído
+
+### Handoff ADM-SYNC-001 - 2026-11-21
+
+- Registro: sincronização invertida por decisão do usuário. O servidor Termux é a fonte de verdade; o PC baixa cópias com `flask pull` (snapshot consistente + validação + backup local) ou pelo botão **Baixar do servidor** (`POST /pull`). O antigo `publish` exige `--force` e fica como recuperação. Backup diário no Termux por `scripts/ice-backup.sh` (cronie 08:30, últimos 7).
+- Verificação executada: `114` testes `OK`; `pull` real trouxe 4 tarefas abertas e 5 leads, com backup local; `/health` e `/peixe` online `200`.
+- Ação necessária: prospecção e edição passam a ser feitas pelo site; o PC só baixa cópias.
+- Status: concluído

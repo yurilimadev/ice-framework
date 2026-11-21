@@ -22,7 +22,7 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 
 ## 5. Sincronizacao local <-> servidor Termux
 
-**Status:** implementado (2026-10-10). Regra aprovada pelo usuario: local publica, servidor espelha (tarefa criada direto no servidor e sobrescrita na proxima publicacao). Gatilhos: CLI `python3 -m flask --app wsgi publish` e botao `Publicar` na barra superior (rota `POST /publish`, visivel apenas com DEPLOY_* no `.env` local). Snapshot consistente via backup API do SQLite; antivirus via restart do servico remoto. Cron ficou para decisao futura.
+**Status:** superado em 2026-11-21. O servidor Termux passou a ser a fonte de verdade; o PC baixa cópias com `flask pull` (validação + backup local) e o antigo `publish` virou exceção com `--force`. Botão da barra superior agora é **Baixar do servidor** (`POST /pull`). Backup diário no Termux via `scripts/ice-backup.sh`.
 
 
 ## 6. Agrupamento de tasks (grupos Projeto / Area - "PARA-lite")
@@ -77,3 +77,12 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 **Fora do escopo:** excluir lead, editar status/próxima ação pela tela e histórico de alterações.
 
 **Origem:** necessidade de corrigir telefones e observações dos 5 leads iniciais antes das primeiras abordagens.
+
+
+## 10. Sincronizacao com o servidor como fonte de verdade
+
+**Status:** implementado (2026-11-21). O banco do Termux passa a ser a fonte de verdade; o PC mantém uma copia para desenvolvimento e backup. `flask pull` cria snapshot consistente no servidor, valida `integrity_check` e `foreign_key_check`, salva backup local em `backups/` e substitui o banco. A rota `POST /pull` e o botao **Baixar do servidor** substituem o antigo **Publicar** (`POST /publish`). `flask publish --force` permanece apenas como recuperacao manual. Backup diario no Termux por `scripts/ice-backup.sh` (cronie 08:30, ultimos 7 arquivos).
+
+**Decisao do usuario:** editar e prospectar de qualquer lugar pelo site; nao querer depender do PC de casa nem lidar com conflitos de sincronizacao.
+
+**Fora do escopo:** sincronizacao bidirecional e resolucao de conflito por registro.

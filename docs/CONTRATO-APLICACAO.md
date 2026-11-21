@@ -32,7 +32,7 @@ Este documento define as rotas HTTP, os formulários e o contexto dos templates 
 | `POST` | `/grupos/<int:group_id>/archive` | Arquivar grupo | Redirect `303` para `/grupos` |
 | `POST` | `/grupos/<int:group_id>/delete` | Excluir grupo e soltar os cards | Redirect `303` para `/grupos` |
 | `POST` | `/digest/send` | Enviar resumo das tarefas por email (SMTP_* + DIGEST_TO) | Redirect `303` para a tela de origem |
-| `POST` | `/publish` | Publicar banco local no servidor Termux (DEPLOY_*; botao visivel apenas com configuracao) | Redirect `303` para a tela de origem |
+| `POST` | `/pull` | Baixar o banco do servidor Termux (DEPLOY_*; botao visivel apenas com configuracao) | Redirect `303` para a tela de origem |
 | `GET` | `/health` | Verificar aplicação, banco e schema | JSON `200` |
 
 Não criar rotas para autenticação, usuários, API JSON ou funcionalidades fora do MVP nesta fase.
