@@ -141,6 +141,8 @@ O módulo usa o mesmo Flask/SQLite, com tela própria em `/peixe`. Ele não alte
 | `GET` | `/peixe/leads` | Pipeline com filtro `status` | HTML `200` |
 | `GET` | `/peixe/leads/new` | Formulário de lead | HTML `200` |
 | `POST` | `/peixe/leads` | Criar lead | Redirect `303` para o detalhe |
+| `GET` | `/peixe/leads/<int:lead_id>/editar` | Formulário de edição do lead | HTML `200` |
+| `POST` | `/peixe/leads/<int:lead_id>/editar` | Atualizar dados do lead | Redirect `303` para o detalhe |
 | `GET` | `/peixe/leads/<int:lead_id>` | Detalhe, mensagem sugerida e timeline | HTML `200` |
 | `POST` | `/peixe/leads/<int:lead_id>/send` | Registrar mensagem enviada | Redirect `303` |
 | `POST` | `/peixe/leads/<int:lead_id>/reply` | Registrar resposta | Redirect `303` |
@@ -159,9 +161,12 @@ Lead inexistente responde `404`; validação inválida do formulário responde `
 
 Campos: `company` (obrigatório, 1-120), `contact` (opcional), `sector` (1-60), `city` (1-60), `channel` (`whatsapp`, `linkedin`, `email`, `instagram`, `presencial`), `handle` (1-200) e `observation` (1-200).
 
+A edição usa os mesmos campos e validações da criação. `status`, `next_action_at` e `created_at` são preservados; apenas `updated_at` muda. Duplicidade de `channel` + `handle` é verificada ignorando o próprio lead.
+
 ### Contexto
 
 - Dashboard: `mission`, `contact` (dor, mensagem e link), `xp`, `level`, `streak`, `badges`, `quest`, `followups`, `top_tasks`, `counts`, `ocean` e `city`.
+- Formulário (novo e edição): `lead`, `errors` e `form_values`.
 - Pipeline: `leads`, `counts`, `status` e `statuses`.
 - Detalhe: `lead`, `contact` e `interactions`.
 - Semana: `progress`, `extra` (propostas/pilotos), `quest`, `xp`, `level`, `streak`, `next_leads`, `learning` e `blocker`.
@@ -171,7 +176,7 @@ Campos: `company` (obrigatório, 1-120), `contact` (opcional), `sector` (1-60), 
 
 A mensagem é gerada no servidor com contato, observação, dor e setor. A dor vem de `settings.current_pain` ou do padrão de odontologia ("falta de paciente e agenda"). Links por canal:
 
-- WhatsApp: `https://wa.me/55<numero>?text=<mensagem>`.
+- WhatsApp: `https://wa.me/55<numero>?text=<mensagem>`. O número é normalizado: o `0` inicial de discagem e o `55` duplicado são removidos antes do prefixo do país.
 - Email: `mailto:<handle>?subject=...&body=<mensagem>`.
 - LinkedIn/Instagram: abre o perfil; a mensagem é copiada pelo botão.
 - Presencial: sem link externo.

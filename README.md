@@ -19,7 +19,7 @@ O **score** é o produto das três dimensões — `I × C × F`, de 1 a 1000 —
 - **Modo painel (desktop)** — cabeçalho e filtros ficam fixos e a lista rola dentro do próprio painel; em telas pequenas a página rola normalmente.
 - **Tags** — cada tarefa pode ter várias tags; a tela "Gerenciar Tags" permite renomear, excluir (desvinculando das tarefas, com confirmação) e mesclar tags.
 - **Grupos** — cards podem ser organizados em Projetos, Áreas e Recursos pela tela "Gerenciar Grupos"; o painel exibe seções por grupo com blocos recolhíveis, os arquivados vão para Arquivos, e os cards soltos ficam em "Sem grupo".
-- **Peixe-piloto** — cockpit de prospecção em `/peixe`: lead do dia, mensagem pronta por canal, pipeline, XP, nível, streak, quest semanal, agenda e fechamento da semana.
+- **Peixe-piloto** — cockpit de prospecção em `/peixe`: lead do dia, mensagem pronta por canal, pipeline, edição de lead, XP, nível, streak, quest semanal, agenda e fechamento da semana.
 - **Ciclo de vida** — criar, editar, concluir, reabrir e excluir tarefas, com avisos efêmeros (4 segundos) de sucesso/erro e confirmação antes de exclusões.
 - **Resumo por email** — envia um email com as tarefas abertas (por score), contagem de atrasadas e prazos, com destaque para as atrasadas. Disparável por botão na barra superior ou por comando no terminal (ver abaixo).
 - **Saúde** — `GET /health` responde `status`, `database` e `schema_version` em JSON.

@@ -96,7 +96,7 @@ O schema `5` adiciona as tabelas `leads`, `interactions` e `settings`. A migraç
 
 O `PeixeRepository` fornece:
 
-- `create_lead`, `get_lead`, `list_leads`, `update_status`, `set_next_action`.
+- `create_lead`, `update_lead`, `get_lead`, `list_leads`, `update_status`, `set_next_action`.
 - `log_interaction`, `list_interactions`.
 - `daily_mission`, `followups_due`, `pipeline_counts`.
 - `xp_total`, `level`, `streak`, `weekly_progress`, `badges`.

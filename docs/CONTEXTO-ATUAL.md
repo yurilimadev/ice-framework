@@ -1,6 +1,6 @@
 # Contexto Atual
 
-**Atualizado em:** 2026-10-31
+**Atualizado em:** 2026-11-20
 
 Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler todo o histórico. Detalhes permanentes devem permanecer nos contratos, no discovery ou no registro de sessões.
 
@@ -9,6 +9,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - **Fases 11 e 12 do Ciclo 3**: concluídas em 2026-10-31.
 - **Fase 13**: executada em 2026-10-31 — aguardando aceite do usuário para encerrar o Ciclo 3.
 - **Peixe-piloto — Fases 14, 15 e 16**: concluídas em 2026-10-31; módulo publicado no Termux e agendado.
+- **Melhoria pós-F16 (2026-11-20)**: edição de lead em `/peixe/leads/<id>/editar` (domínio, rota, formulário, links e testes); link de WhatsApp normaliza `0` inicial e `55` duplicado.
 - Entregue na Fase 11: `kind='recurso'`, migração `3 -> 4` preservando grupos e vínculos; `Arquivos` segue como `status='archived'`.
 - Entregue na Fase 12: painel em seções Projetos, Áreas, Recursos, Arquivos e Sem grupo; tipo Recurso na gestão e no formulário.
 - Entregue/validado na Fase 13: E2E local e no Termux, backup/restauração e publicação em schema `4`; servidor espelhando 5 tarefas e 0 grupos.
@@ -41,6 +42,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 | `QA-010` | concluída | Seções validadas; Fase 12 encerrada |
 | `QA-011` | em validação | Drills F13 aprovados; aguardando aceite do usuário |
 | `ADM-PEIXE-001` | em validação | F14 entregue; aguardando aceite antes da F15 |
+| `ADM-PEIXE-002` | concluída | Edição de lead entregue em 2026-11-20 |
 | `BE-010` | concluída | Schema `5` e domínio Peixe-piloto entregues |
 | `QA-012` | em validação | 14 testes novos; suíte total com 89 testes OK |
 | `BE-011` | concluída | Rotas e contexto `/peixe` entregues |
@@ -83,7 +85,8 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - Fase 14 executada: migração `005_peixe.sql` (schema `5`), `PeixeRepository` e 14 testes de domínio; upgrade `4 -> 5` validado em cópia do banco real.
 - Fase 15 executada: dashboard, pipeline, detalhe, semana e agenda em `/peixe`; mensagem/links por canal, ações de lead, cópia e sub-identidade visual; 10 testes de rotas.
 - Fase 16 concluída: e-mails diário/semanal reais (local e servidor), publicação no Termux em schema `5`, `/peixe` online `200` e agendamento via `cronie` (diário 08:00, semanal sexta 17:00).
-- Suíte automatizada atual: `105` testes, resultado `OK`.
+- Melhoria de 2026-11-20: `PeixeRepository.update_lead` + rotas `GET/POST /peixe/leads/<id>/editar`, formulário reaproveitado em modo edição, link **Editar** no detalhe e no pipeline; `status`, `next_action_at` e `created_at` preservados; duplicidade ignorando o próprio lead. Link de WhatsApp passou a normalizar `0` inicial e `55` duplicado. 5 testes novos.
+- Suíte automatizada atual: `110` testes, resultado `OK`.
 
 ## Bloqueio atual
 
@@ -91,7 +94,7 @@ Nenhum bloqueio de projeto. Observação: `termux-job-scheduler` não existe no 
 
 ## Próxima decisão
 
-Refinar o tutorial do Peixe (`docs/peixe-piloto/TUTORIAL.md`) e definir melhorias futuras fora da v1. O aceite da Fase 13/Ciclo 3 também continua pendente. Handoffs de encerramento: `ADM-F16-CLOSE-001` e `ADM-PEIXE-CLOSE-001`.
+Usar a edição para corrigir os 5 leads de odontologia em Natal (telefones e observações) e iniciar as primeiras abordagens. Publicar o código no Termux (`git pull` + restart do serviço) quando fizer sentido ter a edição online; a publicação de banco (`publish`) continua sendo uma etapa separada. Refinar o tutorial do Peixe (`docs/peixe-piloto/TUTORIAL.md`) e definir melhorias futuras fora da v1. O aceite da Fase 13/Ciclo 3 também continua pendente. Handoffs de encerramento: `ADM-F16-CLOSE-001` e `ADM-PEIXE-CLOSE-001`.
 
 ## Backlog
 
@@ -112,4 +115,4 @@ Refinar o tutorial do Peixe (`docs/peixe-piloto/TUTORIAL.md`) e definir melhoria
 ## Último versionamento
 
 - Último commit de código publicado: `7a76ff6` (Peixe F14-F16, grupos recolhíveis e schema `5`).
-- Alterações locais pendentes: documentação de encerramento da F16; código e banco já publicados.
+- Alterações locais pendentes: edição de lead (código, testes e docs) ainda não commitada nem publicada no Termux.

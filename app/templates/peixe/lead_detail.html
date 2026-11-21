@@ -17,6 +17,7 @@
         {% if lead.next_action_at %}Proxima acao: {{ lead.next_action_at.strftime("%d/%m/%Y") }}{% else %}Sem proxima acao{% endif %}
       </p>
     </div>
+    <a class="button button-ghost" href="{{ url_for('peixe.edit_lead', lead_id=lead.id) }}">Editar lead</a>
   </header>
 
   {% if messages %}

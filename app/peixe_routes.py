@@ -87,14 +87,23 @@ def build_message(lead, pain):
     )
 
 
+def _whatsapp_digits(handle: str) -> str:
+    digits = re.sub(r"\D", "", handle)
+    if digits.startswith("550"):
+        digits = f"55{digits[3:]}"
+    elif digits.startswith("0"):
+        digits = digits[1:]
+    if digits and not digits.startswith("55"):
+        digits = f"55{digits}"
+    return digits
+
+
 def _channel_link(lead, message):
     text = quote(message)
     if lead.channel is Channel.WHATSAPP:
-        digits = re.sub(r"\D", "", lead.handle)
+        digits = _whatsapp_digits(lead.handle)
         if not digits:
             return None
-        if not digits.startswith("55"):
-            digits = f"55{digits}"
         return {
             "url": f"https://wa.me/{digits}?text={text}",
             "label": "Abrir WhatsApp",
@@ -282,6 +291,64 @@ def create_lead():
             400,
         )
     flash("Lead criado.", "success")
+    return redirect(url_for("peixe.lead_detail", lead_id=lead.id), code=303)
+
+
+@peixe_bp.get("/peixe/leads/<int:lead_id>/editar")
+def edit_lead(lead_id):
+    repository = _repository()
+    try:
+        lead = repository.get_lead(lead_id)
+    except LeadNotFoundError:
+        abort(404)
+    return render_template(
+        "peixe/lead_form.html",
+        lead=lead,
+        errors={},
+        form_values=_lead_form_values(lead),
+    )
+
+
+@peixe_bp.post("/peixe/leads/<int:lead_id>/editar")
+def update_lead(lead_id):
+    repository = _repository()
+    try:
+        lead = repository.get_lead(lead_id)
+    except LeadNotFoundError:
+        abort(404)
+    values = {
+        "company": request.form.get("company", ""),
+        "contact": request.form.get("contact", ""),
+        "sector": request.form.get("sector", ""),
+        "city": request.form.get("city", ""),
+        "channel": request.form.get("channel", ""),
+        "handle": request.form.get("handle", ""),
+        "observation": request.form.get("observation", ""),
+    }
+    try:
+        lead = repository.update_lead(
+            lead_id,
+            company=values["company"],
+            contact=values["contact"] or None,
+            sector=values["sector"],
+            city=values["city"],
+            channel=values["channel"],
+            handle=values["handle"],
+            observation=values["observation"],
+        )
+    except LeadNotFoundError:
+        abort(404)
+    except ValidationError as error:
+        return (
+            render_template(
+                "peixe/lead_form.html",
+                lead=lead,
+                errors={error.field or "form": str(error)},
+                form_values=values,
+            ),
+            400,
+        )
+    flash("Lead atualizado.", "success")
     return redirect(url_for("peixe.lead_detail", lead_id=lead.id), code=303)
 
 

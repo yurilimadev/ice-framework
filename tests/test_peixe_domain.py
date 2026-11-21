@@ -238,6 +238,86 @@ class PeixeDomainTestCase(unittest.TestCase):
             other_channel = self.create_lead(channel="linkedin")
             self.assertEqual(other_channel.channel, Channel.LINKEDIN)
 
+    def test_update_lead_changes_fields_and_keeps_status_and_next_action(self):
+        with self.app.app_context():
+            repository = self.repository()
+            lead = self.create_lead()
+            repository.update_status(lead.id, LeadStatus.TO_SEND)
+            repository.update_status(lead.id, LeadStatus.SENT)
+            followup = local_today() + timedelta(days=3)
+            repository.set_next_action(lead.id, followup)
+            before = repository.get_lead(lead.id)
+
+            updated = repository.update_lead(
+                lead.id,
+                company="Clinica Sorriso Norte",
+                contact="Dra. Ana Paula",
+                sector="odontologia",
+                city="Parnamirim",
+                channel="instagram",
+                handle="@sorrisonorte",
+                observation="Posts sobre alinhadores",
+            )
+
+            self.assertEqual(updated.company, "Clinica Sorriso Norte")
+            self.assertEqual(updated.contact, "Dra. Ana Paula")
+            self.assertEqual(updated.city, "Parnamirim")
+            self.assertEqual(updated.channel, Channel.INSTAGRAM)
+            self.assertEqual(updated.handle, "@sorrisonorte")
+            self.assertEqual(updated.observation, "Posts sobre alinhadores")
+            self.assertEqual(updated.status, LeadStatus.SENT)
+            self.assertEqual(updated.next_action_at, followup)
+            self.assertEqual(updated.created_at, before.created_at)
+
+    def test_update_lead_rejects_duplicates_and_invalid_data(self):
+        with self.app.app_context():
+            repository = self.repository()
+            lead = self.create_lead()
+            other = self.create_lead(handle="outro")
+
+            same = repository.update_lead(
+                lead.id,
+                company=lead.company,
+                contact=lead.contact,
+                sector=lead.sector,
+                city=lead.city,
+                channel=lead.channel,
+                handle=lead.handle,
+                observation=lead.observation,
+            )
+            self.assertEqual(same.id, lead.id)
+
+            with self.assertRaises(ValidationError):
+                repository.update_lead(
+                    other.id,
+                    company="Outra Clinica",
+                    sector="odontologia",
+                    city="Natal",
+                    channel="whatsapp",
+                    handle=lead.handle,
+                    observation="Teste",
+                )
+            with self.assertRaises(ValidationError):
+                repository.update_lead(
+                    lead.id,
+                    company=" ",
+                    sector="odontologia",
+                    city="Natal",
+                    channel="whatsapp",
+                    handle=lead.handle,
+                    observation="Teste",
+                )
+            with self.assertRaises(LeadNotFoundError):
+                repository.update_lead(
+                    999,
+                    company="Fantasma",
+                    sector="odontologia",
+                    city="Natal",
+                    channel="whatsapp",
+                    handle="123",
+                    observation="Teste",
+                )
+
     def test_streak_counts_consecutive_days_and_breaks(self):
         with self.app.app_context():
             repository = self.repository()

@@ -1,15 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Novo lead - Peixe-piloto{% endblock %}
+{% block title %}{% if lead %}Editar lead{% else %}Novo lead{% endif %} - Peixe-piloto{% endblock %}
 {% block content %}
 <section class="peixe-page peixe-form-page" aria-labelledby="lead-form-title">
   <div class="peixe-form-intro">
-    <a class="back-link" href="{{ url_for('peixe.leads') }}"><span aria-hidden="true">&#8592;</span> Voltar ao pipeline</a>
-    <p class="eyebrow">NOVO LEAD</p>
-    <h1 id="lead-form-title">Quem entra no oceano?</h1>
-    <p>Registre o essencial. A mensagem nasce na proxima tela, pronta para copiar.</p>
+    {% if lead %}
+      <a class="back-link" href="{{ url_for('peixe.lead_detail', lead_id=lead.id) }}"><span aria-hidden="true">&#8592;</span> Voltar ao lead</a>
+      <p class="eyebrow">EDITAR LEAD</p>
+      <h1 id="lead-form-title">Ajustar este lead</h1>
+      <p>Corrija contato, canal ou observacao. O status e a proxima acao continuam como estao.</p>
+    {% else %}
+      <a class="back-link" href="{{ url_for('peixe.leads') }}"><span aria-hidden="true">&#8592;</span> Voltar ao pipeline</a>
+      <p class="eyebrow">NOVO LEAD</p>
+      <h1 id="lead-form-title">Quem entra no oceano?</h1>
+      <p>Registre o essencial. A mensagem nasce na proxima tela, pronta para copiar.</p>
+    {% endif %}
   </div>
 
-  <form class="peixe-form" method="post" action="{{ url_for('peixe.create_lead') }}">
+  <form class="peixe-form" method="post" action="{% if lead %}{{ url_for('peixe.update_lead', lead_id=lead.id) }}{% else %}{{ url_for('peixe.create_lead') }}{% endif %}">
     {% if errors %}
       <div class="error-panel" role="alert" aria-labelledby="lead-error-title">
         <strong id="lead-error-title">Confira os campos destacados</strong>
@@ -64,8 +71,8 @@
     </div>
 
     <div class="form-actions">
-      <a class="button button-ghost" href="{{ url_for('peixe.leads') }}">Cancelar</a>
-      <button class="button button-primary" type="submit">Salvar lead</button>
+      <a class="button button-ghost" href="{% if lead %}{{ url_for('peixe.lead_detail', lead_id=lead.id) }}{% else %}{{ url_for('peixe.leads') }}{% endif %}">Cancelar</a>
+      <button class="button button-primary" type="submit">{% if lead %}Salvar alteracoes{% else %}Salvar lead{% endif %}</button>
     </div>
   </form>
 </section>

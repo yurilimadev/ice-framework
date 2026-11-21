@@ -54,7 +54,11 @@
               <td>{{ channel_label(lead.channel.value) }}</td>
               <td><span class="peixe-status peixe-status-{{ lead.status.value }}">{{ status_label(lead.status.value) }}</span></td>
               <td>{% if lead.next_action_at %}{{ lead.next_action_at.strftime("%d/%m/%Y") }}{% else %}<span class="muted-text">Sem data</span>{% endif %}</td>
-              <td class="peixe-table-action"><a class="text-action" href="{{ url_for('peixe.lead_detail', lead_id=lead.id) }}">Abrir</a></td>
+              <td class="peixe-table-action">
+                <a class="text-action" href="{{ url_for('peixe.lead_detail', lead_id=lead.id) }}">Abrir</a>
+                <span class="muted-text" aria-hidden="true">·</span>
+                <a class="text-action" href="{{ url_for('peixe.edit_lead', lead_id=lead.id) }}">Editar</a>
+              </td>
             </tr>
           {% endfor %}
         </tbody>

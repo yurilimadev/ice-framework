@@ -51,6 +51,16 @@ Se a tela antiga aparecer, recarregue com `Ctrl+Shift+R`. O link **Peixe** tamb�
 
 O lead nasce com status **Novo**. O detalhe abre com a mensagem sugerida.
 
+### Corrigir os dados de um lead
+
+1. No detalhe do lead, clique em **Editar lead** (ou em **Editar** na linha do pipeline).
+2. Ajuste empresa, contato, setor, cidade, canal, contato no canal ou observação.
+3. Clique em **Salvar alterações**.
+
+O status, a próxima ação e a data de criação são preservados. A observação merece atenção especial: ela entra literalmente na mensagem, então escreva uma frase que faça sentido depois de "Vi que" — por exemplo, "vocês têm boas avaliações no Google" em vez de uma nota interna.
+
+Para WhatsApp, o número pode ser gravado com DDD (`84999999999`), com o `0` de discagem (`084999999999`) ou com `55`; o link **Abrir WhatsApp** normaliza o formato.
+
 ## 4. Missão do dia
 
 A tela `/peixe` mostra a missão do dia: o primeiro lead com status **A enviar** ou **Enviado** e sem próxima ação ou com data vencida.

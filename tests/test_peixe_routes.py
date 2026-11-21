@@ -87,6 +87,80 @@ class PeixeRoutesTestCase(unittest.TestCase):
         self.assertIn("Instagram", body)
         self.assertIn('data-lead-status="novo"', body)
 
+    def test_edit_lead_form_and_update(self):
+        lead = self.create_lead(handle="084994017101")
+
+        form = self.client.get(f"/peixe/leads/{lead.id}/editar")
+        form_body = form.get_data(as_text=True)
+        self.assertEqual(form.status_code, 200)
+        self.assertIn("EDITAR LEAD", form_body)
+        self.assertIn("Salvar alteracoes", form_body)
+        self.assertIn('value="Clinica Sorriso"', form_body)
+        self.assertIn('value="084994017101"', form_body)
+
+        response = self.client.post(
+            f"/peixe/leads/{lead.id}/editar",
+            data={
+                "company": "Clinica Sorriso Norte",
+                "contact": "Dra. Ana Paula",
+                "sector": "odontologia",
+                "city": "Natal",
+                "channel": "whatsapp",
+                "handle": "84994017101",
+                "observation": "voces tem boas avaliacoes no Google",
+            },
+            follow_redirects=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.get_data(as_text=True)
+        self.assertIn("Lead atualizado", body)
+        self.assertIn("Clinica Sorriso Norte", body)
+        self.assertIn("Dra. Ana Paula", body)
+        self.assertIn("wa.me/5584994017101", body)
+        self.assertIn(f'href="/peixe/leads/{lead.id}/editar"', body)
+        with self.app.app_context():
+            updated = PeixeRepository(get_db()).get_lead(lead.id)
+            self.assertEqual(updated.company, "Clinica Sorriso Norte")
+            self.assertEqual(updated.contact, "Dra. Ana Paula")
+            self.assertEqual(updated.handle, "84994017101")
+            self.assertEqual(updated.status, LeadStatus.NEW)
+
+    def test_edit_lead_invalid_and_missing(self):
+        lead = self.create_lead()
+        invalid = self.client.post(
+            f"/peixe/leads/{lead.id}/editar",
+            data={
+                "company": " ",
+                "contact": "",
+                "sector": "odontologia",
+                "city": "Natal",
+                "channel": "whatsapp",
+                "handle": "84994017101",
+                "observation": "Teste",
+            },
+        )
+        self.assertEqual(invalid.status_code, 400)
+        self.assertIn(b'data-error-field="company"', invalid.data)
+
+        self.assertEqual(self.client.get("/peixe/leads/999/editar").status_code, 404)
+        self.assertEqual(
+            self.client.post("/peixe/leads/999/editar", data={}).status_code, 404
+        )
+
+    def test_whatsapp_link_ignores_leading_zero(self):
+        lead = self.create_lead(handle="084994017101")
+        body = self.client.get(f"/peixe/leads/{lead.id}").get_data(as_text=True)
+        self.assertIn("wa.me/5584994017101", body)
+
+        with_country = self.create_lead(
+            company="Outra Clinica", handle="55084994017102"
+        )
+        body = self.client.get(f"/peixe/leads/{with_country.id}").get_data(
+            as_text=True
+        )
+        self.assertIn("wa.me/5584994017102", body)
+
     def test_invalid_lead_form_returns_400_with_field_error(self):
         response = self.client.post(
             "/peixe/leads",

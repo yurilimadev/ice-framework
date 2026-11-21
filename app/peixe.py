@@ -304,6 +304,55 @@ class PeixeRepository:
             )
         return self.get_lead(cursor.lastrowid)
 
+    def update_lead(
+        self,
+        lead_id: int,
+        company: str,
+        sector: str,
+        city: str,
+        channel: Channel | str,
+        handle: str,
+        observation: str,
+        contact: str | None = None,
+    ) -> Lead:
+        self.get_lead(lead_id)
+        company = _required_text(company, "company", 120)
+        sector = _required_text(sector, "sector", 60)
+        city = _required_text(city, "city", 60)
+        channel = validate_lead_channel(channel)
+        handle = _required_text(handle, "handle", 200)
+        observation = _required_text(observation, "observation", 200)
+        contact = _optional_text(contact, "contact")
+        duplicate = self.connection.execute(
+            "SELECT id FROM leads WHERE channel = ? AND handle = ? AND id != ?",
+            (channel.value, handle, lead_id),
+        ).fetchone()
+        if duplicate is not None:
+            raise ValidationError("Ja existe um lead com este canal e contato.", "handle")
+
+        now = _coerce_timestamp().isoformat()
+        with self.connection:
+            self.connection.execute(
+                """
+                UPDATE leads
+                SET company = ?, contact = ?, sector = ?, city = ?, channel = ?,
+                    handle = ?, observation = ?, updated_at = ?
+                WHERE id = ?
+                """,
+                (
+                    company,
+                    contact,
+                    sector,
+                    city,
+                    channel.value,
+                    handle,
+                    observation,
+                    now,
+                    lead_id,
+                ),
+            )
+        return self.get_lead(lead_id)
+
     def get_lead(self, lead_id: int) -> Lead:
         row = self.connection.execute(
             "SELECT * FROM leads WHERE id = ?", (lead_id,)

@@ -68,3 +68,12 @@ Este documento registra demandas futuras que ainda não fazem parte do escopo at
 **Ciclos previstos:** F14 (dominio + migracao 005) -> F15 (interface `/peixe`) -> F16 (email, agendamento e E2E).
 
 **Bloqueio:** nenhum. Nota: `termux-job-scheduler` indisponivel; agendamento feito com `cronie`/`crond`.
+
+
+## 9. Edicao de lead no Peixe-piloto
+
+**Status:** implementado (2026-11-20). `PeixeRepository.update_lead` + rotas `GET/POST /peixe/leads/<int:lead_id>/editar`, formulário reaproveitado em modo edição, links **Editar** no detalhe e no pipeline. Status, próxima ação e data de criação preservados; duplicidade de canal/contato ignorando o próprio lead. Link de WhatsApp normaliza `0` inicial e `55` duplicado. Suíte com 110 testes.
+
+**Fora do escopo:** excluir lead, editar status/próxima ação pela tela e histórico de alterações.
+
+**Origem:** necessidade de corrigir telefones e observações dos 5 leads iniciais antes das primeiras abordagens.
