@@ -117,5 +117,5 @@ Usar a edição para corrigir os 5 leads de odontologia em Natal (telefones e ob
 
 ## Último versionamento
 
-- Último commit de código publicado: `dc44b39` (edição de lead e normalização do link de WhatsApp), em `main` e implantado no Termux em 2026-11-21.
+- Último commit de código publicado: `b082a3f` (servidor como fonte de verdade, `pull`, botão **Baixar do servidor** e backup diário), em `main` e implantado no Termux em 2026-11-21.
 - Alterações locais pendentes: nenhuma.
