@@ -56,7 +56,7 @@ class PublishDatabaseTestCase(unittest.TestCase):
         with self.assertRaises(RuntimeError) as context:
             publish_database(self.app, force=True)
 
-        self.assertIn("Publicacao incompleta", str(context.exception))
+        self.assertIn("Sincronizacao incompleta", str(context.exception))
         for name in ("DEPLOY_HOST", "DEPLOY_KEY_PATH", "DEPLOY_TARGET_PATH"):
             self.assertIn(name, str(context.exception))
 

@@ -42,7 +42,7 @@ def _deploy_config(app) -> dict:
         if not value
     ]
     if missing:
-        raise RuntimeError("Publicacao incompleta; defina " + ", ".join(missing) + ".")
+        raise RuntimeError("Sincronizacao incompleta; defina " + ", ".join(missing) + ".")
     return config
 
 
