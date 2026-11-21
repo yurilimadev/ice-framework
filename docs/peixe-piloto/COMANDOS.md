@@ -200,15 +200,15 @@ Adicionar link "Peixe" na navegação de `base.html`.
 
 ### 3.3 Script e links
 
-Gerar a mensagem no servidor, no formato:
+Gerar a mensagem no servidor, no formato (revisado em 2026-11-21):
 
 ```text
-Oi {contato}, tudo bem? Vi que {observação}.
-Estou estudando {dor} em {setor} e queria te fazer 2 perguntas rápidas — não é venda.
-Pode ser por aqui?
+Oi, {contato}, tudo bem? Vi que {observação}.
+Estou pesquisando como {setor} de {cidade} organizam a agenda e conquistam pacientes novos.
+São 2 perguntas rápidas, sem venda — pode ser por aqui?
 ```
 
-`{dor}` vem de `settings` ou de um campo do lead; para odontologia, usar "falta de paciente e agenda".
+`{setor}` vira "clínicas odontológicas" para odontologia e "clínicas de {setor}" nos demais. `settings.current_pain` não entra mais na mensagem.
 
 Links por canal:
 - WhatsApp: `https://wa.me/55{numero}?text={texto_urlencoded}`

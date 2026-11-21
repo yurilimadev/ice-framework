@@ -65,9 +65,9 @@
     </div>
 
     <div class="field-group{% if errors.observation %} has-error{% endif %}">
-      <label for="observation">Observacao</label>
-      <input id="observation" name="observation" maxlength="200" value="{{ form_values.observation }}" placeholder="O que chamou sua atencao nesse lead?" required{% if errors.observation %} aria-invalid="true" aria-describedby="error-observation"{% endif %}>
-      <span class="field-help">Essa frase entra na mensagem gerada.</span>
+      <label for="observation">Observacao (entra na mensagem)</label>
+      <input id="observation" name="observation" maxlength="200" value="{{ form_values.observation }}" placeholder="voces divulgam o WhatsApp direto no Instagram" required{% if errors.observation %} aria-invalid="true" aria-describedby="error-observation"{% endif %}>
+      <span class="field-help">Complete a frase "Vi que...": fato publico, minuscula inicial, sem notas internas.</span>
     </div>
 
     <div class="form-actions">

@@ -74,12 +74,12 @@ A tela `/peixe` mostra a missão do dia: o primeiro lead com status **A enviar**
 O padrão é:
 
 ```text
-Oi {contato}, tudo bem? Vi que {observação}.
-Estou estudando {dor} em {setor} e queria te fazer 2 perguntas rápidas — não é venda.
-Pode ser por aqui?
+Oi, {contato}, tudo bem? Vi que {observação}.
+Estou pesquisando como {setor} de {cidade} organizam a agenda e conquistam pacientes novos.
+São 2 perguntas rápidas, sem venda — pode ser por aqui?
 ```
 
-Para odontologia, a dor padrão é **falta de paciente e agenda**.
+Para odontologia, o setor vira **clínicas odontológicas**; nos demais, **clínicas de {setor}**. A observação precisa completar a frase "Vi que..." — fato público, minúscula inicial e sem notas internas. Se a frase não fizer sentido depois de "Vi que", o lead ainda não está pronto para envio.
 
 ## 5. Enviar a primeira mensagem
 

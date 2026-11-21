@@ -76,14 +76,19 @@ def _pain(repository, lead):
     return f"os desafios de {lead.sector}"
 
 
-def build_message(lead, pain):
+def build_message(lead):
     contact = lead.contact or lead.company
     observation = lead.observation.rstrip(". ")
+    sector = lead.sector.strip()
+    if sector.casefold() == "odontologia":
+        sector_phrase = "clínicas odontológicas"
+    else:
+        sector_phrase = f"clínicas de {sector.lower()}"
     return (
-        f"Oi {contact}, tudo bem? Vi que {observation}.\n"
-        f"Estou estudando {pain} em {lead.sector} e queria te fazer 2 perguntas "
-        "rápidas — não é venda.\n"
-        "Pode ser por aqui?"
+        f"Oi, {contact}, tudo bem? Vi que {observation}.\n"
+        f"Estou pesquisando como {sector_phrase} de {lead.city} organizam a "
+        "agenda e conquistam pacientes novos.\n"
+        "São 2 perguntas rápidas, sem venda — pode ser por aqui?"
     )
 
 
@@ -135,7 +140,7 @@ def _channel_link(lead, message):
 
 def _lead_contact(lead, repository):
     pain = _pain(repository, lead)
-    message = build_message(lead, pain)
+    message = build_message(lead)
     return {
         "pain": pain,
         "message": message,

@@ -333,11 +333,23 @@ class PeixeRoutesTestCase(unittest.TestCase):
 
     def test_message_builder_and_pipeline_filter(self):
         lead = self.create_lead()
-        message = build_message(lead, "falta de paciente e agenda")
-        self.assertIn("Oi Dra. Ana", message)
+        message = build_message(lead)
+        self.assertIn("Oi, Dra. Ana", message)
         self.assertIn("Posts sobre implantes", message)
-        self.assertIn("falta de paciente e agenda", message)
-        self.assertIn("Pode ser por aqui?", message)
+        self.assertIn("clínicas odontológicas de Natal", message)
+        self.assertIn("sem venda", message)
+        self.assertIn("2 perguntas", message)
+        self.assertIn("pode ser por aqui?", message)
+
+        other = self.create_lead(
+            company="Studio Estetica",
+            sector="Estetica",
+            city="Parnamirim",
+            channel="instagram",
+            handle="@studio",
+        )
+        other_message = build_message(other)
+        self.assertIn("clínicas de estetica de Parnamirim", other_message)
 
         with self.app.app_context():
             repository = PeixeRepository(get_db())

@@ -33,7 +33,7 @@ def _mission(repository):
     if lead is None:
         return None, None, None
     pain = _pain(repository, lead)
-    return lead, pain, build_message(lead, pain)
+    return lead, pain, build_message(lead)
 
 
 def render_daily_text(repository, base_url="https://ice.yurilimadev.com") -> str:

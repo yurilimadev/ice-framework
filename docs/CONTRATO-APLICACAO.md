@@ -174,7 +174,7 @@ A edição usa os mesmos campos e validações da criação. `status`, `next_act
 
 ### Mensagem e links
 
-A mensagem é gerada no servidor com contato, observação, dor e setor. A dor vem de `settings.current_pain` ou do padrão de odontologia ("falta de paciente e agenda"). Links por canal:
+A mensagem é gerada no servidor com contato, observação, setor e cidade. O setor vira "clínicas odontológicas" para odontologia e "clínicas de {setor}" nos demais. `settings.current_pain` continua como rótulo interno, mas não entra mais na mensagem. Links por canal:
 
 - WhatsApp: `https://wa.me/55<numero>?text=<mensagem>`. O número é normalizado: o `0` inicial de discagem e o `55` duplicado são removidos antes do prefixo do país.
 - Email: `mailto:<handle>?subject=...&body=<mensagem>`.

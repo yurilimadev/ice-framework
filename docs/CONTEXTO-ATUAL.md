@@ -11,6 +11,7 @@ Este arquivo é um snapshot operacional para iniciar uma nova sessão sem reler 
 - **Peixe-piloto — Fases 14, 15 e 16**: concluídas em 2026-10-31; módulo publicado no Termux e agendado.
 - **Melhoria pós-F16 (2026-11-20)**: edição de lead em `/peixe/leads/<id>/editar` (domínio, rota, formulário, links e testes); link de WhatsApp normaliza `0` inicial e `55` duplicado.
 - **Sincronização (2026-11-21)**: o servidor Termux passa a ser a fonte de verdade; `pull`/botão **Baixar do servidor** substituem o fluxo local→servidor; `publish --force` fica como exceção; backup diário no Termux.
+- **Abordagem (2026-11-21)**: mensagem gerada passou a usar contato, observação, setor e cidade, sem a dor interna e sem "Estou estudando"; o formulário orienta a observação a completar "Vi que...".
 - Entregue na Fase 11: `kind='recurso'`, migração `3 -> 4` preservando grupos e vínculos; `Arquivos` segue como `status='archived'`.
 - Entregue na Fase 12: painel em seções Projetos, Áreas, Recursos, Arquivos e Sem grupo; tipo Recurso na gestão e no formulário.
 - Entregue/validado na Fase 13: E2E local e no Termux, backup/restauração e publicação em schema `4`; servidor espelhando 5 tarefas e 0 grupos.
