@@ -86,9 +86,8 @@ def build_message(lead):
         sector_phrase = f"clínicas de {sector.lower()}"
     return (
         f"Oi, {contact}, tudo bem? Vi que {observation}.\n"
-        f"Estou pesquisando como {sector_phrase} de {lead.city} organizam a "
-        "agenda e conquistam pacientes novos.\n"
-        "São 2 perguntas rápidas, sem venda — pode ser por aqui?"
+        f"Estou pesquisando como {sector_phrase} de {lead.city} atraem "
+        "pacientes novos. Posso te fazer 2 perguntas rápidas? Não é venda."
     )
 
 

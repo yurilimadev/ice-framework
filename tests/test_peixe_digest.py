@@ -68,7 +68,7 @@ class PeixeDigestTestCase(unittest.TestCase):
         self.assertIn("Clinica Sorriso", text)
         self.assertIn("Dra. Ana", text)
         self.assertIn("Posts sobre implantes", text)
-        self.assertIn("pode ser por aqui?", text)
+        self.assertIn("Não é venda", text)
         self.assertIn("Aprendiz", text)
         self.assertIn("https://ice.exemplo.com/peixe", text)
         self.assertIn("Clinica Sorriso", html)

@@ -337,9 +337,9 @@ class PeixeRoutesTestCase(unittest.TestCase):
         self.assertIn("Oi, Dra. Ana", message)
         self.assertIn("Posts sobre implantes", message)
         self.assertIn("clínicas odontológicas de Natal", message)
-        self.assertIn("sem venda", message)
+        self.assertIn("atraem pacientes novos", message)
         self.assertIn("2 perguntas", message)
-        self.assertIn("pode ser por aqui?", message)
+        self.assertIn("Não é venda", message)
 
         other = self.create_lead(
             company="Studio Estetica",

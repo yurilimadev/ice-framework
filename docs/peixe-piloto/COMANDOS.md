@@ -204,8 +204,7 @@ Gerar a mensagem no servidor, no formato (revisado em 2026-11-21):
 
 ```text
 Oi, {contato}, tudo bem? Vi que {observação}.
-Estou pesquisando como {setor} de {cidade} organizam a agenda e conquistam pacientes novos.
-São 2 perguntas rápidas, sem venda — pode ser por aqui?
+Estou pesquisando como {setor} de {cidade} atraem pacientes novos. Posso te fazer 2 perguntas rápidas? Não é venda.
 ```
 
 `{setor}` vira "clínicas odontológicas" para odontologia e "clínicas de {setor}" nos demais. `settings.current_pain` não entra mais na mensagem.

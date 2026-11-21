@@ -75,8 +75,7 @@ O padrão é:
 
 ```text
 Oi, {contato}, tudo bem? Vi que {observação}.
-Estou pesquisando como {setor} de {cidade} organizam a agenda e conquistam pacientes novos.
-São 2 perguntas rápidas, sem venda — pode ser por aqui?
+Estou pesquisando como {setor} de {cidade} atraem pacientes novos. Posso te fazer 2 perguntas rápidas? Não é venda.
 ```
 
 Para odontologia, o setor vira **clínicas odontológicas**; nos demais, **clínicas de {setor}**. A observação precisa completar a frase "Vi que..." — fato público, minúscula inicial e sem notas internas. Se a frase não fizer sentido depois de "Vi que", o lead ainda não está pronto para envio.
