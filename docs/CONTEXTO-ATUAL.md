@@ -118,5 +118,6 @@ Usar a edição para corrigir os 5 leads de odontologia em Natal (telefones e ob
 
 ## Último versionamento
 
-- Último commit de código publicado: `6bcf893` (mensagem de abordagem revisada), em `main` e implantado no Termux em 2026-11-21.
+- Último commit de código publicado: `0a71404` (mensagem enxuta de abordagem), em `main` e implantado no Termux em 2026-11-21.
+- Dados: leads 1 a 4 com contatos curtos e observações reescritas; SouSmile (5) mantido fora da primeira leva.
 - Alterações locais pendentes: nenhuma.
